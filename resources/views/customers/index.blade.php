@@ -61,7 +61,6 @@
                         <th class="px-4 py-3 font-medium">Customer ID</th>
                         <th class="px-4 py-3 font-medium">Name</th>
                         <th class="px-4 py-3 font-medium">Type</th>
-                        <th class="px-4 py-3 font-medium hidden md:table-cell">Phone</th>
                         <th class="px-4 py-3 font-medium hidden md:table-cell">Address</th>
                         <th class="px-4 py-3 font-medium text-right">Manage</th>
                     </tr>
@@ -72,14 +71,12 @@
                         <td class="px-4 py-3 font-semibold text-gray-700">#{{ $customer->customer_id }}</td>
                         <td class="px-4 py-3">
                             <div class="font-medium text-gray-800">{{ $customer->name }}</div>
-                            <div class="text-sm text-gray-500 md:hidden">{{ $customer->phone }}</div>
                         </td>
                         <td class="px-4 py-3">
                             <span class="px-2 py-1 rounded text-xs font-medium {{ $customer->type === 'Regular' ? 'bg-[#d9edf7] text-[#31708f]' : 'bg-[#fff3cd] text-[#856404]' }}">
                                 {{ $customer->type }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">{{ $customer->phone }}</td>
                         <td class="px-4 py-3 text-sm text-gray-600 hidden md:table-cell truncate max-w-[200px]" title="{{ $customer->address }}">{{ $customer->address }}</td>
                         <td class="px-4 py-3 text-right">
                             <div class="flex justify-end gap-2">

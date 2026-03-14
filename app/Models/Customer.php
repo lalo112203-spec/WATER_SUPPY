@@ -15,7 +15,6 @@ class Customer extends Model
         'name',
         'type',
         'email',
-        'phone',
         'address',
         'meter_reading',
         'total_consumption',

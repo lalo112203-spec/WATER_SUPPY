@@ -16,6 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Customers
     Route::resource('customers', CustomerController::class);
     Route::post('customers/{customer}/create-account', [CustomerController::class, 'createAccount'])->name('customers.create-account');
+    Route::post('customers/{customer}/update-password', [CustomerController::class, 'updatePassword'])->name('customers.update-password');
 
     // Messaging
     Route::get('messages', [\App\Http\Controllers\MessageController::class, 'index'])->name('messages.index');

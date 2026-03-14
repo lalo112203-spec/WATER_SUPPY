@@ -66,20 +66,6 @@
                     </flux:field>
 
                     <flux:field>
-                        <flux:label for="phone">Phone</flux:label>
-                        <flux:input
-                            id="phone"
-                            name="phone"
-                            type="text"
-                            required
-                            value="{{ old('phone', $customer->phone) }}"
-                        />
-                        @error('phone')
-                            <flux:error>{{ $message }}</flux:error>
-                        @enderror
-                    </flux:field>
-
-                    <flux:field>
                         <flux:label for="address">Address</flux:label>
                         <flux:textarea
                             id="address"

@@ -35,14 +35,20 @@ class CustomerController extends Controller
             'type' => 'required|in:Regular,Commercial',
             'email' => 'required|email|unique:customers',
             'address' => 'required|string',
+            'password' => 'nullable|string|min:8',
         ]);
 
         // Auto-generate customer ID if not provided, format as 1001, 1002 etc.
         $nextId = (Customer::max('id') ?? 1000) + 1;
         $validated['customer_id'] = sprintf('%d', $nextId);
-        $validated['phone'] = $request->input('phone', 'N/A');
 
-        $customer = Customer::create($validated);
+        $customer = Customer::create([
+            'name' => $validated['name'],
+            'type' => $validated['type'],
+            'email' => $validated['email'],
+            'address' => $validated['address'],
+            'customer_id' => $validated['customer_id'],
+        ]);
 
         // automatically create initial bill
         // base charge depends on customer type
@@ -65,6 +71,17 @@ class CustomerController extends Controller
             'due_date' => now()->addDays(30),
         ]);
 
+        if ($request->has('create_account') && $request->filled('password')) {
+            \App\Models\User::create([
+                'name' => $customer->name,
+                'email' => $customer->email,
+                'password' => \Illuminate\Support\Facades\Hash::make($request->input('password')),
+                'role' => 'consumer',
+                'customer_id' => $customer->id,
+                'email_verified_at' => now(),
+            ]);
+        }
+
         return redirect()->route('customers.index')
             ->with('success', 'Customer created successfully');
     }
@@ -72,7 +89,13 @@ class CustomerController extends Controller
     public function show(Customer $customer): View
     {
         $customer->load(['waterUsages', 'bills']);
-        return view('customers.show', compact('customer'));
+        $settings = [
+            'regular_green_max' => \App\Models\SystemSetting::get('regular_green_max', 10),
+            'commercial_green_max' => \App\Models\SystemSetting::get('commercial_green_max', 49),
+            'regular_orange_max' => \App\Models\SystemSetting::get('regular_orange_max', 14),
+            'commercial_orange_max' => \App\Models\SystemSetting::get('commercial_orange_max', 50),
+        ];
+        return view('customers.show', compact('customer', 'settings'));
     }
 
     public function edit(Customer $customer): View
@@ -88,8 +111,6 @@ class CustomerController extends Controller
             'email' => 'required|email|unique:customers,email,' . $customer->id,
             'address' => 'required|string',
         ]);
-        
-        $validated['phone'] = $request->input('phone', 'N/A');
 
         $customer->update($validated);
 
@@ -123,5 +144,22 @@ class CustomerController extends Controller
         ]);
 
         return back()->with('success', 'Account created successfully. Default password is: ' . $password);
+    }
+
+    public function updatePassword(Request $request, Customer $customer)
+    {
+        $request->validate([
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        if (!$customer->user) {
+            return back()->with('error', 'Customer does not have an account.');
+        }
+
+        $customer->user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+        ]);
+
+        return back()->with('success', 'Customer account password updated successfully.');
     }
 }

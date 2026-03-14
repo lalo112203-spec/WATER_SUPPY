@@ -20,12 +20,12 @@ class BillingController extends Controller
 
         $thresholds = [
             'Regular' => [
-                'green_max' => \App\Models\SystemSetting::get('regular_green_max', 12),
+                'green_max' => \App\Models\SystemSetting::get('regular_green_max', 10),
                 'orange_max' => \App\Models\SystemSetting::get('regular_orange_max', 14),
             ],
             'Commercial' => [
-                'green_max' => \App\Models\SystemSetting::get('commercial_green_max', 12),
-                'orange_max' => \App\Models\SystemSetting::get('commercial_orange_max', 14),
+                'green_max' => \App\Models\SystemSetting::get('commercial_green_max', 49),
+                'orange_max' => \App\Models\SystemSetting::get('commercial_orange_max', 50),
             ],
         ];
 
@@ -44,12 +44,12 @@ class BillingController extends Controller
         // load thresholds from settings so the form can colorize usage
         $thresholds = [
             'Regular' => [
-                'green_max' => \App\Models\SystemSetting::get('regular_green_max', 12),
+                'green_max' => \App\Models\SystemSetting::get('regular_green_max', 10),
                 'orange_max' => \App\Models\SystemSetting::get('regular_orange_max', 14),
             ],
             'Commercial' => [
-                'green_max' => \App\Models\SystemSetting::get('commercial_green_max', 12),
-                'orange_max' => \App\Models\SystemSetting::get('commercial_orange_max', 14),
+                'green_max' => \App\Models\SystemSetting::get('commercial_green_max', 49),
+                'orange_max' => \App\Models\SystemSetting::get('commercial_orange_max', 50),
             ],
         ];
 

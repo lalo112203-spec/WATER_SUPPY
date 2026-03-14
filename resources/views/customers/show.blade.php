@@ -50,13 +50,15 @@
                             @php
                                 $usage = $customer->waterUsages->where('billing_id', $bill->id)->first() ?? $customer->waterUsages->where('reading_date', '<=', $bill->billing_date)->last();
                                 $reading = $usage ? $usage->current_reading : 0;
+                                $greenMax = $customer->type === 'Commercial' ? $settings['commercial_green_max'] : $settings['regular_green_max'];
+                                $orangeMax = $customer->type === 'Commercial' ? $settings['commercial_orange_max'] : $settings['regular_orange_max'];
+                                $colorClass = $bill->usage_units <= $greenMax ? 'bg-[#5cb85c]' : ($bill->usage_units <= $orangeMax ? 'bg-[#f0ad4e]' : 'bg-[#d9534f]');
                             @endphp
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3 text-sm">{{ $bill->billing_date->format('F Y') }}</td>
                                 <td class="px-4 py-3 text-sm">{{ $reading }}</td>
                                 <td class="px-4 py-3 text-sm">
-                                    <span class="text-white px-2 py-0.5 rounded text-xs 
-                                        {{ $bill->usage_units <= 10 ? 'bg-[#5cb85c]' : ($bill->usage_units <= 20 ? 'bg-[#f0ad4e]' : 'bg-[#d9534f]') }}">
+                                    <span class="text-white px-2 py-0.5 rounded text-xs {{ $colorClass }}">
                                         {{ $bill->usage_units }} L
                                     </span>
                                 </td>
@@ -96,12 +98,59 @@
                                 </button>
                             </form>
                         @else
-                            <span class="inline-block bg-green-100 text-green-800 px-4 py-2 rounded text-sm font-medium">
-                                Account Active
-                            </span>
+                            <div class="inline-flex flex-col mb-4">
+                                <span class="inline-block bg-green-100 text-green-800 px-4 py-2 rounded text-sm font-medium">
+                                    Account Active
+                                </span>
+                                <span class="text-sm text-gray-500 mt-1">Login Email: {{ $customer->user->email }}</span>
+                            </div>
+                            
+                            <div class="mt-4 p-4 border border-gray-200 rounded bg-[#fcfcfc] max-w-sm">
+                                <h3 class="text-sm font-semibold mb-3 text-gray-700">Change Account Password</h3>
+                                <form action="{{ route('customers.update-password', $customer->id) }}" method="POST" class="flex flex-col gap-3">
+                                    @csrf
+                                    <div>
+                                        <input type="password" name="password" placeholder="New Password" required minlength="8" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-[#42a5f5] text-sm hidden" id="change_pwd_input_{{ $customer->id }}">
+                                    </div>
+                                    <div>
+                                        <input type="password" name="password_confirmation" placeholder="Confirm Password" required minlength="8" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-[#42a5f5] text-sm hidden" id="change_pwd_confirm_{{ $customer->id }}">
+                                    </div>
+                                    
+                                    <div>
+                                        <button type="button" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded text-sm font-medium shadow-sm transition-colors" onclick="togglePwdForm({{ $customer->id }})" id="change_pwd_btn_{{ $customer->id }}">
+                                            Change Password
+                                        </button>
+                                        <button type="submit" class="bg-[#5cb85c] hover:bg-[#4cae4c] text-white px-3 py-1.5 rounded text-sm font-medium shadow-sm transition-colors hidden" id="save_pwd_btn_{{ $customer->id }}">
+                                            Save Password
+                                        </button>
+                                        <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded text-sm font-medium shadow-sm transition-colors hidden ml-2" onclick="cancelPwdForm({{ $customer->id }})" id="cancel_pwd_btn_{{ $customer->id }}">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         @endif
                     </div>
                 </div>
+
+                <script>
+                    function togglePwdForm(id) {
+                        document.getElementById('change_pwd_input_' + id).classList.remove('hidden');
+                        document.getElementById('change_pwd_confirm_' + id).classList.remove('hidden');
+                        document.getElementById('save_pwd_btn_' + id).classList.remove('hidden');
+                        document.getElementById('cancel_pwd_btn_' + id).classList.remove('hidden');
+                        document.getElementById('change_pwd_btn_' + id).classList.add('hidden');
+                    }
+                    function cancelPwdForm(id) {
+                        document.getElementById('change_pwd_input_' + id).classList.add('hidden');
+                        document.getElementById('change_pwd_confirm_' + id).classList.add('hidden');
+                        document.getElementById('save_pwd_btn_' + id).classList.add('hidden');
+                        document.getElementById('cancel_pwd_btn_' + id).classList.add('hidden');
+                        document.getElementById('change_pwd_btn_' + id).classList.remove('hidden');
+                        document.getElementById('change_pwd_input_' + id).value = '';
+                        document.getElementById('change_pwd_confirm_' + id).value = '';
+                    }
+                </script>
             </div>
 
             <!-- New Entry Form -->

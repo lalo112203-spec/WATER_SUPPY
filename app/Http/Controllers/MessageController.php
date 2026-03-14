@@ -18,11 +18,20 @@ class MessageController extends Controller
         } else {
             $admin = \App\Models\User::where('role', 'admin')->first();
             $messages = \App\Models\Message::where(function($q) use ($user, $admin) {
-                $q->where('sender_id', $user->id)->where('receiver_id', $admin->id);
+                if ($admin) {
+                    $q->where('sender_id', $user->id)->where('receiver_id', $admin->id);
+                }
             })->orWhere(function($q) use ($user, $admin) {
-                $q->where('sender_id', $admin->id)->where('receiver_id', $user->id);
+                if ($admin) {
+                    $q->where('sender_id', $admin->id)->where('receiver_id', $user->id);
+                }
             })->orderBy('created_at', 'asc')->get();
-            return view('messages.consumer', compact('admin', 'messages'));
+            
+            $customer = \App\Models\Customer::with(['bills' => function($q) {
+                $q->orderBy('billing_date', 'desc');
+            }, 'waterUsages'])->find($user->customer_id);
+
+            return view('messages.consumer', compact('admin', 'messages', 'customer'));
         }
     }
 
@@ -32,6 +41,13 @@ class MessageController extends Controller
             'receiver_id' => 'required|exists:users,id',
             'message' => 'required|string',
         ]);
+
+        if (auth()->user()->role === 'consumer') {
+            $admin = \App\Models\User::where('role', 'admin')->first();
+            if (!$admin || $request->receiver_id != $admin->id) {
+                return back()->with('error', 'You are only allowed to message the admin.');
+            }
+        }
 
         \App\Models\Message::create([
             'sender_id' => auth()->id(),

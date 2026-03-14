@@ -22,7 +22,7 @@
                     
                     <div class="mb-6">
                         <label class="block text-gray-600 mb-1 text-sm">Red Alert (L)</label>
-                        <input type="number" name="regular_red_max" value="{{ old('alert_threshold', $settings['alert_threshold'] ?? 15) }}" class="w-full bg-transparent border-b border-gray-300 py-1 focus:outline-none focus:border-blue-400 text-gray-700">
+                        <input type="number" name="regular_red_max" value="{{ old('regular_red_max', $settings['regular_red_max'] ?? 20) }}" class="w-full bg-transparent border-b border-gray-300 py-1 focus:outline-none focus:border-blue-400 text-gray-700">
                     </div>
                     
                     <button type="submit" class="bg-[#337ab7] hover:bg-[#286090] text-white px-4 py-2 rounded font-medium text-sm shadow-sm">
@@ -36,7 +36,7 @@
                     
                     <div class="mb-4">
                         <label class="block text-gray-600 mb-1 text-sm">Base Charge (₱)</label>
-                        <input type="number" step="0.01" name="commercial_base_charge" value="250" class="w-full bg-transparent border-b border-gray-300 py-1 focus:outline-none focus:border-blue-400 text-gray-700">
+                        <input type="number" step="0.01" name="commercial_base_charge" value="{{ old('commercial_base_charge', $settings['commercial_base_charge'] ?? 250) }}" class="w-full bg-transparent border-b border-gray-300 py-1 focus:outline-none focus:border-blue-400 text-gray-700">
                     </div>
                     
                     <div class="mb-4">
@@ -46,7 +46,7 @@
                     
                     <div class="mb-6">
                         <label class="block text-gray-600 mb-1 text-sm">Red Alert (L)</label>
-                        <input type="number" name="commercial_red_max" value="100" class="w-full bg-transparent border-b border-gray-300 py-1 focus:outline-none focus:border-blue-400 text-gray-700">
+                        <input type="number" name="commercial_red_max" value="{{ old('commercial_red_max', $settings['commercial_red_max'] ?? 100) }}" class="w-full bg-transparent border-b border-gray-300 py-1 focus:outline-none focus:border-blue-400 text-gray-700">
                     </div>
                 </div>
             </div>
