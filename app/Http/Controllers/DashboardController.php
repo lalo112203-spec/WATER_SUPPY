@@ -59,7 +59,7 @@ class DashboardController extends Controller
                 ->groupBy('customers.type')
                 ->get();
 
-            $html = view('dashboard.index', [
+            return view('dashboard.index', [
                 'totalCustomers' => $totalCustomers,
                 'totalRevenue' => $totalRevenue,
                 'pendingRevenue' => $pendingRevenue,
@@ -68,9 +68,7 @@ class DashboardController extends Controller
                 'usageTrend' => $usageTrend,
                 'customerTypes' => $customerTypes,
                 'revenueByType' => $revenueByType,
-            ])->render();
-            
-            return response($html);
+            ]);
         } catch (\Throwable $e) {
             die("Dashboard Error, Driver " . \Illuminate\Support\Facades\DB::connection()->getDriverName() . " : " . $e->getMessage() . " on line " . $e->getLine() . " in " . $e->getFile());
         }
