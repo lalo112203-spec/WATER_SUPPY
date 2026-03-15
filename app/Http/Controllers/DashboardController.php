@@ -42,7 +42,7 @@ class DashboardController extends Controller
                 ->get();
 
             // Get usage trend data
-            $usageTrend = WaterUsage::selectRaw("{$usageMonthExpr} as month, SUM(usage) as total_usage")
+            $usageTrend = WaterUsage::selectRaw("{$usageMonthExpr} as month, SUM(`usage`) as total_usage")
                 ->groupByRaw($usageMonthExpr)
                 ->orderByRaw("{$usageMonthExpr} asc")
                 ->get();
