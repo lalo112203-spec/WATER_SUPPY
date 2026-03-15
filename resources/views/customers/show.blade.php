@@ -10,7 +10,7 @@
                         <th class="px-4 py-3 font-medium">No.</th>
                         <th class="px-4 py-3 font-medium">Name</th>
                         <th class="px-4 py-3 font-medium">Address</th>
-                        <th class="px-4 py-3 font-medium">Last Reading</th>
+                        <th class="px-4 py-3 font-medium">Total Usage</th>
                         <th class="px-4 py-3 font-medium text-right">Manage</th>
                     </tr>
                 </thead>
@@ -19,7 +19,7 @@
                         <td class="px-4 py-3">{{ $customer->customer_number ?? $customer->id }}</td>
                         <td class="px-4 py-3">{{ $customer->name }}</td>
                         <td class="px-4 py-3">{{ $customer->address }}</td>
-                        <td class="px-4 py-3">{{ $customer->waterUsages->last()->current_reading ?? 0 }} L</td>
+                        <td class="px-4 py-3 font-semibold text-[#42a5f5]">{{ number_format($customer->bills->sum('usage_units'), 2) }} L</td>
                         <td class="px-4 py-3 text-right">
                             <a href="{{ route('billing.create', ['customer_id' => $customer->id]) }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm font-medium inline-flex items-center">
                                 Billing <span class="ml-1 text-red-500 font-bold">&#10060;</span>
@@ -46,20 +46,24 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
-                            @forelse($customer->bills as $bill)
                             @php
-                                $usage = $customer->waterUsages->where('billing_id', $bill->id)->first() ?? $customer->waterUsages->where('reading_date', '<=', $bill->billing_date)->last();
-                                $reading = $usage ? $usage->current_reading : 0;
+                                $sortedBills = $customer->bills->sortByDesc('billing_date');
+                            @endphp
+                            @forelse($sortedBills as $bill)
+                            @php
+                                // Cumulative sum up to this bill
+                                $reading = $customer->bills->where('billing_date', '<=', $bill->billing_date)->sum('usage_units');
+
                                 $greenMax = $customer->type === 'Commercial' ? $settings['commercial_green_max'] : $settings['regular_green_max'];
                                 $orangeMax = $customer->type === 'Commercial' ? $settings['commercial_orange_max'] : $settings['regular_orange_max'];
                                 $colorClass = $bill->usage_units <= $greenMax ? 'bg-[#5cb85c]' : ($bill->usage_units <= $orangeMax ? 'bg-[#f0ad4e]' : 'bg-[#d9534f]');
                             @endphp
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3 text-sm">{{ $bill->billing_date->format('F Y') }}</td>
-                                <td class="px-4 py-3 text-sm">{{ $reading }}</td>
+                                <td class="px-4 py-3 text-sm">{{ number_format($reading, 2) }} L</td>
                                 <td class="px-4 py-3 text-sm">
                                     <span class="text-white px-2 py-0.5 rounded text-xs {{ $colorClass }}">
-                                        {{ $bill->usage_units }} L
+                                        {{ number_format($bill->usage_units, 2) }} L
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-sm">₱{{ number_format($bill->total_amount, 0) }}</td>

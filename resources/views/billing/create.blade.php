@@ -59,10 +59,10 @@
                     </div>
 
                     <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-4">
-                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4">💡 Enter the current water meter reading. Charges and usage will be calculated automatically.</p>
+                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4">💡 Enter the water usage for this month. Charges will be calculated automatically.</p>
                         
                         <flux:field>
-                            <flux:label for="usage_units">Current Meter Reading (L) *</flux:label>
+                            <flux:label for="usage_units">Water Usage (L) *</flux:label>
                             <flux:input
                                 id="usage_units"
                                 name="usage_units"
@@ -253,10 +253,9 @@
 
             const selectedOption = customerSelect.options[customerSelect.selectedIndex];
             const customerType = selectedOption.getAttribute('data-type');
-            const newReading = parseFloat(usageInput.value);
             
-            // Calculate actual usage length
-            const usage = Math.max(newReading - previousReading, 0);
+            // The user directly inputs the amount of water used THIS MONTH
+            const usage = parseFloat(usageInput.value) || 0;
 
             // Formula: (usage - 10) * rate + baseCharge
             let baseCharge = 0;
@@ -277,7 +276,7 @@
             usageChargeInput.value = usageCharge.toFixed(2);
 
             // Show calculation breakdown and color based on thresholds
-            calculationText.textContent = `Previous: ${previousReading} | Usage: ${Math.max(newReading - previousReading, 0)} | Calculation: (${Math.max(newReading - previousReading, 0)} - 10) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
+            calculationText.textContent = `Usage: ${usage}L | Calculation: (${usage} - 10) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
 
             // Determine color class based on usage INCREASE (billable usage)
             // The increase is the metered usage above the 10L threshold

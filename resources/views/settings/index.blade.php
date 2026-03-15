@@ -5,6 +5,14 @@
         <form method="POST" action="{{ route('settings.update') }}">
             @csrf
             
+            <div class="bg-[#ebf0f5] p-6 mb-6">
+                <h3 class="text-[#337ab7] font-semibold mb-4 text-base">General Settings</h3>
+                <div class="mb-4 max-w-md">
+                    <label class="block text-gray-600 mb-1 text-sm">Price of Water (₱ per unit)</label>
+                    <input type="number" step="0.01" name="usage_rate" value="{{ old('usage_rate', $settings['usage_rate'] ?? 50) }}" class="w-full bg-transparent border-b border-gray-300 py-1 focus:outline-none focus:border-blue-400 text-gray-700">
+                </div>
+            </div>
+
             <div class="flex flex-col md:flex-row gap-12 bg-[#ebf0f5] p-6">
                 <!-- Regular User Config -->
                 <div class="flex-1">
@@ -13,6 +21,11 @@
                     <div class="mb-4">
                         <label class="block text-gray-600 mb-1 text-sm">Base Charge (₱)</label>
                         <input type="number" step="0.01" name="base_charge" value="{{ old('base_charge', $settings['base_charge'] ?? 100) }}" class="w-full bg-transparent border-b border-gray-300 py-1 focus:outline-none focus:border-blue-400 text-gray-700">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-600 mb-1 text-sm">Green Alert (L)</label>
+                        <input type="number" name="regular_green_max" value="{{ old('regular_green_max', $settings['regular_green_max'] ?? 10) }}" class="w-full bg-transparent border-b border-gray-300 py-1 focus:outline-none focus:border-blue-400 text-gray-700">
                     </div>
                     
                     <div class="mb-4">
@@ -40,6 +53,11 @@
                     </div>
                     
                     <div class="mb-4">
+                        <label class="block text-gray-600 mb-1 text-sm">Green Alert (L)</label>
+                        <input type="number" name="commercial_green_max" value="{{ old('commercial_green_max', $settings['commercial_green_max'] ?? 49) }}" class="w-full bg-transparent border-b border-gray-300 py-1 focus:outline-none focus:border-blue-400 text-gray-700">
+                    </div>
+                    
+                    <div class="mb-4">
                         <label class="block text-gray-600 mb-1 text-sm">Orange Alert (L)</label>
                         <input type="number" name="commercial_orange_max" value="{{ old('commercial_orange_max', $settings['commercial_orange_max'] ?? 50) }}" class="w-full bg-transparent border-b border-gray-300 py-1 focus:outline-none focus:border-blue-400 text-gray-700">
                     </div>
@@ -53,11 +71,8 @@
             
             <!-- Hidden required fields from original form to maintain compatibility -->
             <div class="hidden">
-                <input type="number" name="usage_rate" value="{{ $settings['usage_rate'] ?? 1 }}">
                 <input type="email" name="alert_email" value="{{ $settings['alert_email'] ?? 'admin@example.com' }}">
                 <input type="number" name="alert_threshold" value="{{ $settings['alert_threshold'] ?? 15 }}">
-                <input type="number" name="regular_green_max" value="{{ $settings['regular_green_max'] ?? 10 }}">
-                <input type="number" name="commercial_green_max" value="{{ $settings['commercial_green_max'] ?? 49 }}">
             </div>
         </form>
     </div>

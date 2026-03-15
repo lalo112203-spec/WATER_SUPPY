@@ -62,6 +62,7 @@
                         <th class="px-4 py-3 font-medium">Name</th>
                         <th class="px-4 py-3 font-medium">Type</th>
                         <th class="px-4 py-3 font-medium hidden md:table-cell">Address</th>
+                        <th class="px-4 py-3 font-medium">Total Usage</th>
                         <th class="px-4 py-3 font-medium text-right">Manage</th>
                     </tr>
                 </thead>
@@ -78,6 +79,7 @@
                             </span>
                         </td>
                         <td class="px-4 py-3 text-sm text-gray-600 hidden md:table-cell truncate max-w-[200px]" title="{{ $customer->address }}">{{ $customer->address }}</td>
+                        <td class="px-4 py-3 font-semibold text-[#42a5f5]">{{ number_format($customer->bills->sum('usage_units'), 2) }} L</td>
                         <td class="px-4 py-3 text-right">
                             <div class="flex justify-end gap-2">
                                 <a href="{{ route('customers.show', $customer) }}" class="p-1 text-[#337ab7] hover:bg-[#ebf0f5] rounded transition duration-150" title="View Customer Profile">
