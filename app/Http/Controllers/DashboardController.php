@@ -20,17 +20,30 @@ class DashboardController extends Controller
         $pendingRevenue = Bill::where('status', 'Pending')->sum('total_amount');
         $totalConsumption = WaterUsage::sum('usage');
 
+        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        
+        $billMonthExpr = "strftime('%Y-%m', billing_date)";
+        $usageMonthExpr = "strftime('%Y-%m', reading_date)";
+        
+        if ($driver === 'mysql' || $driver === 'mariadb') {
+            $billMonthExpr = "DATE_FORMAT(billing_date, '%Y-%m')";
+            $usageMonthExpr = "DATE_FORMAT(reading_date, '%Y-%m')";
+        } elseif ($driver === 'pgsql') {
+            $billMonthExpr = "to_char(billing_date, 'YYYY-MM')";
+            $usageMonthExpr = "to_char(reading_date, 'YYYY-MM')";
+        }
+
         // Get monthly revenue data for chart
         $monthlyRevenue = Bill::where('status', 'Paid')
-            ->selectRaw("strftime('%Y-%m', billing_date) as month, SUM(total_amount) as total")
-            ->groupBy('month')
-            ->orderBy('month', 'asc')
+            ->selectRaw("{$billMonthExpr} as month, SUM(total_amount) as total")
+            ->groupByRaw($billMonthExpr)
+            ->orderByRaw("{$billMonthExpr} asc")
             ->get();
 
         // Get usage trend data
-        $usageTrend = WaterUsage::selectRaw("strftime('%Y-%m', reading_date) as month, SUM(usage) as total_usage")
-            ->groupBy('month')
-            ->orderBy('month', 'asc')
+        $usageTrend = WaterUsage::selectRaw("{$usageMonthExpr} as month, SUM(usage) as total_usage")
+            ->groupByRaw($usageMonthExpr)
+            ->orderByRaw("{$usageMonthExpr} asc")
             ->get();
 
         // Customer type distribution

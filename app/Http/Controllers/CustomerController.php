@@ -14,10 +14,18 @@ class CustomerController extends Controller
         $totalCustomers = Customer::count();
         $activeCustomers = Customer::where('status', 'active')->count();
         
+        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        $monthExpr = "strftime('%Y-%m', created_at)";
+        if ($driver === 'mysql' || $driver === 'mariadb') {
+            $monthExpr = "DATE_FORMAT(created_at, '%Y-%m')";
+        } elseif ($driver === 'pgsql') {
+            $monthExpr = "to_char(created_at, 'YYYY-MM')";
+        }
+
         // Get customer growth data for the chart
-        $customerGrowth = Customer::selectRaw("strftime('%Y-%m', created_at) as month, COUNT(*) as count")
-            ->groupBy('month')
-            ->orderBy('month', 'asc')
+        $customerGrowth = Customer::selectRaw("{$monthExpr} as month, COUNT(*) as count")
+            ->groupByRaw($monthExpr)
+            ->orderByRaw("{$monthExpr} asc")
             ->get();
 
         return view('customers.index', compact('customers', 'totalCustomers', 'activeCustomers', 'customerGrowth'));
