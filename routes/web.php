@@ -21,12 +21,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Messaging
     Route::get('messages', [\App\Http\Controllers\MessageController::class, 'index'])->name('messages.index');
     Route::post('messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
+    Route::post('messages/mark-read', [\App\Http\Controllers\MessageController::class, 'markRead'])->name('messages.markRead');
 
     // Billing
     Route::get('billing', [BillingController::class, 'index'])->name('billing.index');
     Route::get('billing/create', [BillingController::class, 'create'])->name('billing.create');
     Route::post('billing', [BillingController::class, 'store'])->name('billing.store');
     Route::get('billing/{bill}', [BillingController::class, 'show'])->name('billing.show');
+    Route::get('billing/{bill}/receipt', [BillingController::class, 'receipt'])->name('billing.receipt');
     Route::patch('billing/{bill}/mark-paid', [BillingController::class, 'markAsPaid'])->name('billing.mark-paid');
     Route::delete('billing/{bill}', [BillingController::class, 'destroy'])->name('billing.destroy');
 

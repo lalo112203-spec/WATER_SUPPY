@@ -16,6 +16,13 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
+                        <label class="block text-gray-600 mb-1 text-sm font-medium">Customer ID (Leave blank to auto-generate)</label>
+                        <input type="text" name="customer_id" value="{{ old('customer_id') }}" placeholder="e.g. {{ $nextId ?? 1001 }}"
+                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#42a5f5] text-gray-700 bg-[#fefefe] shadow-sm">
+                        @error('customer_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div>
                         <label class="block text-gray-600 mb-1 text-sm font-medium">Full Name <span class="text-red-500">*</span></label>
                         <input type="text" name="name" value="{{ old('name') }}" required
                             class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#42a5f5] text-gray-700 bg-[#fefefe] shadow-sm">
@@ -33,12 +40,6 @@
                         @error('type') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
-                    <div>
-                        <label class="block text-gray-600 mb-1 text-sm font-medium">Email Address <span class="text-red-500">*</span></label>
-                        <input type="email" name="email" value="{{ old('email') }}" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#42a5f5] text-gray-700 bg-[#fefefe] shadow-sm">
-                        @error('email') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                    </div>
                 </div>
 
                 <div class="mb-8">

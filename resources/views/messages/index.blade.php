@@ -6,25 +6,35 @@
             <p class="mt-1 text-sm text-gray-500">Communicate with consumers</p>
         </div>
 
-        <div class="bg-white shadow rounded-lg flex-1 mb-8 overflow-hidden flex">
+        <div class="bg-white shadow rounded-lg flex-1 mb-8 overflow-hidden flex flex-col md:flex-row relative">
             <!-- Consumers List -->
-            <div class="w-1/3 border-r border-gray-200 overflow-y-auto">
+            <div id="users_list" class="w-full md:w-1/3 border-r border-gray-200 overflow-y-auto block absolute md:static inset-0 z-10 bg-white md:bg-transparent">
                 <div class="p-4 border-b border-gray-200">
                     <h2 class="text-lg font-medium text-gray-900">Consumers</h2>
                 </div>
                 <ul class="divide-y divide-gray-200">
                     @forelse($users as $u)
-                        <li class="p-4 hover:bg-gray-50 cursor-pointer" onclick="document.getElementById('receiver_id').value = '{{ $u->id }}'; document.getElementById('chat_with').innerText = '{{ $u->name }}'; filterMessages('{{ $u->id }}')">
-                            <div class="flex items-center space-x-3">
-                                <div class="flex-shrink-0">
-                                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                                        {{ substr($u->name, 0, 1) }}
+                        <li data-user-id="{{ $u->id }}" class="p-4 hover:bg-gray-50 cursor-pointer" onclick="document.getElementById('receiver_id').value = '{{ $u->id }}'; document.getElementById('chat_with').innerText = '{{ addslashes($u->name) }}'; filterMessages('{{ $u->id }}')">
+                            <div class="flex items-center space-x-3 justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0 relative">
+                                        <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                                            {{ substr($u->name, 0, 1) }}
+                                        </div>
+                                        @if($u->unread_count > 0)
+                                            <span id="unread_indicator_{{ $u->id }}" class="absolute top-0 right-0 block h-3 w-3 rounded-full bg-red-500 ring-2 ring-white"></span>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium {{ $u->unread_count > 0 ? 'text-gray-900 font-bold' : 'text-gray-900' }}">{{ $u->name }}</p>
+                                        <p class="text-xs {{ $u->unread_count > 0 ? 'text-gray-800 font-semibold' : 'text-gray-500' }}">ID: {{ $u->customer_id ?? $u->id }}</p>
                                     </div>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-900">{{ $u->name }}</p>
-                                    <p class="text-xs text-gray-500">{{ $u->email }}</p>
-                                </div>
+                                @if($u->unread_count > 0)
+                                    <div>
+                                        <span id="unread_badge_{{ $u->id }}" class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $u->unread_count }}</span>
+                                    </div>
+                                @endif
                             </div>
                         </li>
                     @empty
@@ -34,8 +44,11 @@
             </div>
 
             <!-- Chat Area -->
-            <div class="w-2/3 flex flex-col h-full bg-gray-50">
-                <div class="p-4 border-b border-gray-200 bg-white shadow-sm flex-shrink-0">
+            <div id="chat_area" class="w-full md:w-2/3 flex-col h-full bg-gray-50 hidden md:flex">
+                <div class="p-4 border-b border-gray-200 bg-white shadow-sm flex-shrink-0 flex items-center">
+                    <button type="button" class="md:hidden mr-3 text-gray-500 hover:text-gray-700" onclick="showUsersList()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    </button>
                     <h2 class="text-lg font-medium text-gray-900" id="chat_with">Select a consumer</h2>
                 </div>
                 
@@ -78,6 +91,48 @@
         });
         const container = document.getElementById('messages_container');
         container.scrollTop = container.scrollHeight;
+
+        // Mobile layout swap
+        if(window.innerWidth < 768) {
+            document.getElementById('users_list').classList.add('hidden');
+            document.getElementById('users_list').classList.remove('block');
+            document.getElementById('chat_area').classList.remove('hidden');
+            document.getElementById('chat_area').classList.add('flex');
+        }
+
+        // Mark as read
+        fetch('{{ route("messages.markRead") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ partner_id: partnerId })
+        }).then(res => res.json()).then(data => {
+            if(data.success) {
+                const indicator = document.getElementById('unread_indicator_' + partnerId);
+                if (indicator) indicator.remove();
+                const badge = document.getElementById('unread_badge_' + partnerId);
+                if (badge) badge.remove();
+            }
+        });
     }
+
+    function showUsersList() {
+        document.getElementById('users_list').classList.remove('hidden');
+        document.getElementById('users_list').classList.add('block');
+        document.getElementById('chat_area').classList.add('hidden');
+        document.getElementById('chat_area').classList.remove('flex');
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        @if(request()->has('select_user'))
+            const userId = '{{ request('select_user') }}';
+            const userElement = document.querySelector(`li[data-user-id="${userId}"]`);
+            if (userElement) {
+                userElement.click();
+            }
+        @endif
+    });
 </script>
 </x-layouts::app>

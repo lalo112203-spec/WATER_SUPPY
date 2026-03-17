@@ -11,13 +11,13 @@
             <!-- Username/Customer ID -->
             <flux:input
                 name="email"
-                :label="__('Username or Customer No.')"
+                :label="__('Customer ID (or Email/Username)')"
                 :value="old('email')"
                 type="text"
                 required
                 autofocus
                 autocomplete="username"
-                placeholder="Username or Customer ID"
+                placeholder="e.g. 1001"
             />
 
             <!-- Password -->

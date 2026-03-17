@@ -106,7 +106,13 @@
                                 <span class="inline-block bg-green-100 text-green-800 px-4 py-2 rounded text-sm font-medium">
                                     Account Active
                                 </span>
-                                <span class="text-sm text-gray-500 mt-1">Login Email: {{ $customer->user->email }}</span>
+                                <span class="text-sm text-gray-500 mt-1">Login ID: {{ $customer->customer_id ?? $customer->id }}</span>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <a href="{{ route('messages.index', ['select_user' => $customer->user->id]) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded text-sm font-medium inline-block">
+                                    Message Consumer
+                                </a>
                             </div>
                             
                             <div class="mt-4 p-4 border border-gray-200 rounded bg-[#fcfcfc] max-w-sm">

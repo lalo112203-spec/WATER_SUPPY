@@ -30,8 +30,16 @@
                         </flux:sidebar.item>
                     @endif
                     
+                    @php
+                        $unreadCount = \App\Models\Message::where('receiver_id', auth()->id())->whereNull('read_at')->count();
+                    @endphp
                     <flux:sidebar.item icon="chat-bubble-left" :href="route('messages.index')" :current="request()->routeIs('messages.*')" wire:navigate>
-                        {{ __('Messages') }}
+                        <div class="flex items-center justify-between w-full">
+                            <span>{{ __('Messages') }}</span>
+                            @if($unreadCount > 0)
+                                <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $unreadCount }}</span>
+                            @endif
+                        </div>
                     </flux:sidebar.item>
 
                     @if(auth()->user()->role === 'admin')

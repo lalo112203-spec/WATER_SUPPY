@@ -81,6 +81,21 @@ class BillingController extends Controller
         return view('billing.show', compact('bill'));
     }
 
+    public function receipt(Bill $bill): View
+    {
+        // Require the bill to be paid to view receipt
+        if (strtolower($bill->status) !== 'paid') {
+            abort(403, 'Receipt is only available for paid bills.');
+        }
+        
+        // Ensure user is authorized if it's a consumer
+        if (auth()->user()->role === 'consumer' && auth()->user()->customer_id !== $bill->customer_id) {
+            abort(403);
+        }
+
+        return view('billing.receipt', compact('bill'));
+    }
+
     public function markAsPaid(Bill $bill)
     {
         $bill->update([

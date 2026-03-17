@@ -33,27 +33,34 @@ class CustomerController extends Controller
 
     public function create(): View
     {
-        return view('customers.create');
+        $allIds = Customer::pluck('customer_id')->map(fn($val) => (int)$val)->toArray();
+        $nextId = (count($allIds) > 0 ? max($allIds) : 1000) + 1;
+        return view('customers.create', compact('nextId'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'customer_id' => 'nullable|string|unique:customers,customer_id',
             'name' => 'required|string',
             'type' => 'required|in:Regular,Commercial',
-            'email' => 'required|email|unique:customers',
             'address' => 'required|string',
             'password' => 'nullable|string|min:8',
         ]);
 
-        // Auto-generate customer ID if not provided, format as 1001, 1002 etc.
-        $nextId = (Customer::max('id') ?? 1000) + 1;
-        $validated['customer_id'] = sprintf('%d', $nextId);
+        if ($request->filled('customer_id')) {
+            $validated['customer_id'] = $request->customer_id;
+        } else {
+            // Auto-generate customer ID if not provided. Use max existing customer_id integer.
+            $allIds = Customer::pluck('customer_id')->map(fn($val) => (int)$val)->toArray();
+            $nextId = (count($allIds) > 0 ? max($allIds) : 1000) + 1;
+            $validated['customer_id'] = sprintf('%d', $nextId);
+        }
 
         $customer = Customer::create([
             'name' => $validated['name'],
             'type' => $validated['type'],
-            'email' => $validated['email'],
+            'email' => $validated['customer_id'] . '@system.local',
             'address' => $validated['address'],
             'customer_id' => $validated['customer_id'],
         ]);
@@ -114,13 +121,19 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $validated = $request->validate([
+            'customer_id' => 'required|string|unique:customers,customer_id,' . $customer->id,
             'name' => 'required|string',
             'type' => 'required|in:Regular,Commercial',
-            'email' => 'required|email|unique:customers,email,' . $customer->id,
             'address' => 'required|string',
         ]);
 
-        $customer->update($validated);
+        // Keep existing email, just update others
+        $customer->update([
+            'customer_id' => $validated['customer_id'],
+            'name' => $validated['name'],
+            'type' => $validated['type'],
+            'address' => $validated['address'],
+        ]);
 
         return redirect()->route('customers.index')
             ->with('success', 'Customer updated successfully');

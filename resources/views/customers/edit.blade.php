@@ -51,19 +51,6 @@
                         @enderror
                     </flux:field>
 
-                    <flux:field>
-                        <flux:label for="email">Email</flux:label>
-                        <flux:input
-                            id="email"
-                            name="email"
-                            type="email"
-                            required
-                            value="{{ old('email', $customer->email) }}"
-                        />
-                        @error('email')
-                            <flux:error>{{ $message }}</flux:error>
-                        @enderror
-                    </flux:field>
 
                     <flux:field>
                         <flux:label for="address">Address</flux:label>

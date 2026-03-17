@@ -10,13 +10,27 @@ class MessageController extends Controller
     {
         $user = auth()->user();
         if ($user->role === 'admin') {
-            $users = \App\Models\User::where('role', 'consumer')->get();
+            $users = \App\Models\User::where('role', 'consumer')
+                ->withCount(['sentMessages as unread_count' => function ($query) {
+                    $query->where('receiver_id', auth()->id())->whereNull('read_at');
+                }])
+                ->orderByDesc('unread_count')
+                ->get();
             $messages = \App\Models\Message::with(['sender', 'receiver'])
                 ->orderBy('created_at', 'asc')
                 ->get();
             return view('messages.index', compact('users', 'messages'));
         } else {
             $admin = \App\Models\User::where('role', 'admin')->first();
+            
+            // Mark messages from admin as read
+            if ($admin) {
+                \App\Models\Message::where('sender_id', $admin->id)
+                    ->where('receiver_id', $user->id)
+                    ->whereNull('read_at')
+                    ->update(['read_at' => now()]);
+            }
+
             $messages = \App\Models\Message::where(function($q) use ($user, $admin) {
                 if ($admin) {
                     $q->where('sender_id', $user->id)->where('receiver_id', $admin->id);
@@ -56,5 +70,19 @@ class MessageController extends Controller
         ]);
 
         return back()->with('success', 'Message sent.');
+    }
+
+    public function markRead(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'partner_id' => 'required|exists:users,id'
+        ]);
+        
+        \App\Models\Message::where('sender_id', $request->partner_id)
+            ->where('receiver_id', auth()->id())
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+            
+        return response()->json(['success' => true]);
     }
 }
