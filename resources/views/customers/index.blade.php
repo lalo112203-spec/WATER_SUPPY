@@ -69,7 +69,7 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse($customers as $customer)
                     <tr class="hover:bg-blue-50 transition duration-150">
-                        <td class="px-4 py-3 font-semibold text-gray-700">#{{ $customer->customer_id }}</td>
+                        <td class="px-4 py-3 font-semibold text-gray-700">{{ $customer->customer_id }}</td>
                         <td class="px-4 py-3">
                             <div class="font-medium text-gray-800">{{ $customer->name }}</div>
                         </td>

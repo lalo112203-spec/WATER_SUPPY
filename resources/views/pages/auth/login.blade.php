@@ -10,9 +10,9 @@
 
             <!-- Username/Customer ID -->
             <flux:input
-                name="email"
-                :label="__('Customer ID (or Email/Username)')"
-                :value="old('email')"
+                name="customer_id"
+                :label="__('Customer ID')"
+                :value="old('customer_id')"
                 type="text"
                 required
                 autofocus
