@@ -46,27 +46,45 @@ new #[Title('Password settings')] class extends Component {
 
     <x-pages::settings.layout :heading="__('Update password')" :subheading="__('Ensure your account is using a long, random password to stay secure')">
         <form method="POST" wire:submit="updatePassword" class="mt-6 space-y-6">
-            <flux:input
-                wire:model="current_password"
-                :label="__('Current password')"
-                type="password"
-                required
-                autocomplete="current-password"
-            />
-            <flux:input
-                wire:model="password"
-                :label="__('New password')"
-                type="password"
-                required
-                autocomplete="new-password"
-            />
-            <flux:input
-                wire:model="password_confirmation"
-                :label="__('Confirm password')"
-                type="password"
-                required
-                autocomplete="new-password"
-            />
+            <div class="relative">
+                <flux:input
+                    wire:model="current_password"
+                    :label="__('Current password')"
+                    id="current_password"
+                    type="password"
+                    required
+                    autocomplete="current-password"
+                />
+                <button type="button" onclick="togglePassword('current_password')" class="absolute top-8 right-2 text-sm text-gray-600">
+                    👁️
+                </button>
+            </div>
+            <div class="relative">
+                <flux:input
+                    wire:model="password"
+                    :label="__('New password')"
+                    id="new_password"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                />
+                <button type="button" onclick="togglePassword('new_password')" class="absolute top-8 right-2 text-sm text-gray-600">
+                    👁️
+                </button>
+            </div>
+            <div class="relative">
+                <flux:input
+                    wire:model="password_confirmation"
+                    :label="__('Confirm password')"
+                    id="password_confirmation"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                />
+                <button type="button" onclick="togglePassword('password_confirmation')" class="absolute top-8 right-2 text-sm text-gray-600">
+                    👁️
+                </button>
+            </div>
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">
@@ -82,3 +100,14 @@ new #[Title('Password settings')] class extends Component {
         </form>
     </x-pages::settings.layout>
 </section>
+
+<script>
+    function togglePassword(id) {
+        const input = document.getElementById(id);
+        if (input.type === 'password') {
+            input.type = 'text';
+        } else {
+            input.type = 'password';
+        }
+    }
+</script>

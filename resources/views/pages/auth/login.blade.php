@@ -10,27 +10,30 @@
 
             <!-- Username/Customer ID -->
             <flux:input
-                name="customer_id"
-                :label="__('Customer ID')"
-                :value="old('customer_id')"
+                name="email"
+                :label="__('Customer ID / Username')"
+                :value="old('email')"
                 type="text"
                 required
                 autofocus
                 autocomplete="username"
-                placeholder="e.g. 1001"
+                placeholder="e.g. 1001 or admin"
             />
 
             <!-- Password -->
             <div class="relative">
                 <flux:input
+                    id="password"
                     name="password"
                     :label="__('Password')"
                     type="password"
                     required
                     autocomplete="current-password"
                     :placeholder="__('Password')"
-                    viewable
                 />
+                <button type="button" onclick="togglePassword()" class="absolute top-8 right-2 text-sm text-gray-600">
+                    👁️
+                </button>
 
                 @if (Route::has('password.request'))
                     <flux:link class="absolute top-0 text-sm end-0" :href="route('password.request')" wire:navigate>
@@ -38,6 +41,17 @@
                     </flux:link>
                 @endif
             </div>
+
+            <script>
+                function togglePassword() {
+                    const password = document.getElementById('password');
+                    if (password.type === 'password') {
+                        password.type = 'text';
+                    } else {
+                        password.type = 'password';
+                    }
+                }
+            </script>
 
             <!-- Remember Me -->
             <flux:checkbox name="remember" :label="__('Remember me')" :checked="old('remember')" />
