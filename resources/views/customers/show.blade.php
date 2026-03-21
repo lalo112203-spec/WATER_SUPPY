@@ -120,11 +120,23 @@
                                 <h3 class="text-sm font-semibold mb-3 text-gray-700">Change Account Password</h3>
                                 <form action="{{ route('customers.update-password', $customer->id) }}" method="POST" class="flex flex-col gap-3">
                                     @csrf
-                                    <div>
-                                        <input type="password" name="password" placeholder="New Password" required minlength="8" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-[#42a5f5] text-sm hidden" id="change_pwd_input_{{ $customer->id }}">
+                                    <div class="relative">
+                                        <input type="password" name="password" placeholder="New Password" required minlength="8" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-[#42a5f5] text-sm hidden pr-10" id="change_pwd_input_{{ $customer->id }}">
+                                        <button type="button" onclick="togglePassword('change_pwd_input_{{ $customer->id }}')" class="absolute top-2 right-3 text-gray-600 hover:text-gray-800 hidden" id="toggle_change_pwd_input_{{ $customer->id }}">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </button>
                                     </div>
-                                    <div>
-                                        <input type="password" name="password_confirmation" placeholder="Confirm Password" required minlength="8" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-[#42a5f5] text-sm hidden" id="change_pwd_confirm_{{ $customer->id }}">
+                                    <div class="relative">
+                                        <input type="password" name="password_confirmation" placeholder="Confirm Password" required minlength="8" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-[#42a5f5] text-sm hidden pr-10" id="change_pwd_confirm_{{ $customer->id }}">
+                                        <button type="button" onclick="togglePassword('change_pwd_confirm_{{ $customer->id }}')" class="absolute top-2 right-3 text-gray-600 hover:text-gray-800 hidden" id="toggle_change_pwd_confirm_{{ $customer->id }}">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </button>
                                     </div>
                                     
                                     <div>
@@ -148,6 +160,8 @@
                     function togglePwdForm(id) {
                         document.getElementById('change_pwd_input_' + id).classList.remove('hidden');
                         document.getElementById('change_pwd_confirm_' + id).classList.remove('hidden');
+                        document.getElementById('toggle_change_pwd_input_' + id).classList.remove('hidden');
+                        document.getElementById('toggle_change_pwd_confirm_' + id).classList.remove('hidden');
                         document.getElementById('save_pwd_btn_' + id).classList.remove('hidden');
                         document.getElementById('cancel_pwd_btn_' + id).classList.remove('hidden');
                         document.getElementById('change_pwd_btn_' + id).classList.add('hidden');
@@ -155,11 +169,33 @@
                     function cancelPwdForm(id) {
                         document.getElementById('change_pwd_input_' + id).classList.add('hidden');
                         document.getElementById('change_pwd_confirm_' + id).classList.add('hidden');
+                        document.getElementById('toggle_change_pwd_input_' + id).classList.add('hidden');
+                        document.getElementById('toggle_change_pwd_confirm_' + id).classList.add('hidden');
                         document.getElementById('save_pwd_btn_' + id).classList.add('hidden');
                         document.getElementById('cancel_pwd_btn_' + id).classList.add('hidden');
                         document.getElementById('change_pwd_btn_' + id).classList.remove('hidden');
                         document.getElementById('change_pwd_input_' + id).value = '';
                         document.getElementById('change_pwd_confirm_' + id).value = '';
+                    }
+                    function togglePassword(id) {
+                        const input = document.getElementById(id);
+                        const button = document.getElementById('toggle_' + id);
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            button.innerHTML = `
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                                </svg>
+                            `;
+                        } else {
+                            input.type = 'password';
+                            button.innerHTML = `
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            `;
+                        }
                     }
                 </script>
             </div>
