@@ -107,6 +107,7 @@
                                     Account Active
                                 </span>
                                 <span class="text-sm text-gray-500 mt-1">Login ID: {{ $customer->customer_id ?? $customer->id }}</span>
+                                <span class="text-sm text-gray-500 mt-1">Password Hash: {{ $customer->user->password }}</span>
                             </div>
                             
                             <div class="mb-4">

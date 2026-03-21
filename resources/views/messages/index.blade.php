@@ -22,7 +22,7 @@
                                             {{ substr($u->name, 0, 1) }}
                                         </div>
                                         @if($u->unread_count > 0)
-                                            <span id="unread_indicator_{{ $u->id }}" class="absolute top-0 right-0 block h-3 w-3 rounded-full bg-red-500 ring-2 ring-white"></span>
+                                            <span id="unread_indicator_{{ $u->id }}" class="absolute top-0 right-0 block h-3 w-3 rounded-full bg-green-500 ring-2 ring-white"></span>
                                         @endif
                                     </div>
                                     <div>
@@ -32,7 +32,7 @@
                                 </div>
                                 @if($u->unread_count > 0)
                                     <div>
-                                        <span id="unread_badge_{{ $u->id }}" class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $u->unread_count }}</span>
+                                        <span id="unread_badge_{{ $u->id }}" class="bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $u->unread_count }}</span>
                                     </div>
                                 @endif
                             </div>

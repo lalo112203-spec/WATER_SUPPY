@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
 Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', 'settings/profile');
+    Route::redirect('settings', function () {
+        return auth()->user()->role === 'admin' ? route('settings.index') : route('profile.edit');
+    });
 
     Route::livewire('settings/profile', 'pages::settings.profile')->name('profile.edit');
 });

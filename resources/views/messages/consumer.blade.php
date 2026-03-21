@@ -3,7 +3,7 @@
     <div class="h-full flex flex-col pt-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div class="mb-8">
             <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-            <p class="mt-1 text-sm text-gray-500">Welcome, {{ auth()->user()->name }}. View your billing history and contact admin.</p>
+            <p class="mt-1 text-sm text-gray-500">Welcome, {{ auth()->user()->name }}. View your billing history and contact admin. <a href="{{ route('user-password.edit') }}" class="text-blue-600 hover:text-blue-700 ml-2">Change Password</a></p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 flex-1 mb-8 lg:max-h-[calc(100vh-12rem)]">
