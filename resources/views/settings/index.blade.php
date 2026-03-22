@@ -1,10 +1,13 @@
-<x-layouts.app title="{{ __('System Settings') }}">
+<x-layouts::app title="{{ __('System Settings') }}">
     <section class="w-full">
         @include('partials.settings-heading')
 
         <flux:heading class="sr-only">{{ __('System settings') }}</flux:heading>
 
-        <x-pages::settings.layout :heading="__('System Configuration')" :subheading="__('Update your system billing charges and alert thresholds.')">
+        @component('pages.settings.layout', [
+            'heading' => __('System Configuration'),
+            'subheading' => __('Update your system billing charges and alert thresholds.')
+        ])
             
             <form method="POST" action="{{ route('settings.update') }}" class="my-6 w-full space-y-6">
                 @csrf
@@ -52,6 +55,6 @@
                     </div>
                 </div>
             </form>
-        </x-pages::settings.layout>
+        @endcomponent
     </section>
-</x-layouts.app>
+</x-layouts::app>
