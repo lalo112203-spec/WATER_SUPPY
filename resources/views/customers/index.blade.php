@@ -54,8 +54,8 @@
             Customer Directory
         </h2>
         
-        <div class="bg-white rounded shadow-sm overflow-hidden border border-gray-200">
-            <table class="w-full text-left border-collapse">
+        <div class="bg-white rounded shadow-sm overflow-x-auto border border-gray-200">
+            <table class="w-full text-left border-collapse min-w-max">
                 <thead>
                     <tr class="bg-[#42a5f5] text-white">
                         <th class="px-4 py-3 font-medium">Customer ID</th>

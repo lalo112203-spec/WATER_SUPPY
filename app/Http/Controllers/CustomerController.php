@@ -91,6 +91,7 @@ class CustomerController extends Controller
                 'name' => $customer->name,
                 'email' => $customer->email,
                 'password' => \Illuminate\Support\Facades\Hash::make($request->input('password')),
+                'plain_password' => $request->input('password'),
                 'role' => 'consumer',
                 'customer_id' => $customer->id,
                 'email_verified_at' => now(),
@@ -157,8 +158,9 @@ class CustomerController extends Controller
 
         \App\Models\User::create([
             'name' => $customer->name,
-            'email' => $customer->email,
+            'email' => $customer->customer_id . '@system.local',
             'password' => \Illuminate\Support\Facades\Hash::make($password),
+            'plain_password' => $password,
             'role' => 'consumer',
             'customer_id' => $customer->id,
             'email_verified_at' => now(),
@@ -179,6 +181,7 @@ class CustomerController extends Controller
 
         $customer->user->update([
             'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'plain_password' => $request->password,
         ]);
 
         return back()->with('success', 'Customer account password updated successfully.');

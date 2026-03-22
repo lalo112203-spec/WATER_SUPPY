@@ -3,8 +3,8 @@
         <h1 class="text-2xl font-bold mb-6 text-gray-800">Customers</h1>
 
         <!-- Customer Summary Table -->
-        <div class="bg-white rounded shadow-sm overflow-hidden mb-8 border border-gray-200">
-            <table class="w-full text-left border-collapse">
+        <div class="bg-white rounded shadow-sm overflow-x-auto mb-8 border border-gray-200">
+            <table class="w-full text-left border-collapse min-w-max">
                 <thead>
                     <tr class="bg-[#42a5f5] text-white">
                         <th class="px-4 py-3 font-medium">No.</th>
@@ -34,8 +34,8 @@
             <!-- Reading History -->
             <div class="flex-1">
                 <h2 class="text-lg font-semibold mb-3">Reading History for [{{ $customer->customer_number ?? $customer->id }}]</h2>
-                <div class="bg-white rounded shadow-sm overflow-hidden border border-gray-200">
-                    <table class="w-full text-left border-collapse">
+                <div class="bg-white rounded shadow-sm overflow-x-auto border border-gray-200">
+                    <table class="w-full text-left border-collapse min-w-max">
                         <thead>
                             <tr class="bg-[#42a5f5] text-white">
                                 <th class="px-4 py-3 font-medium">Period</th>
@@ -102,12 +102,12 @@
                                 </button>
                             </form>
                         @else
-                            <div class="inline-flex flex-col mb-4">
+                            <div class="flex flex-col items-start mb-4 max-w-full">
                                 <span class="inline-block bg-green-100 text-green-800 px-4 py-2 rounded text-sm font-medium">
                                     Account Active
                                 </span>
                                 <span class="text-sm text-gray-500 mt-1">Login ID: {{ $customer->customer_id ?? $customer->id }}</span>
-                                <span class="text-sm text-gray-500 mt-1">Password Hash: {{ $customer->user->password }}</span>
+                                <span class="text-sm text-gray-500 mt-1 break-all">Password: {{ $customer->user->plain_password ?? 'Not Recorded' }}</span>
                             </div>
                             
                             <div class="mb-4">
@@ -200,36 +200,7 @@
                 </script>
             </div>
 
-            <!-- New Entry Form -->
-            <div class="w-full md:w-80">
-                <h2 class="text-lg font-semibold mb-3">New Entry for {{ date('F Y') }}</h2>
-                <div class="bg-[#f8f9fa] p-4">
-                    <form action="{{ route('billing.store') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="customer_id" value="{{ $customer->id }}">
-                        
-                        <div class="mb-3">
-                            <select name="month" class="w-full px-3 py-2 border border-gray-300 rounded bg-white focus:outline-none focus:border-blue-400">
-                                @foreach(range(1, 12) as $m)
-                                    <option value="{{ $m }}" {{ date('n') == $m ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $m, 1)) }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <input type="text" name="year" value="{{ date('Y') }}" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-400" placeholder="Year">
-                        </div>
-                        
-                        <div class="mb-4">
-                            <input type="number" name="current_reading" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-400 text-gray-400" placeholder="New Reading">
-                        </div>
-                        
-                        <button type="submit" class="w-full bg-[#5cb85c] hover:bg-[#4cae4c] text-white px-4 py-2 rounded font-medium">
-                            Generate Bill
-                        </button>
-                    </form>
-                </div>
-            </div>
+
         </div>
     </div>
 </x-layouts::app>

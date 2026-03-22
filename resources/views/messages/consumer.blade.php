@@ -39,11 +39,7 @@
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap text-sm">
                                             @if(strtolower($bill->status) !== 'paid')
-                                                <form action="{{ route('billing.mark-paid', $bill->id) }}" method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="text-blue-600 hover:text-blue-900 font-medium text-xs border border-blue-600 rounded px-2 py-1">Pay Now</button>
-                                                </form>
+                                                <span class="text-red-500 font-medium text-xs border border-red-500 rounded px-2 py-1 inline-block text-center bg-red-50">Not Paid</span>
                                             @else
                                                 <a href="{{ route('billing.receipt', $bill->id) }}" class="text-green-600 hover:text-green-900 font-medium text-xs border border-green-600 hover:bg-green-50 rounded px-2 py-1 inline-block text-center flex items-center gap-1 w-max">
                                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
