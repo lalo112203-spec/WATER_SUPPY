@@ -70,7 +70,7 @@
             </div>
 
             <!-- Content Area -->
-            <div id="chat_area" class="w-full md:w-2/3 flex-col h-full bg-gray-50 hidden flex">
+            <div id="chat_area" class="w-full md:w-2/3 flex-col h-full bg-gray-50 hidden md:flex">
                 <div class="p-4 border-b border-gray-200 bg-white shadow-sm flex-shrink-0 flex items-center">
                     <button type="button" class="md:hidden mr-3 text-gray-500 hover:text-gray-700" onclick="showUsersList()">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
