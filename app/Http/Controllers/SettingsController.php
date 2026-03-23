@@ -65,7 +65,8 @@ class SettingsController extends Controller
         }
 
         foreach ($validated as $key => $value) {
-            SystemSetting::set($key, $value, 'number');
+            $type = ($key === 'alert_email') ? 'text' : 'number';
+            SystemSetting::set($key, $value ?? '', $type);
         }
 
         return redirect()->route('settings.index')
