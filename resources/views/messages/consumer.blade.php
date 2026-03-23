@@ -1,10 +1,31 @@
-<x-layouts::app title="Messages">
+<x-layouts::app title="Message & Posting">
 <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 h-[calc(100vh-4rem)]">
     <div class="h-full flex flex-col pt-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div class="mb-8">
-            <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-            <p class="mt-1 text-sm text-gray-500">Welcome, {{ auth()->user()->name }}. View your billing history and contact admin. <a href="{{ route('user-password.edit') }}" class="text-blue-600 hover:text-blue-700 ml-2">Change Password</a></p>
+            <h1 class="text-2xl font-bold text-gray-900">Message & Posting</h1>
+            <p class="mt-1 text-sm text-gray-500">Welcome, {{ auth()->user()->name }}. View your billing history, announcements, and contact admin. <a href="{{ route('user-password.edit') }}" class="text-blue-600 hover:text-blue-700 ml-2">Change Password</a></p>
         </div>
+
+        <!-- Announcements Section -->
+        @if(isset($posts) && count($posts) > 0)
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 mb-8 shadow-sm">
+            <h2 class="text-xl font-bold text-blue-900 mb-4 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                System Announcements
+            </h2>
+            <div class="space-y-4 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                @foreach($posts as $post)
+                    <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200">
+                        @if($post->title)
+                            <h3 class="font-bold text-gray-900 text-lg mb-1">{{ $post->title }}</h3>
+                        @endif
+                        <p class="text-gray-700 text-sm leading-relaxed mb-3">{{ $post->content }}</p>
+                        <p class="text-[11px] font-semibold text-gray-400 tracking-wide uppercase">Posted on {{ $post->created_at->format('M d, Y h:i A') }}</p>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 flex-1 mb-8 lg:max-h-[calc(100vh-12rem)]">
             <!-- Payment History Section -->

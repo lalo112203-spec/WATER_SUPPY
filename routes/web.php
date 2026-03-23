@@ -21,6 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Messaging
     Route::get('messages', [\App\Http\Controllers\MessageController::class, 'index'])->name('messages.index');
     Route::post('messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
+    Route::post('messages/post', [\App\Http\Controllers\MessageController::class, 'storePost'])->name('messages.storePost');
     Route::post('messages/mark-read', [\App\Http\Controllers\MessageController::class, 'markRead'])->name('messages.markRead');
 
     // Billing

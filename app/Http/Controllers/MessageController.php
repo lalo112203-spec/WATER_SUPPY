@@ -9,6 +9,8 @@ class MessageController extends Controller
     public function index()
     {
         $user = auth()->user();
+        $posts = \App\Models\Post::with('admin')->orderBy('created_at', 'desc')->get();
+
         if ($user->role === 'admin') {
             $users = \App\Models\User::where('role', 'consumer')
                 ->withCount(['sentMessages as unread_count' => function ($query) {
@@ -19,7 +21,7 @@ class MessageController extends Controller
             $messages = \App\Models\Message::with(['sender', 'receiver'])
                 ->orderBy('created_at', 'asc')
                 ->get();
-            return view('messages.index', compact('users', 'messages'));
+            return view('messages.index', compact('users', 'messages', 'posts'));
         } else {
             $admin = \App\Models\User::where('role', 'admin')->first();
             
@@ -45,7 +47,7 @@ class MessageController extends Controller
                 $q->orderBy('billing_date', 'desc');
             }, 'waterUsages'])->find($user->customer_id);
 
-            return view('messages.consumer', compact('admin', 'messages', 'customer'));
+            return view('messages.consumer', compact('admin', 'messages', 'customer', 'posts'));
         }
     }
 
@@ -70,6 +72,26 @@ class MessageController extends Controller
         ]);
 
         return back()->with('success', 'Message sent.');
+    }
+
+    public function storePost(\Illuminate\Http\Request $request)
+    {
+        if (auth()->user()->role !== 'admin') {
+            return back()->with('error', 'Only admins can post announcements.');
+        }
+
+        $request->validate([
+            'title' => 'nullable|string|max:255',
+            'content' => 'required|string',
+        ]);
+
+        \App\Models\Post::create([
+            'admin_id' => auth()->id(),
+            'title' => $request->title,
+            'content' => $request->content,
+        ]);
+
+        return back()->with('success', 'Post published successfully.');
     }
 
     public function markRead(\Illuminate\Http\Request $request)

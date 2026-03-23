@@ -35,7 +35,7 @@
                     @endphp
                     <flux:sidebar.item icon="chat-bubble-left" :href="route('messages.index')" :current="request()->routeIs('messages.*')" wire:navigate>
                         <div class="flex items-center justify-between w-full">
-                            <span>{{ __('Messages') }}</span>
+                            <span>{{ __('Message & Posting') }}</span>
                             @if($unreadCount > 0)
                                 <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $unreadCount }}</span>
                             @endif
