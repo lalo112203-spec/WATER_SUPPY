@@ -8,8 +8,12 @@ use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
-    public function index(): View
+    public function index()
     {
+        if (auth()->user()->role !== 'admin') {
+            return redirect()->route('profile.edit');
+        }
+
         $settings = [
             'base_charge' => SystemSetting::get('base_charge', 500),
             'commercial_base_charge' => SystemSetting::get('commercial_base_charge', 250),
@@ -29,6 +33,10 @@ class SettingsController extends Controller
 
     public function update(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'base_charge' => 'required|numeric|min:0',
             'commercial_base_charge' => 'required|numeric|min:0',
