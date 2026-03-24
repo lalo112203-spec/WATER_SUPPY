@@ -71,6 +71,10 @@ class MessageController extends Controller
             'message' => $request->message,
         ]);
 
+        if (auth()->user()->role === 'admin') {
+            return redirect()->route('messages.index', ['select_user' => $request->receiver_id]);
+        }
+
         return back()->with('success', 'Message sent.');
     }
 
