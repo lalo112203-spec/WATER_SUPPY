@@ -1,9 +1,9 @@
 <x-layouts::app title="Customers">
-    <div class="px-6 py-4 bg-[#f8f9fa] min-h-screen font-sans text-gray-700">
-        <h1 class="text-2xl font-bold mb-6 text-gray-800">Customers</h1>
+    <div class="px-6 py-4 bg-transparent min-h-screen font-sans text-gray-300">
+        <h1 class="text-2xl font-bold mb-6 text-gray-200">Customers</h1>
 
         <!-- Customer Summary Table -->
-        <div class="bg-white rounded shadow-sm overflow-x-auto mb-8 border border-gray-200">
+        <div class="bg-[#121a25]/80 backdrop-blur-md rounded shadow-sm overflow-x-auto mb-8 border border-[#263548]">
             <table class="w-full text-left border-collapse min-w-max">
                 <thead>
                     <tr class="bg-[#42a5f5] text-white">
@@ -15,13 +15,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="hover:bg-gray-50 border-b border-gray-200">
+                    <tr class="hover:bg-[#0f1722] border-b border-[#263548]">
                         <td class="px-4 py-3">{{ $customer->customer_number ?? $customer->id }}</td>
                         <td class="px-4 py-3">{{ $customer->name }}</td>
                         <td class="px-4 py-3">{{ $customer->address }}</td>
                         <td class="px-4 py-3 font-semibold text-[#42a5f5]">{{ number_format($customer->bills->sum('usage_units'), 2) }} L</td>
                         <td class="px-4 py-3 text-right">
-                            <a href="{{ route('billing.create', ['customer_id' => $customer->id]) }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm font-medium inline-flex items-center">
+                            <a href="{{ route('billing.create', ['customer_id' => $customer->id]) }}" class="bg-gray-200 hover:bg-gray-300 text-gray-300 px-3 py-1 rounded text-sm font-medium inline-flex items-center">
                                 Billing <span class="ml-1 text-red-500 font-bold">&#10060;</span>
                             </a>
                         </td>
@@ -34,7 +34,7 @@
             <!-- Reading History -->
             <div class="flex-1">
                 <h2 class="text-lg font-semibold mb-3">Reading History for [{{ $customer->customer_number ?? $customer->id }}]</h2>
-                <div class="bg-white rounded shadow-sm overflow-x-auto border border-gray-200">
+                <div class="bg-[#121a25]/80 backdrop-blur-md rounded shadow-sm overflow-x-auto border border-[#263548]">
                     <table class="w-full text-left border-collapse min-w-max">
                         <thead>
                             <tr class="bg-[#42a5f5] text-white">
@@ -58,7 +58,7 @@
                                 $orangeMax = $customer->type === 'Commercial' ? $settings['commercial_orange_max'] : $settings['regular_orange_max'];
                                 $colorClass = $bill->usage_units <= $greenMax ? 'bg-[#5cb85c]' : ($bill->usage_units <= $orangeMax ? 'bg-[#f0ad4e]' : 'bg-[#d9534f]');
                             @endphp
-                            <tr class="hover:bg-gray-50">
+                            <tr class="hover:bg-[#0f1722]">
                                 <td class="px-4 py-3 text-sm">{{ $bill->billing_date->format('F Y') }}</td>
                                 <td class="px-4 py-3 text-sm">{{ number_format($reading, 2) }} L</td>
                                 <td class="px-4 py-3 text-sm">
@@ -68,11 +68,11 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm">₱{{ number_format($bill->total_amount, 0) }}</td>
                                 <td class="px-4 py-3 text-sm flex items-center justify-between">
-                                    <span class="text-gray-600">{{ $bill->status }}</span>
+                                    <span class="text-gray-400">{{ $bill->status }}</span>
                                     <form action="{{ route('billing.destroy', $bill) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded border border-gray-300 text-gray-500 font-bold ml-2">
+                                        <button type="submit" class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded border border-[#263548] text-gray-400 font-bold ml-2">
                                             ×
                                         </button>
                                     </form>
@@ -80,7 +80,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-4 text-center text-gray-500">No reading history</td>
+                                <td colspan="5" class="px-4 py-4 text-center text-gray-400">No reading history</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -106,8 +106,8 @@
                                 <span class="inline-block bg-green-100 text-green-800 px-4 py-2 rounded text-sm font-medium">
                                     Account Active
                                 </span>
-                                <span class="text-sm text-gray-500 mt-1">Login ID: {{ $customer->customer_id ?? $customer->id }}</span>
-                                <span class="text-sm text-gray-500 mt-1 break-all">Password: {{ $customer->user->plain_password ?? 'Not Recorded' }}</span>
+                                <span class="text-sm text-gray-400 mt-1">Login ID: {{ $customer->customer_id ?? $customer->id }}</span>
+                                <span class="text-sm text-gray-400 mt-1 break-all">Password: {{ $customer->user->plain_password ?? 'Not Recorded' }}</span>
                             </div>
                             
                             <div class="mb-4">
@@ -116,13 +116,13 @@
                                 </a>
                             </div>
                             
-                            <div class="mt-4 p-4 border border-gray-200 rounded bg-[#fcfcfc] max-w-sm">
-                                <h3 class="text-sm font-semibold mb-3 text-gray-700">Change Account Password</h3>
+                            <div class="mt-4 p-4 border border-[#263548] rounded bg-[#fcfcfc] max-w-sm">
+                                <h3 class="text-sm font-semibold mb-3 text-gray-300">Change Account Password</h3>
                                 <form action="{{ route('customers.update-password', $customer->id) }}" method="POST" class="flex flex-col gap-3">
                                     @csrf
                                     <div class="relative">
-                                        <input type="password" name="password" placeholder="New Password" required minlength="8" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-[#42a5f5] text-sm hidden pr-10" id="change_pwd_input_{{ $customer->id }}">
-                                        <button type="button" onclick="togglePassword('change_pwd_input_{{ $customer->id }}')" class="absolute top-2 right-3 text-gray-600 hover:text-gray-800 hidden" id="toggle_change_pwd_input_{{ $customer->id }}">
+                                        <input type="password" name="password" placeholder="New Password" required minlength="8" class="w-full px-3 py-2 border border-[#263548] rounded outline-none focus:border-[#42a5f5] text-sm hidden pr-10" id="change_pwd_input_{{ $customer->id }}">
+                                        <button type="button" onclick="togglePassword('change_pwd_input_{{ $customer->id }}')" class="absolute top-2 right-3 text-gray-400 hover:text-gray-200 hidden" id="toggle_change_pwd_input_{{ $customer->id }}">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -130,8 +130,8 @@
                                         </button>
                                     </div>
                                     <div class="relative">
-                                        <input type="password" name="password_confirmation" placeholder="Confirm Password" required minlength="8" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-[#42a5f5] text-sm hidden pr-10" id="change_pwd_confirm_{{ $customer->id }}">
-                                        <button type="button" onclick="togglePassword('change_pwd_confirm_{{ $customer->id }}')" class="absolute top-2 right-3 text-gray-600 hover:text-gray-800 hidden" id="toggle_change_pwd_confirm_{{ $customer->id }}">
+                                        <input type="password" name="password_confirmation" placeholder="Confirm Password" required minlength="8" class="w-full px-3 py-2 border border-[#263548] rounded outline-none focus:border-[#42a5f5] text-sm hidden pr-10" id="change_pwd_confirm_{{ $customer->id }}">
+                                        <button type="button" onclick="togglePassword('change_pwd_confirm_{{ $customer->id }}')" class="absolute top-2 right-3 text-gray-400 hover:text-gray-200 hidden" id="toggle_change_pwd_confirm_{{ $customer->id }}">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -146,7 +146,7 @@
                                         <button type="submit" class="bg-[#5cb85c] hover:bg-[#4cae4c] text-white px-3 py-1.5 rounded text-sm font-medium shadow-sm transition-colors hidden" id="save_pwd_btn_{{ $customer->id }}">
                                             Save Password
                                         </button>
-                                        <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded text-sm font-medium shadow-sm transition-colors hidden ml-2" onclick="cancelPwdForm({{ $customer->id }})" id="cancel_pwd_btn_{{ $customer->id }}">
+                                        <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-300 px-3 py-1.5 rounded text-sm font-medium shadow-sm transition-colors hidden ml-2" onclick="cancelPwdForm({{ $customer->id }})" id="cancel_pwd_btn_{{ $customer->id }}">
                                             Cancel
                                         </button>
                                     </div>
@@ -204,3 +204,4 @@
         </div>
     </div>
 </x-layouts::app>
+

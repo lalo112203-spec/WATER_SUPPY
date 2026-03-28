@@ -7,12 +7,15 @@ use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 new #[Title('Profile settings')] class extends Component {
     use ProfileValidationRules;
+    use WithFileUploads;
 
     public string $name = '';
     public string $email = '';
+    public $messenger_background;
 
     /**
      * Mount the component.
@@ -36,6 +39,12 @@ new #[Title('Profile settings')] class extends Component {
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
+        }
+
+        if ($this->messenger_background) {
+            // Store the file in public/messenger_backgrounds
+            $path = $this->messenger_background->store('messenger_backgrounds', 'public');
+            $user->messenger_background = $path;
         }
 
         $user->save();
@@ -104,6 +113,16 @@ new #[Title('Profile settings')] class extends Component {
                         @endif
                     </div>
                 @endif
+            </div>
+
+            <div>
+                <flux:input wire:model="messenger_background" :label="__('Messenger Background Image')" type="file" accept="image/*" />
+                @if (auth()->user()->messenger_background)
+                    <div class="mt-2 text-sm text-gray-500">
+                        Current background: <img src="{{ asset('storage/' . auth()->user()->messenger_background) }}" class="h-16 w-16 object-cover inline-block ml-2 rounded border border-gray-600">
+                    </div>
+                @endif
+                <div wire:loading wire:target="messenger_background" class="text-sm text-blue-500 mt-1">Uploading...</div>
             </div>
 
             <div class="flex items-center gap-4">

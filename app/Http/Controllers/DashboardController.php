@@ -12,8 +12,14 @@ class DashboardController extends Controller
     public function index(): View|\Illuminate\Http\RedirectResponse
     {
         try {
-            if (auth()->user()->role === 'consumer') {
-                return redirect()->route('messages.index');
+            $user = auth()->user();
+            if ($user->role === 'consumer') {
+                $posts = \App\Models\Post::with('admin')->orderBy('created_at', 'desc')->get();
+                $customer = \App\Models\Customer::with(['bills' => function($q) {
+                    $q->orderBy('billing_date', 'desc');
+                }, 'waterUsages'])->find($user->customer_id);
+
+                return view('dashboard.consumer', compact('customer', 'posts'));
             }
 
             $totalCustomers = Customer::count();

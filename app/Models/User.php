@@ -26,6 +26,7 @@ class User extends Authenticatable
         'plain_password',
         'role',
         'customer_id',
+        'messenger_background',
     ];
 
     /**

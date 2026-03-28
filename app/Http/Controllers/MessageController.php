@@ -12,9 +12,10 @@ class MessageController extends Controller
         $posts = \App\Models\Post::with('admin')->orderBy('created_at', 'desc')->get();
 
         if ($user->role === 'admin') {
+            $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
             $users = \App\Models\User::where('role', 'consumer')
-                ->withCount(['sentMessages as unread_count' => function ($query) {
-                    $query->where('receiver_id', auth()->id())->whereNull('read_at');
+                ->withCount(['sentMessages as unread_count' => function ($query) use ($adminIds) {
+                    $query->whereIn('receiver_id', $adminIds)->whereNull('read_at');
                 }])
                 ->orderByDesc('unread_count')
                 ->get();
@@ -25,29 +26,20 @@ class MessageController extends Controller
         } else {
             $admin = \App\Models\User::where('role', 'admin')->first();
             
-            // Mark messages from admin as read
-            if ($admin) {
-                \App\Models\Message::where('sender_id', $admin->id)
-                    ->where('receiver_id', $user->id)
-                    ->whereNull('read_at')
-                    ->update(['read_at' => now()]);
-            }
+            // Mark all received messages as read
+            \App\Models\Message::where('receiver_id', $user->id)
+                ->whereNull('read_at')
+                ->update(['read_at' => now()]);
 
-            $messages = \App\Models\Message::where(function($q) use ($user, $admin) {
-                if ($admin) {
-                    $q->where('sender_id', $user->id)->where('receiver_id', $admin->id);
-                }
-            })->orWhere(function($q) use ($user, $admin) {
-                if ($admin) {
-                    $q->where('sender_id', $admin->id)->where('receiver_id', $user->id);
-                }
+            $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
+
+            $messages = \App\Models\Message::where(function($q) use ($user, $adminIds) {
+                $q->where('sender_id', $user->id)->whereIn('receiver_id', $adminIds);
+            })->orWhere(function($q) use ($user, $adminIds) {
+                $q->whereIn('sender_id', $adminIds)->where('receiver_id', $user->id);
             })->orderBy('created_at', 'asc')->get();
             
-            $customer = \App\Models\Customer::with(['bills' => function($q) {
-                $q->orderBy('billing_date', 'desc');
-            }, 'waterUsages'])->find($user->customer_id);
-
-            return view('messages.consumer', compact('admin', 'messages', 'customer', 'posts'));
+            return view('messages.consumer', compact('admin', 'messages'));
         }
     }
 
@@ -104,10 +96,18 @@ class MessageController extends Controller
             'partner_id' => 'required|exists:users,id'
         ]);
         
-        \App\Models\Message::where('sender_id', $request->partner_id)
-            ->where('receiver_id', auth()->id())
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
+        if (auth()->user()->role === 'admin') {
+            $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
+            \App\Models\Message::where('sender_id', $request->partner_id)
+                ->whereIn('receiver_id', $adminIds)
+                ->whereNull('read_at')
+                ->update(['read_at' => now()]);
+        } else {
+            \App\Models\Message::where('sender_id', $request->partner_id)
+                ->where('receiver_id', auth()->id())
+                ->whereNull('read_at')
+                ->update(['read_at' => now()]);
+        }
             
         return response()->json(['success' => true]);
     }

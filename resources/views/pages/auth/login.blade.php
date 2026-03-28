@@ -1,4 +1,20 @@
 <x-layouts::auth :title="__('Log in')">
+    <style>
+        /* Override dark mode text contrast issues globally on this page */
+        h1, h2, h3, label, p, span, [data-flux-label], [data-flux-heading], [data-flux-subheading], .text-zinc-600, .text-zinc-800 {
+            color: #f3f4f6 !important;
+        }
+        input {
+            color: #ffffff !important; 
+        }
+        button[type="submit"] {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+        }
+        button[type="submit"] * {
+            color: #ffffff !important;
+        }
+    </style>
     <div class="flex flex-col gap-6">
         <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
 
@@ -8,16 +24,16 @@
         <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-6">
             @csrf
 
-            <!-- Username/Customer ID -->
+            <!-- Customer ID -->
             <flux:input
                 name="email"
-                :label="__('Customer ID / Username')"
+                :label="__('Customer ID')"
                 :value="old('email')"
                 type="text"
                 required
                 autofocus
                 autocomplete="username"
-                placeholder="e.g. 1001 or admin"
+                placeholder="e.g. 1001"
             />
 
             <!-- Password -->
@@ -31,7 +47,7 @@
                     autocomplete="current-password"
                     :placeholder="__('Password')"
                 />
-                <button type="button" onclick="togglePassword()" class="absolute top-8 right-2 text-sm text-gray-600">
+                <button type="button" onclick="togglePassword()" class="absolute top-8 right-2 text-sm text-gray-400">
                     👁️
                 </button>
 
@@ -71,3 +87,4 @@
         @endif
     </div>
 </x-layouts::auth>
+

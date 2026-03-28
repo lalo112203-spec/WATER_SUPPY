@@ -11,8 +11,15 @@ class BillingController extends Controller
 {
     public function index(): View
     {
-        $bills = Bill::with('customer')
-            ->paginate(15);
+        $pendingBills = Bill::with('customer')
+            ->where('status', '!=', 'Paid')
+            ->orderBy('billing_date', 'desc')
+            ->paginate(10, ['*'], 'pending_page');
+
+        $paidBills = Bill::with('customer')
+            ->where('status', 'Paid')
+            ->orderBy('paid_date', 'desc')
+            ->paginate(10, ['*'], 'paid_page');
 
         $paidCount = Bill::where('status', 'Paid')->count();
         $pendingCount = Bill::where('status', 'Pending')->count();
@@ -30,7 +37,8 @@ class BillingController extends Controller
         ];
 
         return view('billing.index', [
-            'bills' => $bills,
+            'pendingBills' => $pendingBills,
+            'paidBills' => $paidBills,
             'paidCount' => $paidCount,
             'pendingCount' => $pendingCount,
             'totalBilled' => $totalBilled,
