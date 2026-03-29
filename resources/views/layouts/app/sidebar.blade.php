@@ -4,6 +4,24 @@
 <head>
     @include('partials.head')
     <style>
+        @if(auth()->check() && auth()->user()->background_image)
+            html.dark body, html:not(.dark) body {
+                background-image: url("{{ asset('storage/' . auth()->user()->background_image) }}") !important;
+                background-size: cover !important;
+                background-attachment: fixed !important;
+                background-position: center !important;
+                background-color: transparent !important;
+            }
+        @endif
+
+        @if(auth()->check() && auth()->user()->text_color)
+            html body, html.dark body,
+            html .text-gray-100, html .text-gray-200, html .text-gray-300, html .text-gray-400, html .text-gray-500, html .text-white,
+            html.dark .text-gray-100, html.dark .text-gray-200, html.dark .text-gray-300, html.dark .text-gray-400, html.dark .text-gray-500, html.dark .text-white {
+                color: {{ auth()->user()->text_color }} !important;
+            }
+        @endif
+        
         /* Light Mode Styles */
         html:not(.dark) body {
             background-color: #f8fafc;
@@ -14,9 +32,10 @@
         /* Dark Mode Styles */
         html.dark body {
             background-color: #0b1118;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(24, 46, 70, 0.6) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(12, 114, 160, 0.2) 0px, transparent 50%);
+            background-image: url("{{ asset('images/dark-bg.jpg') }}");
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
             color: #94a3b8;
         }
 
@@ -56,6 +75,21 @@
         html:not(.dark) .from-\[\#1b2636\] { background-image: none !important; background-color: white !important; }
         html:not(.dark) .bg-\[\#091522\]\/80 { background-color: #f0fdfa !important; }
         html:not(.dark) .shadow-\[0_8px_30px_rgb\(0\,0\,0\,0\.5\)\] { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; }
+
+        /* Fix text color turning white while typing in forms */
+        html:not(.dark) input, html:not(.dark) textarea, html:not(.dark) select {
+            color: #111827 !important;
+        }
+        html:not(.dark) input:-webkit-autofill {
+            -webkit-text-fill-color: #111827 !important;
+        }
+        
+        html.dark input, html.dark textarea, html.dark select {
+            color: #f3f4f6 !important;
+        }
+        html.dark input:-webkit-autofill {
+            -webkit-text-fill-color: #f3f4f6 !important;
+        }
     </style>
 </head>
 

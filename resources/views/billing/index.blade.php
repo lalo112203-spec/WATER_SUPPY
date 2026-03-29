@@ -25,10 +25,10 @@
                     @forelse($pendingBills as $bill)
                     <tr class="hover:bg-blue-50/50 transition-colors">
                         <td class="px-4 py-3">{{ $bill->billing_date->format('F Y') }}</td>
-                        <td class="px-4 py-3">{{ $bill->customer->customer_number ?? $bill->customer->id }}</td>
-                        <td class="px-4 py-3">{{ $bill->customer->name }}</td>
+                        <td class="px-4 py-3">{{ $bill->customer?->customer_number ?? $bill->customer?->id ?? 'N/A' }}</td>
+                        <td class="px-4 py-3">{{ $bill->customer?->name ?? 'Deleted Customer' }}</td>
                         @php
-                            $cType = $bill->customer->type ?? 'Regular';
+                            $cType = $bill->customer?->type ?? 'Regular';
                             $greenMax = $thresholds[$cType]['green_max'] ?? 12;
                             $orangeMax = $thresholds[$cType]['orange_max'] ?? 14;
                             $bgClass = $bill->usage_units <= $greenMax ? 'bg-emerald-500' : ($bill->usage_units <= $orangeMax ? 'bg-amber-500' : 'bg-red-500');
@@ -79,10 +79,10 @@
                     @forelse($paidBills as $bill)
                     <tr class="hover:bg-blue-50/50 transition-colors">
                         <td class="px-4 py-3">{{ $bill->billing_date->format('F Y') }}</td>
-                        <td class="px-4 py-3">{{ $bill->customer->customer_number ?? $bill->customer->id }}</td>
-                        <td class="px-4 py-3">{{ $bill->customer->name }}</td>
+                        <td class="px-4 py-3">{{ $bill->customer?->customer_number ?? $bill->customer?->id ?? 'N/A' }}</td>
+                        <td class="px-4 py-3">{{ $bill->customer?->name ?? 'Deleted Customer' }}</td>
                         @php
-                            $cType = $bill->customer->type ?? 'Regular';
+                            $cType = $bill->customer?->type ?? 'Regular';
                             $greenMax = $thresholds[$cType]['green_max'] ?? 12;
                             $orangeMax = $thresholds[$cType]['orange_max'] ?? 14;
                             $bgClass = $bill->usage_units <= $greenMax ? 'bg-emerald-500' : ($bill->usage_units <= $orangeMax ? 'bg-amber-500' : 'bg-red-500');

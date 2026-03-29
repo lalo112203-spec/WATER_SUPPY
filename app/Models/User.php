@@ -27,6 +27,8 @@ class User extends Authenticatable
         'role',
         'customer_id',
         'messenger_background',
+        'background_image',
+        'text_color',
     ];
 
     /**

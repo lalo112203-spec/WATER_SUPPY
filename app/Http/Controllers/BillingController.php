@@ -11,12 +11,12 @@ class BillingController extends Controller
 {
     public function index(): View
     {
-        $pendingBills = Bill::with('customer')
+        $pendingBills = Bill::with(['customer' => function ($query) { $query->withTrashed(); }])
             ->where('status', '!=', 'Paid')
             ->orderBy('billing_date', 'desc')
             ->paginate(10, ['*'], 'pending_page');
 
-        $paidBills = Bill::with('customer')
+        $paidBills = Bill::with(['customer' => function ($query) { $query->withTrashed(); }])
             ->where('status', 'Paid')
             ->orderBy('paid_date', 'desc')
             ->paginate(10, ['*'], 'paid_page');
