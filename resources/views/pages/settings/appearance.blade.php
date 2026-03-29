@@ -8,6 +8,7 @@ new #[Title('Appearance settings')] class extends Component {
     use WithFileUploads;
 
     public $background_image;
+    public $messenger_background;
     public $text_color;
 
     public function mount() {
@@ -22,11 +23,16 @@ new #[Title('Appearance settings')] class extends Component {
             $user->background_image = $path;
         }
         
+        if ($this->messenger_background) {
+            $path2 = $this->messenger_background->store('messenger_backgrounds', 'public');
+            $user->messenger_background = $path2;
+        }
+        
         $user->text_color = $this->text_color;
         $user->save();
 
         session()->flash('status', 'Appearance updated successfully.');
-        $this->redirectIntended(route('settings.appearance'));
+        $this->redirectIntended(route('appearance.edit'));
     }
     
     public function removeBackground() {
@@ -34,7 +40,15 @@ new #[Title('Appearance settings')] class extends Component {
         $user->background_image = null;
         $user->save();
         session()->flash('status', 'Background removed successfully.');
-        $this->redirectIntended(route('settings.appearance'));
+        $this->redirectIntended(route('appearance.edit'));
+    }
+
+    public function removeMessengerBackground() {
+        $user = auth()->user();
+        $user->messenger_background = null;
+        $user->save();
+        session()->flash('status', 'Messenger background removed successfully.');
+        $this->redirectIntended(route('appearance.edit'));
     }
 }; ?>
 
@@ -76,7 +90,26 @@ new #[Title('Appearance settings')] class extends Component {
                 @error('background_image') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
             </div>
 
-            <div class="space-y-2 mt-6">
+            <div class="space-y-2 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+                <flux:heading>{{ __('Messenger Background Image') }}</flux:heading>
+                <flux:subheading>{{ __('Upload a custom background picture for your messenger.') }}</flux:subheading>
+                
+                @if(auth()->user()->messenger_background)
+                    <div class="my-4">
+                        <img src="{{ asset('storage/' . auth()->user()->messenger_background) }}" class="h-32 rounded shadow-sm border border-gray-200">
+                        <button type="button" wire:click="removeMessengerBackground" class="mt-2 text-sm text-red-600 hover:text-red-800 transition-colors">{{ __('Remove Messenger Background') }}</button>
+                    </div>
+                @endif
+                <input type="file" wire:model="messenger_background" class="block w-full text-sm text-slate-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-blue-50 file:text-blue-700
+                    hover:file:bg-blue-100" accept="image/*" />
+                @error('messenger_background') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="space-y-2 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
                 <flux:heading>{{ __('Custom Text Color') }}</flux:heading>
                 <flux:subheading>{{ __('Choose a default text color for your dashboard (leave empty for default).') }}</flux:subheading>
                 <div class="flex items-center gap-4">
