@@ -4,36 +4,98 @@
 <head>
     @include('partials.head')
     <style>
+        /* Custom Theme Styles */
         @if(auth()->check() && auth()->user()->background_image)
-            html.dark body, html:not(.dark) body {
+            html.custom-theme body {
                 background-image: url("{{ asset('storage/' . auth()->user()->background_image) }}") !important;
                 background-size: cover !important;
                 background-attachment: fixed !important;
                 background-position: center !important;
                 background-color: transparent !important;
             }
+            /* Make main components transparent so custom background shines through */
+            html.custom-theme main,
+            html.custom-theme main > div,
+            html.custom-theme main > section,
+            html.custom-theme main [class*="bg-white"],
+            html.custom-theme main [class*="dark:bg-"] {
+                background-color: rgba(0, 0, 0, 0.4) !important; /* semi-transparent overlay */
+                backdrop-filter: blur(2px) !important;
+            }
         @endif
 
         @if(auth()->check() && auth()->user()->text_color)
-            html body, html.dark body,
-            html .text-gray-100, html .text-gray-200, html .text-gray-300, html .text-gray-400, html .text-gray-500, html .text-white,
-            html.dark .text-gray-100, html.dark .text-gray-200, html.dark .text-gray-300, html.dark .text-gray-400, html.dark .text-gray-500, html.dark .text-white {
-                color: {{ auth()->user()->text_color }} !important;
+            html.custom-theme {
+                --flux-custom-text: {{ auth()->user()->text_color }};
+            }
+            /* Penetrate all elements in main */
+            html.custom-theme main,
+            html.custom-theme main *,
+            html.custom-theme [data-flux-main],
+            html.custom-theme [data-flux-main] * {
+                color: var(--flux-custom-text) !important;
+            }
+            /* Make text inputs transparent and follow the custom text color */
+            html.custom-theme main input,
+            html.custom-theme main textarea,
+            html.custom-theme main select,
+            html.custom-theme [data-flux-main] input,
+            html.custom-theme [data-flux-main] textarea,
+            html.custom-theme [data-flux-main] select {
+                background-color: rgba(0, 0, 0, 0.3) !important;
+                border-color: rgba(255, 255, 255, 0.2) !important;
+                color: var(--flux-custom-text) !important;
+            }
+            html.custom-theme main input:focus,
+            html.custom-theme main textarea:focus,
+            html.custom-theme main select:focus {
+                background-color: rgba(0, 0, 0, 0.4) !important;
+                border-color: rgba(255, 255, 255, 0.4) !important;
             }
         @endif
+        html.custom-theme main { background-color: transparent !important; backdrop-filter: none !important; }
         
-        /* Light Mode Styles */
-        html:not(.dark) body {
-            background-color: #ffffff;
-            background-image: none;
-            color: #000000;
+        /* Light Mode Styles (Default) */
+        html:not(.dark):not(.custom-theme) body {
+            background-color: #ffffff !important;
+            background-image: none !important;
+        }
+        html:not(.dark):not(.custom-theme) main {
+            color: #000000 !important;
+        }
+
+        html:not(.dark):not(.custom-theme) main .text-gray-100, 
+        html:not(.dark):not(.custom-theme) main .text-gray-200, 
+        html:not(.dark):not(.custom-theme) main .text-gray-300, 
+        html:not(.dark):not(.custom-theme) main .text-gray-400, 
+        html:not(.dark):not(.custom-theme) main .text-gray-500, 
+        html:not(.dark):not(.custom-theme) main .text-white,
+        html:not(.dark):not(.custom-theme) main label,
+        html:not(.dark):not(.custom-theme) main button,
+        html:not(.dark):not(.custom-theme) main button span,
+        html:not(.dark):not(.custom-theme) main .border-\[\#1e293b\] {
+            color: #000000 !important;
         }
 
         /* Dark Mode Styles */
-        html.dark body {
-            background-color: #ffffff;
-            background-image: none;
-            color: #000000;
+        html.dark:not(.custom-theme) body {
+            background-color: #000000 !important;
+            background-image: none !important;
+        }
+        html.dark:not(.custom-theme) main {
+            color: #ffffff !important;
+        }
+
+        html.dark:not(.custom-theme) main .text-gray-100, 
+        html.dark:not(.custom-theme) main .text-gray-200, 
+        html.dark:not(.custom-theme) main .text-gray-300, 
+        html.dark:not(.custom-theme) main .text-gray-400, 
+        html.dark:not(.custom-theme) main .text-gray-500, 
+        html.dark:not(.custom-theme) main .text-black,
+        html.dark:not(.custom-theme) main label,
+        html.dark:not(.custom-theme) main button,
+        html.dark:not(.custom-theme) main button span {
+            color: #ffffff !important;
         }
 
         /* Custom Scrollbar - Light */
@@ -49,7 +111,7 @@
         html.dark ::-webkit-scrollbar-thumb:hover { background: #334155; }
         
         /* Add cool pattern overlay only in Dark Mode */
-        html.dark body::before {
+        html.dark:not(.custom-theme) body::before {
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -58,20 +120,20 @@
             background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2.5L40 20 20 20.5zM0 38h20v-2.5L40 40 20 40.5V38H0v-2h20v-2.5L40 38 20 38.5V38H0z' fill='%2338bdf8' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
         }
 
-        /* Map hardcoded dark themes back to light styles globally to ensure consistency across devices */
-        html .bg-\[\#121a25\]\/80 { background-color: rgba(255, 255, 255, 0.95) !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important; }
-        html .bg-\[\#0b121c\] { background-color: #ffffff !important; }
-        html .border-\[\#263548\], html .border-\[\#1e293b\], html .border-\[\#2d4059\] { border-color: #e5e7eb !important; }
-        html .text-gray-100, html .text-white { color: #111827 !important; }
-        html .text-gray-200 { color: #374151 !important; }
-        html .text-gray-300 { color: #4b5563 !important; }
-        html .text-gray-400 { color: #6b7280 !important; }
-        html .text-gray-500 { color: #9ca3af !important; }
-        html .bg-\[\#0f1722\] { background-color: #f3f4f6 !important; border: 1px solid #e5e7eb !important; }
-        html .bg-\[\#0f1722\]\/80 { background-color: rgba(243, 244, 246, 0.9) !important; border: 1px solid #e5e7eb !important; }
-        html .from-\[\#1b2636\] { background-image: none !important; background-color: white !important; }
-        html .bg-\[\#091522\]\/80 { background-color: #f0fdfa !important; }
-        html .shadow-\[0_8px_30px_rgb\(0\,0\,0\,0\.5\)\] { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; }
+        /* Map hardcoded dark themes back to light styles globally for Light Mode only */
+        html:not(.dark):not(.custom-theme) main .bg-\[\#121a25\]\/80 { background-color: rgba(255, 255, 255, 0.95) !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important; }
+        html:not(.dark):not(.custom-theme) main .bg-\[\#0b121c\] { background-color: #ffffff !important; }
+        html:not(.dark):not(.custom-theme) main .border-\[\#263548\], html:not(.dark):not(.custom-theme) main .border-\[\#1e293b\], html:not(.dark):not(.custom-theme) main .border-\[\#2d4059\] { border-color: #e5e7eb !important; }
+        html:not(.dark):not(.custom-theme) main .text-gray-100, html:not(.dark):not(.custom-theme) main .text-white { color: #111827 !important; }
+        html:not(.dark):not(.custom-theme) main .text-gray-200 { color: #374151 !important; }
+        html:not(.dark):not(.custom-theme) main .text-gray-300 { color: #4b5563 !important; }
+        html:not(.dark):not(.custom-theme) main .text-gray-400 { color: #6b7280 !important; }
+        html:not(.dark):not(.custom-theme) main .text-gray-500 { color: #9ca3af !important; }
+        html:not(.dark):not(.custom-theme) main .bg-\[\#0f1722\] { background-color: #f3f4f6 !important; border: 1px solid #e5e7eb !important; }
+        html:not(.dark):not(.custom-theme) main .bg-\[\#0f1722\]\/80 { background-color: rgba(243, 244, 246, 0.9) !important; border: 1px solid #e5e7eb !important; }
+        html:not(.dark):not(.custom-theme) main .from-\[\#1b2636\] { background-image: none !important; background-color: white !important; }
+        html:not(.dark):not(.custom-theme) main .bg-\[\#091522\]\/80 { background-color: #f0fdfa !important; }
+        html:not(.dark):not(.custom-theme) main .shadow-\[0_8px_30px_rgb\(0\,0\,0\,0\.5\)\] { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; }
 
         /* Fix text color turning white while typing in forms */
         html input, html textarea, html select {
@@ -81,6 +143,75 @@
             -webkit-text-fill-color: #111827 !important;
         }
     </style>
+    <script>
+        function shouldBeCustom() {
+            let localApp = window.localStorage.getItem('flux.appearance');
+            // Auto-upgrade legacy 'system' states from previous session bug
+            if (localApp === 'system') {
+                window.localStorage.setItem('flux.appearance', 'custom');
+                localApp = 'custom';
+            }
+            return localApp === 'custom';
+        }
+
+        function enforceCustomTheme() {
+            const isCustom = shouldBeCustom();
+            const hasClass = document.documentElement.classList.contains('custom-theme');
+            if (isCustom && !hasClass) {
+                document.documentElement.classList.add('custom-theme');
+            } else if (!isCustom && hasClass) {
+                document.documentElement.classList.remove('custom-theme');
+            }
+        }
+
+        // Run immediately
+        enforceCustomTheme();
+        
+        // Patch Flux's native appearance method to support 'custom'
+        if (window.Flux) {
+            const originalApply = window.Flux.applyAppearance;
+            window.Flux.applyAppearance = function(appearance) {
+                if (appearance === 'custom') {
+                    window.localStorage.setItem('flux.appearance', 'custom');
+                } else {
+                    originalApply.apply(this, arguments);
+                }
+                enforceCustomTheme();
+            };
+        }
+        
+        // Listen for storage events across windows
+        window.addEventListener('storage', enforceCustomTheme);
+        document.addEventListener('livewire:navigated', () => {
+             enforceCustomTheme();
+             // Re-patch flux if Livewire restored the page
+             if (window.Flux && !window.Flux.applyAppearance.isPatched) {
+                 const originalApply = window.Flux.applyAppearance;
+                 window.Flux.applyAppearance = function(appearance) {
+                     if (appearance === 'custom') {
+                         window.localStorage.setItem('flux.appearance', 'custom');
+                     } else {
+                         originalApply.apply(this, arguments);
+                     }
+                     enforceCustomTheme();
+                 };
+                 window.Flux.applyAppearance.isPatched = true;
+             }
+        });
+        
+        // Intercept local storage updates on this window
+        const originalSetItem = window.localStorage.setItem;
+        window.localStorage.setItem = function(key, value) {
+            originalSetItem.apply(this, arguments);
+            if (key === 'flux.appearance') enforceCustomTheme();
+        };
+
+        // Bulletproof observer against Flux Appearance overwriting classes
+        const themeObserver = new MutationObserver(() => enforceCustomTheme());
+        if (document.documentElement) {
+            themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        }
+    </script>
 </head>
 
 <body class="min-h-screen text-gray-300 antialiased selection:bg-cyan-500/30">

@@ -2,6 +2,16 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         @include('partials.head')
+        <script>
+            // Force dark mode for auth pages
+            document.documentElement.classList.add('dark');
+            const authObserver = new MutationObserver(() => {
+                if (!document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.add('dark');
+                }
+            });
+            authObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        </script>
     </head>
     <body class="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 antialiased dark:bg-linear-to-b dark:from-sky-950 dark:to-blue-900 relative">
         <!-- Optional water decoration using CSS background pattern -->

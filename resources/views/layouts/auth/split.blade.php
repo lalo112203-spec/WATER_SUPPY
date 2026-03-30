@@ -2,6 +2,16 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         @include('partials.head')
+        <script>
+            // Force dark mode for auth pages
+            document.documentElement.classList.add('dark');
+            const authObserver = new MutationObserver(() => {
+                if (!document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.add('dark');
+                }
+            });
+            authObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        </script>
     </head>
     <body class="min-h-screen bg-[#121a25]/80 backdrop-blur-md antialiased dark:bg-linear-to-b dark:from-neutral-950 dark:to-neutral-900">
         <div class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
