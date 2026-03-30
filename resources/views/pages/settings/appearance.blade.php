@@ -3,6 +3,7 @@
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
 
 new #[Title('Appearance settings')] class extends Component {
     use WithFileUploads;
@@ -15,15 +16,56 @@ new #[Title('Appearance settings')] class extends Component {
         $this->text_color = auth()->user()->text_color ?? '';
     }
 
+    public function updatedBackgroundImage() {
+        $user = auth()->user();
+        if ($user->background_image && Storage::disk('public')->exists($user->background_image)) {
+            Storage::disk('public')->delete($user->background_image);
+        }
+        $path = $this->background_image->store('backgrounds', 'public');
+        $user->background_image = $path;
+        $user->save();
+        $this->background_image = null; // Clear from temporary component state
+        session()->flash('status', 'Background image updated successfully.');
+        $this->redirectIntended(route('appearance.edit'));
+    }
+
+    public function updatedMessengerBackground() {
+        $user = auth()->user();
+        if ($user->messenger_background && Storage::disk('public')->exists($user->messenger_background)) {
+            Storage::disk('public')->delete($user->messenger_background);
+        }
+        $path = $this->messenger_background->store('messenger_backgrounds', 'public');
+        $user->messenger_background = $path;
+        $user->save();
+        $this->messenger_background = null;
+        session()->flash('status', 'Messenger background updated successfully.');
+        $this->redirectIntended(route('appearance.edit'));
+    }
+
+    public function updatedTextColor() {
+        $user = auth()->user();
+        $user->text_color = $this->text_color;
+        $user->save();
+        session()->flash('status', 'Text color updated successfully.');
+        $this->redirectIntended(route('appearance.edit'));
+    }
+
     public function updateAppearance() {
+        // Fallback for the manual submit button if they still use it
         $user = auth()->user();
         
         if ($this->background_image) {
+            if ($user->background_image && Storage::disk('public')->exists($user->background_image)) {
+                Storage::disk('public')->delete($user->background_image);
+            }
             $path = $this->background_image->store('backgrounds', 'public');
             $user->background_image = $path;
         }
         
         if ($this->messenger_background) {
+            if ($user->messenger_background && Storage::disk('public')->exists($user->messenger_background)) {
+                Storage::disk('public')->delete($user->messenger_background);
+            }
             $path2 = $this->messenger_background->store('messenger_backgrounds', 'public');
             $user->messenger_background = $path2;
         }
@@ -37,6 +79,9 @@ new #[Title('Appearance settings')] class extends Component {
     
     public function removeBackground() {
         $user = auth()->user();
+        if ($user->background_image && Storage::disk('public')->exists($user->background_image)) {
+            Storage::disk('public')->delete($user->background_image);
+        }
         $user->background_image = null;
         $user->save();
         session()->flash('status', 'Background removed successfully.');
@@ -45,6 +90,9 @@ new #[Title('Appearance settings')] class extends Component {
 
     public function removeMessengerBackground() {
         $user = auth()->user();
+        if ($user->messenger_background && Storage::disk('public')->exists($user->messenger_background)) {
+            Storage::disk('public')->delete($user->messenger_background);
+        }
         $user->messenger_background = null;
         $user->save();
         session()->flash('status', 'Messenger background removed successfully.');

@@ -24,19 +24,16 @@
         
         /* Light Mode Styles */
         html:not(.dark) body {
-            background-color: #f8fafc;
+            background-color: #ffffff;
             background-image: none;
-            color: #1e293b;
+            color: #000000;
         }
 
         /* Dark Mode Styles */
         html.dark body {
-            background-color: #0b1118;
-            background-image: url("{{ asset('images/dark-bg.jpg') }}");
-            background-size: cover;
-            background-attachment: fixed;
-            background-position: center;
-            color: #94a3b8;
+            background-color: #ffffff;
+            background-image: none;
+            color: #000000;
         }
 
         /* Custom Scrollbar - Light */
@@ -61,34 +58,27 @@
             background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2.5L40 20 20 20.5zM0 38h20v-2.5L40 40 20 40.5V38H0v-2h20v-2.5L40 38 20 38.5V38H0z' fill='%2338bdf8' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
         }
 
-        /* Map hardcoded dark themes back to light styles when .dark is absent */
-        html:not(.dark) .bg-\[\#121a25\]\/80 { background-color: rgba(255, 255, 255, 0.95) !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important; }
-        html:not(.dark) .bg-\[\#0b121c\] { background-color: #ffffff !important; }
-        html:not(.dark) .border-\[\#263548\], html:not(.dark) .border-\[\#1e293b\], html:not(.dark) .border-\[\#2d4059\] { border-color: #e5e7eb !important; }
-        html:not(.dark) .text-gray-100, html:not(.dark) .text-white { color: #111827 !important; }
-        html:not(.dark) .text-gray-200 { color: #374151 !important; }
-        html:not(.dark) .text-gray-300 { color: #4b5563 !important; }
-        html:not(.dark) .text-gray-400 { color: #6b7280 !important; }
-        html:not(.dark) .text-gray-500 { color: #9ca3af !important; }
-        html:not(.dark) .bg-\[\#0f1722\] { background-color: #f3f4f6 !important; border: 1px solid #e5e7eb !important; }
-        html:not(.dark) .bg-\[\#0f1722\]\/80 { background-color: rgba(243, 244, 246, 0.9) !important; border: 1px solid #e5e7eb !important; }
-        html:not(.dark) .from-\[\#1b2636\] { background-image: none !important; background-color: white !important; }
-        html:not(.dark) .bg-\[\#091522\]\/80 { background-color: #f0fdfa !important; }
-        html:not(.dark) .shadow-\[0_8px_30px_rgb\(0\,0\,0\,0\.5\)\] { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; }
+        /* Map hardcoded dark themes back to light styles globally to ensure consistency across devices */
+        html .bg-\[\#121a25\]\/80 { background-color: rgba(255, 255, 255, 0.95) !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important; }
+        html .bg-\[\#0b121c\] { background-color: #ffffff !important; }
+        html .border-\[\#263548\], html .border-\[\#1e293b\], html .border-\[\#2d4059\] { border-color: #e5e7eb !important; }
+        html .text-gray-100, html .text-white { color: #111827 !important; }
+        html .text-gray-200 { color: #374151 !important; }
+        html .text-gray-300 { color: #4b5563 !important; }
+        html .text-gray-400 { color: #6b7280 !important; }
+        html .text-gray-500 { color: #9ca3af !important; }
+        html .bg-\[\#0f1722\] { background-color: #f3f4f6 !important; border: 1px solid #e5e7eb !important; }
+        html .bg-\[\#0f1722\]\/80 { background-color: rgba(243, 244, 246, 0.9) !important; border: 1px solid #e5e7eb !important; }
+        html .from-\[\#1b2636\] { background-image: none !important; background-color: white !important; }
+        html .bg-\[\#091522\]\/80 { background-color: #f0fdfa !important; }
+        html .shadow-\[0_8px_30px_rgb\(0\,0\,0\,0\.5\)\] { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; }
 
         /* Fix text color turning white while typing in forms */
-        html:not(.dark) input, html:not(.dark) textarea, html:not(.dark) select {
+        html input, html textarea, html select {
             color: #111827 !important;
         }
-        html:not(.dark) input:-webkit-autofill {
+        html input:-webkit-autofill {
             -webkit-text-fill-color: #111827 !important;
-        }
-        
-        html.dark input, html.dark textarea, html.dark select {
-            color: #f3f4f6 !important;
-        }
-        html.dark input:-webkit-autofill {
-            -webkit-text-fill-color: #f3f4f6 !important;
         }
     </style>
 </head>
