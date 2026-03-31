@@ -16,7 +16,7 @@
         }
     </style>
     <div class="flex flex-col gap-6">
-        <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
+        <x-auth-header :title="__('Log in to your account')" />
 
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
@@ -24,16 +24,16 @@
         <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-6">
             @csrf
 
-            <!-- Customer ID -->
+            <!-- Login Identifier -->
             <flux:input
                 name="email"
-                :label="__('Customer ID')"
+                :label="__('Account ID / Email')"
                 :value="old('email')"
                 type="text"
                 required
                 autofocus
                 autocomplete="username"
-                placeholder="e.g. 1001"
+                placeholder="e.g. 1001 or admin@water.system"
             />
 
             <!-- Password -->
