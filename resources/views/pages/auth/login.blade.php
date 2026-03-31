@@ -27,13 +27,13 @@
             <!-- Login Identifier -->
             <flux:input
                 name="email"
-                :label="__('Account ID / Email')"
+                :label="__('Account ID / UID')"
                 :value="old('email')"
                 type="text"
                 required
                 autofocus
                 autocomplete="username"
-                placeholder="e.g. 1001 or admin@water.system"
+                placeholder="e.g. 1001 or admin1"
             />
 
             <!-- Password -->
