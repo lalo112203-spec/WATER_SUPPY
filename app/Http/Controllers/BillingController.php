@@ -11,19 +11,29 @@ class BillingController extends Controller
 {
     public function index(): View
     {
+        $adminId = auth()->id();
+        $myCustomerIds = Customer::where('admin_id', $adminId)->pluck('id')->toArray();
+
         $pendingBills = Bill::with(['customer' => function ($query) { $query->withTrashed(); }])
+            ->whereIn('customer_id', $myCustomerIds)
             ->where('status', '!=', 'Paid')
             ->orderBy('billing_date', 'desc')
             ->paginate(10, ['*'], 'pending_page');
 
         $paidBills = Bill::with(['customer' => function ($query) { $query->withTrashed(); }])
+            ->whereIn('customer_id', $myCustomerIds)
             ->where('status', 'Paid')
             ->orderBy('paid_date', 'desc')
             ->paginate(10, ['*'], 'paid_page');
 
-        $paidCount = Bill::where('status', 'Paid')->count();
-        $pendingCount = Bill::where('status', 'Pending')->count();
-        $totalBilled = Bill::sum('total_amount');
+        $paidCount = Bill::where('status', 'Paid')
+            ->whereIn('customer_id', $myCustomerIds)
+            ->count();
+        $pendingCount = Bill::where('status', 'Pending')
+            ->whereIn('customer_id', $myCustomerIds)
+            ->count();
+        $totalBilled = Bill::whereIn('customer_id', $myCustomerIds)
+            ->sum('total_amount');
 
         $thresholds = [
             'Regular' => [
@@ -48,7 +58,8 @@ class BillingController extends Controller
 
     public function create(): View
     {
-        $customers = Customer::where('status', 'active')->get();
+        $adminId = auth()->id();
+        $customers = Customer::where('admin_id', $adminId)->where('status', 'active')->get();
         // load thresholds from settings so the form can colorize usage
         $thresholds = [
             'Regular' => [

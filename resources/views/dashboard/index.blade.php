@@ -23,7 +23,6 @@
                 <div class="relative z-10">
                     <p class="text-[13px] font-medium text-gray-400 uppercase tracking-widest mb-1">Customers</p>
                     <h3 class="text-3xl font-extrabold text-white tracking-tight">{{ $totalCustomers }}</h3>
-                    <p class="mt-2 text-xl font-medium text-cyan-300">₱1,250.00</p>
                 </div>
                 <div class="h-12 w-12 rounded-xl bg-cyan-900/30 text-cyan-400 border border-cyan-800/50 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(6,182,212,0.3)] group-hover:scale-110 transition-transform">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -63,7 +62,6 @@
                 <div class="relative z-10">
                     <p class="text-[13px] font-medium text-gray-400 uppercase tracking-widest mb-1">Total Usage</p>
                     <h3 class="text-3xl font-extrabold text-white tracking-tight">{{ number_format($totalConsumption, 2) }} <span class="text-xl text-cyan-300 font-medium">L</span></h3>
-                    <p class="mt-2 text-xl font-medium text-gray-400">₱600.00</p>
                 </div>
                 <div class="h-12 w-12 rounded-xl bg-cyan-900/30 text-cyan-400 border border-cyan-800/50 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(6,182,212,0.3)] group-hover:scale-110 transition-transform">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

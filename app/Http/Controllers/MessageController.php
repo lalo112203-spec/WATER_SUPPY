@@ -9,37 +9,56 @@ class MessageController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $posts = \App\Models\Post::with('admin')->orderBy('created_at', 'desc')->get();
+        $adminId = $user->role === 'admin' ? $user->id : ($user->customer ? $user->customer->admin_id : null);
+        
+        // Only show posts from the relevant admin
+        $postsQuery = \App\Models\Post::with('admin')->orderBy('created_at', 'desc');
+        if ($adminId) {
+            $postsQuery->where('admin_id', $adminId);
+        }
+        $posts = $postsQuery->get();
 
         if ($user->role === 'admin') {
-            $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
+            // Admins only see their own customers' messages
+            $myCustomerIds = \App\Models\Customer::where('admin_id', $user->id)->pluck('id');
+            $myUserIds = \App\Models\User::whereIn('customer_id', $myCustomerIds)->pluck('id');
+
             $users = \App\Models\User::where('role', 'consumer')
-                ->withCount(['sentMessages as unread_count' => function ($query) use ($adminIds) {
-                    $query->whereIn('receiver_id', $adminIds)->whereNull('read_at');
+                ->whereIn('id', $myUserIds)
+                ->withCount(['sentMessages as unread_count' => function ($query) use ($user) {
+                    $query->where('receiver_id', $user->id)->whereNull('read_at');
                 }])
                 ->orderByDesc('unread_count')
                 ->get();
-            $messages = \App\Models\Message::with(['sender', 'receiver'])
+
+            $messages = \App\Models\Message::where(function($q) use ($user, $myUserIds) {
+                    $q->where('sender_id', $user->id)->whereIn('receiver_id', $myUserIds);
+                })
+                ->orWhere(function($q) use ($user, $myUserIds) {
+                    $q->whereIn('sender_id', $myUserIds)->where('receiver_id', $user->id);
+                })
+                ->with(['sender', 'receiver'])
                 ->orderBy('created_at', 'asc')
                 ->get();
+
             return view('messages.index', compact('users', 'messages', 'posts'));
         } else {
-            $admin = \App\Models\User::where('role', 'admin')->first();
+            // Consumer side: find THEIR admin
+            $myAdminId = $user->customer ? $user->customer->admin_id : \App\Models\User::where('role', 'admin')->first()->id;
+            $admin = \App\Models\User::find($myAdminId);
             
             // Mark all received messages as read
             \App\Models\Message::where('receiver_id', $user->id)
                 ->whereNull('read_at')
                 ->update(['read_at' => now()]);
 
-            $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
-
-            $messages = \App\Models\Message::where(function($q) use ($user, $adminIds) {
-                $q->where('sender_id', $user->id)->whereIn('receiver_id', $adminIds);
-            })->orWhere(function($q) use ($user, $adminIds) {
-                $q->whereIn('sender_id', $adminIds)->where('receiver_id', $user->id);
+            $messages = \App\Models\Message::where(function($q) use ($user, $myAdminId) {
+                $q->where('sender_id', $user->id)->where('receiver_id', $myAdminId);
+            })->orWhere(function($q) use ($user, $myAdminId) {
+                $q->where('sender_id', $myAdminId)->where('receiver_id', $user->id);
             })->orderBy('created_at', 'asc')->get();
             
-            return view('messages.consumer', compact('admin', 'messages'));
+            return view('messages.consumer', compact('admin', 'messages', 'posts'));
         }
     }
 
@@ -51,9 +70,9 @@ class MessageController extends Controller
         ]);
 
         if (auth()->user()->role === 'consumer') {
-            $admin = \App\Models\User::where('role', 'admin')->first();
-            if (!$admin || $request->receiver_id != $admin->id) {
-                return back()->with('error', 'You are only allowed to message the admin.');
+            $myAdminId = auth()->user()->customer ? auth()->user()->customer->admin_id : \App\Models\User::where('role', 'admin')->first()->id;
+            if ($request->receiver_id != $myAdminId) {
+                return back()->with('error', 'You are only allowed to message your assigned admin.');
             }
         }
 

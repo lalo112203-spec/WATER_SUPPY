@@ -11,6 +11,7 @@ class Customer extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'admin_id',
         'customer_id',
         'name',
         'type',
@@ -20,6 +21,11 @@ class Customer extends Model
         'total_consumption',
         'status',
     ];
+
+    public function admin()
+    {
+        return $this->belongsTo(User::class, 'admin_id');
+    }
 
     public function waterUsages(): HasMany
     {

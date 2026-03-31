@@ -269,12 +269,7 @@
                 @endif
 
                 @php
-                    if (auth()->user()->role === 'admin') {
-                        $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
-                        $unreadCount = \App\Models\Message::whereIn('receiver_id', $adminIds)->whereNull('read_at')->count();
-                    } else {
-                        $unreadCount = \App\Models\Message::where('receiver_id', auth()->id())->whereNull('read_at')->count();
-                    }
+                    $unreadCount = \App\Models\Message::where('receiver_id', auth()->id())->whereNull('read_at')->count();
                 @endphp
                 <flux:sidebar.item icon="chat-bubble-left" :href="route('messages.index')"
                     :current="request()->routeIs('messages.*')" wire:navigate>

@@ -22,12 +22,27 @@ class DashboardController extends Controller
                 return view('dashboard.consumer', compact('customer', 'posts'));
             }
 
-            $totalCustomers = Customer::count();
-            $totalRevenue = Bill::where('status', 'Paid')->sum('total_amount');
-            $pendingRevenue = Bill::where('status', 'Pending')->sum('total_amount');
-            $totalConsumption = WaterUsage::sum('usage');
+            $adminId = auth()->id();
+
+            // Pre-fetch customer IDs specifically for this admin to speed up other queries
+            $myCustomerIds = Customer::where('admin_id', $adminId)->pluck('id')->toArray();
+
+            $totalCustomers = count($myCustomerIds);
+            
+            $totalRevenue = Bill::where('status', 'Paid')
+                ->whereIn('customer_id', $myCustomerIds)
+                ->sum('total_amount');
+            
+            $pendingRevenue = Bill::where('status', 'Pending')
+                ->whereIn('customer_id', $myCustomerIds)
+                ->sum('total_amount');
+            
+            $totalConsumption = WaterUsage::whereIn('customer_id', $myCustomerIds)
+                ->sum('usage');
+            
             if ($totalConsumption <= 0) {
-                $totalConsumption = Bill::sum('usage_units');
+                $totalConsumption = Bill::whereIn('customer_id', $myCustomerIds)
+                    ->sum('usage_units');
             }
 
             $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
@@ -45,24 +60,28 @@ class DashboardController extends Controller
 
             // Get monthly revenue data for chart
             $monthlyRevenue = Bill::where('status', 'Paid')
+                ->whereIn('customer_id', $myCustomerIds)
                 ->selectRaw("{$billMonthExpr} as month, SUM(total_amount) as total")
                 ->groupByRaw($billMonthExpr)
                 ->orderByRaw("{$billMonthExpr} asc")
                 ->get();
 
             // Get usage trend data
-            $usageTrend = WaterUsage::selectRaw("{$usageMonthExpr} as month, SUM(`usage`) as total_usage")
+            $usageTrend = WaterUsage::whereIn('customer_id', $myCustomerIds)
+                ->selectRaw("{$usageMonthExpr} as month, SUM(`usage`) as total_usage")
                 ->groupByRaw($usageMonthExpr)
                 ->orderByRaw("{$usageMonthExpr} asc")
                 ->get();
 
             // Customer type distribution
-            $customerTypes = Customer::selectRaw('type, COUNT(*) as count')
+            $customerTypes = Customer::where('admin_id', $adminId)
+                ->selectRaw('type, COUNT(*) as count')
                 ->groupBy('type')
                 ->get();
 
             // Revenue by customer type
             $revenueByType = Bill::where('bills.status', 'Paid')
+                ->whereIn('bills.customer_id', $myCustomerIds)
                 ->join('customers', 'bills.customer_id', '=', 'customers.id')
                 ->selectRaw('customers.type, SUM(bills.total_amount) as total')
                 ->groupBy('customers.type')

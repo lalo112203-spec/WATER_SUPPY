@@ -10,9 +10,12 @@ class CustomerController extends Controller
 {
     public function index(): View
     {
-        $customers = Customer::paginate(15);
-        $totalCustomers = Customer::count();
-        $activeCustomers = Customer::where('status', 'active')->count();
+        $adminId = auth()->id();
+        $customersQuery = Customer::where('admin_id', $adminId);
+        
+        $totalCustomers = (clone $customersQuery)->count();
+        $activeCustomers = (clone $customersQuery)->where('status', 'active')->count();
+        $customers = $customersQuery->paginate(15);
         
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
         $monthExpr = "strftime('%Y-%m', created_at)";
@@ -22,8 +25,8 @@ class CustomerController extends Controller
             $monthExpr = "to_char(created_at, 'YYYY-MM')";
         }
 
-        // Get customer growth data for the chart
-        $customerGrowth = Customer::selectRaw("{$monthExpr} as month, COUNT(*) as count")
+        // Get customer growth data for the chart, specific to this admin
+        $customerGrowth = (clone $customersQuery)->selectRaw("{$monthExpr} as month, COUNT(*) as count")
             ->groupByRaw($monthExpr)
             ->orderByRaw("{$monthExpr} asc")
             ->get();
@@ -58,6 +61,7 @@ class CustomerController extends Controller
         }
 
         $customer = Customer::create([
+            'admin_id' => auth()->id(),
             'name' => $validated['name'],
             'type' => $validated['type'],
             'email' => $validated['customer_id'] . '@system.local',
