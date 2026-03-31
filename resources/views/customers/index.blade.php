@@ -19,7 +19,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <!-- Stats -->
             <div class="col-span-1 flex flex-col gap-4">
-                <div class="bg-gradient-to-br from-[#1b2636] to-[#0f1722] rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059] p-6 flex flex-col justify-center text-center items-center h-full relative overflow-hidden group hover:border-cyan-500/50 transition-all">
+                <div class="bg-[#1b2636]/40 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059]/50 p-6 flex flex-col justify-center text-center items-center h-full relative overflow-hidden group hover:border-cyan-500/50 transition-all">
                     <div class="absolute -right-4 -bottom-4 bg-gradient-to-br from-cyan-600/20 to-blue-900/20 h-32 w-32 rounded-full blur-2xl"></div>
                     <div class="relative z-10">
                         <h3 class="text-gray-400 text-sm font-medium uppercase tracking-wider mb-2">Total Active Customers</h3>
@@ -58,8 +58,8 @@
             Customer Directory
         </h2>
         
-        <div class="bg-[#121a25]/80 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.6)] overflow-hidden border border-[#263548]">
-            <table class="w-full text-left border-collapse min-w-max">
+        <div class="bg-[#121a25]/80 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.6)] overflow-x-auto border border-[#263548] scrollbar-thin scrollbar-thumb-cyan-500/30 scrollbar-track-transparent">
+            <table class="w-full text-left border-collapse min-w-[800px]">
                 <thead>
                     <tr class="bg-[#0f1722] text-[#94a3b8] uppercase text-xs tracking-wider">
                         <th class="px-6 py-4 font-semibold border-b border-[#263548]">Customer ID</th>

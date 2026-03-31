@@ -9,8 +9,8 @@
 
         <h2 class="text-lg font-semibold mb-3 text-gray-200">Pending Bills</h2>
         
-        <div class="bg-[#121a25]/80 backdrop-blur-md rounded shadow-sm overflow-hidden mb-4 border border-[#263548]">
-            <table class="w-full text-left border-collapse">
+        <div class="bg-[#121a25]/80 backdrop-blur-md rounded-2xl shadow-sm overflow-x-auto mb-4 border border-[#263548] scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent">
+            <table class="w-full text-left border-collapse min-w-[700px]">
                 <thead>
                     <tr class="bg-blue-600/90 text-white">
                         <th class="px-4 py-3 font-medium">Period</th>
@@ -63,8 +63,8 @@
 
         <h2 class="text-xl font-bold mb-3 text-gray-200">Payment History (Paid)</h2>
         
-        <div class="bg-[#121a25]/80 backdrop-blur-md rounded shadow-sm overflow-hidden mb-4 border border-[#263548]">
-            <table class="w-full text-left border-collapse">
+        <div class="bg-[#121a25]/80 backdrop-blur-md rounded-2xl shadow-sm overflow-x-auto mb-4 border border-[#263548] scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent">
+            <table class="w-full text-left border-collapse min-w-[700px]">
                 <thead>
                     <tr class="bg-blue-600/90 text-white">
                         <th class="px-4 py-3 font-medium">Period</th>

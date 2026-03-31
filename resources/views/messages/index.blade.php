@@ -1,5 +1,5 @@
 <x-layouts::app title="Message & Posting">
-    <div class="h-screen max-h-screen pt-4 pb-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col font-sans bg-transparent">
+    <div class="h-screen max-h-screen pt-4 pb-4 px-4 sm:px-6 lg:px-8 w-full flex flex-col font-sans bg-transparent">
         <!-- Header Section -->
         <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between mt-2">
             <div>
@@ -51,12 +51,17 @@
                     </li>
 
                     @forelse($users as $u)
-                        <li data-user-id="{{ $u->id }}" class="user-list-item p-4 hover:bg-slate-50 cursor-pointer transition-colors duration-200 border-l-4 border-transparent hover:border-[#263548] group" onclick="selectConversation('{{ $u->id }}', '{{ addslashes($u->name) }}', 'Customer ID: {{ $u->customer?->customer_id ?? $u->id }}')">
+                        <li data-user-id="{{ $u->id }}" class="user-list-item p-4 hover:bg-slate-50 cursor-pointer transition-colors duration-200 border-l-4 border-transparent hover:border-[#263548] group" 
+                            onclick="selectConversation('{{ $u->id }}', '{{ addslashes($u->name) }}', 'Customer ID: {{ $u->customer?->customer_id ?? $u->id }}', '{{ $u->profile_photo ? asset('storage/' . $u->profile_photo) : '' }}', '{{ substr($u->name, 0, 1) }}')">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-4 w-full">
                                     <div class="relative flex-shrink-0">
-                                        <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 border border-[#263548] flex items-center justify-center text-gray-400 font-bold text-lg shadow-sm group-hover:scale-105 transition-transform">
-                                            {{ substr($u->name, 0, 1) }}
+                                        <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 border border-[#263548] flex items-center justify-center text-gray-400 font-bold text-lg shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+                                            @if($u->profile_photo)
+                                                <img src="{{ asset('storage/' . $u->profile_photo) }}" class="h-full w-full object-cover">
+                                            @else
+                                                {{ substr($u->name, 0, 1) }}
+                                            @endif
                                         </div>
                                         @if($u->unread_count > 0)
                                             <span id="unread_indicator_{{ $u->id }}" class="absolute -top-1 -right-1 block h-4 w-4 rounded-full bg-red-500 border-2 border-white shadow-sm"></span>
@@ -93,6 +98,12 @@
                         <button type="button" class="md:hidden text-gray-400 hover:text-gray-400 transition-colors p-2 -ml-2 rounded-lg hover:bg-[#0f1722]" onclick="showUsersList()">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                         </button>
+                        <div id="chat_header_avatar_container" class="relative group">
+                            <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-cyan-600 to-blue-700 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-cyan-500/20 overflow-hidden" id="chat_avatar_box">
+                                <span id="chat_avatar_initials">G</span>
+                                <img id="chat_avatar_img" src="" class="h-full w-full object-cover hidden">
+                            </div>
+                        </div>
                         <div>
                             <h2 class="text-[17px] font-bold text-gray-100 tracking-tight" id="chat_with">Global Announcements</h2>
                             <p class="text-[13px] text-gray-400 font-medium mt-0.5" id="chat_with_sub">Broadcast new updates to all users</p>
@@ -106,15 +117,21 @@
                         <!-- Dark overlay to ensure text remains readable over custom background -->
                         <div class="absolute inset-0 bg-black/40 pointer-events-none z-0"></div>
                     @endif
-                    <div class="space-y-6 max-w-4xl mx-auto flex flex-col justify-end relative z-10" id="chat_messages_wrapper">
+                    <div class="space-y-6 px-4 md:px-8 flex flex-col justify-end relative z-10 w-full" id="chat_messages_wrapper">
                         @foreach($messages as $msg)
-                            <div class="message-item w-full flex {{ $msg->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}" 
+                            <div class="message-item w-full flex {{ $msg->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }} group/msg" 
                                  data-partner="{{ $msg->sender_id === auth()->id() ? $msg->receiver_id : $msg->sender_id }}"
+                                 data-id="{{ $msg->id }}"
+                                 data-sender-id="{{ $msg->sender_id }}"
                                  style="display: none;">
                                 @if($msg->sender_id !== auth()->id())
                                 <div class="flex-shrink-0 mr-3 mt-auto mb-1">
-                                    <div class="h-8 w-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-400 text-xs font-bold border border-white shadow-sm">
-                                        {{ substr($msg->sender->name ?? 'U', 0, 1) }}
+                                    <div class="h-8 w-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-400 text-xs font-bold border border-white shadow-sm overflow-hidden">
+                                        @if($msg->sender && $msg->sender->profile_photo)
+                                            <img src="{{ asset('storage/' . $msg->sender->profile_photo) }}" class="h-full w-full object-cover">
+                                        @else
+                                            {{ substr($msg->sender->name ?? 'U', 0, 1) }}
+                                        @endif
                                     </div>
                                 </div>
                                 @endif
@@ -141,7 +158,7 @@
 
                 <!-- Chat Input Area -->
                 <div class="p-4 bg-[#121a25]/80 backdrop-blur-md border-t border-[#263548] shadow-[0_-4px_20px_rgb(0,0,0,0.02)] z-10 w-full" id="chat_form_container" style="display: none;">
-                    <form action="{{ route('messages.store') }}" method="POST" class="max-w-4xl mx-auto flex items-end space-x-3">
+                    <form action="{{ route('messages.store') }}" method="POST" class="w-full flex items-end space-x-3">
                         @csrf
                         <input type="hidden" name="receiver_id" id="receiver_id" value="">
                         <div class="flex-1 relative bg-[#0f1722]/80 rounded-2xl border border-[#263548] focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all shadow-inner">
@@ -155,7 +172,7 @@
 
                 <!-- Announcements Composer & Feed -->
                 <div class="flex-1 overflow-y-auto w-full bg-[#f8fafc]" id="announcements_container">
-                    <div class="max-w-4xl mx-auto p-6 md:p-8 space-y-8">
+                    <div class="w-full p-6 md:p-8 space-y-8">
                         <!-- Composer -->
                         <div class="bg-[#121a25]/80 backdrop-blur-md rounded-3xl p-7 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#263548] relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
@@ -227,6 +244,32 @@
         </div>
     </div>
 
+    <!-- Context Menu -->
+    <div id="message_context_menu" class="fixed z-[100] hidden bg-[#121a25]/95 backdrop-blur-xl border border-[#263548] rounded-2xl shadow-2xl min-w-[160px] overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div class="p-1.5 flex flex-col">
+            <button id="menu_edit_btn" onclick="openEditMode()" class="flex items-center px-4 py-2.5 text-sm font-bold text-gray-200 hover:bg-blue-600/20 hover:text-blue-400 rounded-xl transition-all gap-3">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                Edit Message
+            </button>
+            <button id="menu_delete_btn" onclick="deleteMessage()" class="flex items-center px-4 py-2.5 text-sm font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition-all gap-3">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                Delete
+            </button>
+        </div>
+    </div>
+
+    <!-- Edit Modal Overlay -->
+    <div id="edit_modal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="bg-[#121a25] border border-[#263548] rounded-3xl w-full max-w-lg shadow-2xl p-6">
+            <h3 class="text-xl font-bold text-white mb-4">Edit Message</h3>
+            <textarea id="edit_text" class="w-full bg-[#0f1722] border border-[#263548] rounded-2xl p-4 text-white resize-none focus:ring-2 focus:ring-blue-500 outline-none" rows="3"></textarea>
+            <div class="mt-6 flex justify-end gap-3">
+                <button onclick="closeEditModal()" class="px-6 py-2.5 rounded-xl font-bold text-gray-400 hover:bg-white/5 transition-all">Cancel</button>
+                <button onclick="saveEdit()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <style>
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
@@ -248,7 +291,7 @@
     </style>
 
     <script>
-        function selectConversation(partnerId, title, sub) {
+        function selectConversation(partnerId, title, sub, avatarUrl, initials) {
             // Update active state in list
             document.querySelectorAll('.user-list-item').forEach(el => {
                 el.classList.remove('bg-blue-50/60', 'border-blue-500');
@@ -262,6 +305,20 @@
 
             document.getElementById('chat_with').innerText = title;
             document.getElementById('chat_with_sub').innerText = sub;
+
+            const avatarBox = document.getElementById('chat_avatar_box');
+            const avatarImg = document.getElementById('chat_avatar_img');
+            const avatarInitials = document.getElementById('chat_avatar_initials');
+
+            if (avatarUrl) {
+                avatarImg.src = avatarUrl;
+                avatarImg.classList.remove('hidden');
+                avatarInitials.classList.add('hidden');
+            } else {
+                avatarImg.classList.add('hidden');
+                avatarInitials.classList.remove('hidden');
+                avatarInitials.innerText = initials || 'G';
+            }
 
             if (partnerId === 'post') {
                 document.getElementById('messages_container').style.display = 'none';
@@ -367,6 +424,106 @@
                 selectConversation('post', 'Global Announcements', 'Broadcast new updates to all users');
             @endif
         });
+        let selectedMessageId = null;
+        let selectedMessageEl = null;
+
+        document.addEventListener('contextmenu', function(e) {
+            const msgItem = e.target.closest('.message-item');
+            if (msgItem) {
+                e.preventDefault();
+                showContextMenu(e.pageX, e.pageY, msgItem);
+            } else {
+                hideContextMenu();
+            }
+        });
+
+        // Long press for mobile
+        let pressTimer;
+        document.addEventListener('touchstart', function(e) {
+            const msgItem = e.target.closest('.message-item');
+            if (msgItem) {
+                pressTimer = window.setTimeout(function() {
+                    const touch = e.touches[0];
+                    showContextMenu(touch.pageX, touch.pageY, msgItem);
+                }, 700);
+            }
+        });
+        document.addEventListener('touchend', function(e) {
+            clearTimeout(pressTimer);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#message_context_menu')) {
+                hideContextMenu();
+            }
+        });
+
+        function showContextMenu(x, y, el) {
+            selectedMessageId = el.dataset.id;
+            selectedMessageEl = el;
+            const menu = document.getElementById('message_context_menu');
+            
+            // hide edit if not your message
+            const isMine = el.dataset.senderId == '{{ auth()->id() }}';
+            document.getElementById('menu_edit_btn').style.display = isMine ? 'flex' : 'none';
+            // admins can delete anything, users only theirs
+            const isAdmin = '{{ auth()->user()->role }}' === 'admin';
+            document.getElementById('menu_delete_btn').style.display = (isMine || isAdmin) ? 'flex' : 'none';
+
+            if (!isMine && !isAdmin) return; // don't show menu if no actions possible
+
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            menu.classList.remove('hidden');
+        }
+
+        function hideContextMenu() {
+            document.getElementById('message_context_menu').classList.add('hidden');
+        }
+
+        function openEditMode() {
+            hideContextMenu();
+            const text = selectedMessageEl.querySelector('p').innerText;
+            document.getElementById('edit_text').value = text;
+            document.getElementById('edit_modal').classList.remove('hidden');
+            document.getElementById('edit_text').focus();
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit_modal').classList.add('hidden');
+        }
+
+        function saveEdit() {
+            const newText = document.getElementById('edit_text').value;
+            fetch(`/messages/${selectedMessageId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ message: newText })
+            }).then(res => res.json()).then(data => {
+                if (data.success) {
+                    selectedMessageEl.querySelector('p').innerText = data.new_text;
+                    closeEditModal();
+                }
+            });
+        }
+
+        function deleteMessage() {
+            if (!confirm('Permanently delete this message?')) return;
+            hideContextMenu();
+            fetch(`/messages/${selectedMessageId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            }).then(res => res.json()).then(data => {
+                if (data.success) {
+                    selectedMessageEl.remove();
+                }
+            });
+        }
     </script>
 </x-layouts::app>
 

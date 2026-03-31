@@ -3,8 +3,8 @@
         <h1 class="text-2xl font-bold mb-6 text-gray-200">Recovery / Trash</h1>
 
         @if(session('success'))
-            <div class="bg-[#dff0d8] border border-[#d6e9c6] text-[#3c763d] px-4 py-3 rounded relative mb-4" role="alert">
-                <span class="block sm:inline">{{ session('success') }}</span>
+            <div class="py-3 mb-4 text-[#5cb85c] font-bold text-lg drop-shadow-md" role="alert">
+                <span class="block sm:inline">✓ {{ session('success') }}</span>
             </div>
         @endif
 
@@ -29,12 +29,21 @@
                                 <td class="px-4 py-3">{{ $customer->name }}</td>
                                 <td class="px-4 py-3">{{ $customer->deleted_at->format('M d, Y h:i A') }}</td>
                                 <td class="px-4 py-3 text-right">
-                                    <form action="{{ route('recovery.restoreCustomer', $customer->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        <button type="submit" class="bg-[#5cb85c] hover:bg-[#4cae4c] text-white px-3 py-1 rounded text-sm font-medium">
-                                            Restore
-                                        </button>
-                                    </form>
+                                    <div class="flex justify-end gap-2">
+                                        <form action="{{ route('recovery.restoreCustomer', $customer->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="bg-[#5cb85c] hover:bg-[#4cae4c] text-white px-3 py-1 rounded text-sm font-medium">
+                                                Restore
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('recovery.forceDeleteCustomer', $customer->id) }}" method="POST" class="inline" onsubmit="return confirm('WARNING: This will permanently delete this customer and all their data. This cannot be undone. Proceed?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             @empty
@@ -67,12 +76,21 @@
                                 <td class="px-4 py-3">{{ $bill->billing_date->format('M Y') }}</td>
                                 <td class="px-4 py-3">₱{{ number_format($bill->total_amount, 0) }}</td>
                                 <td class="px-4 py-3 text-right">
-                                    <form action="{{ route('recovery.restoreBill', $bill->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        <button type="submit" class="bg-[#5cb85c] hover:bg-[#4cae4c] text-white px-3 py-1 rounded text-sm font-medium">
-                                            Restore
-                                        </button>
-                                    </form>
+                                    <div class="flex justify-end gap-2">
+                                        <form action="{{ route('recovery.restoreBill', $bill->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="bg-[#5cb85c] hover:bg-[#4cae4c] text-white px-3 py-1 rounded text-sm font-medium">
+                                                Restore
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('recovery.forceDeleteBill', $bill->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to permanently delete this bill?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             @empty

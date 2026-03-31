@@ -25,9 +25,9 @@
             </div>
         @endif
 
-        <div class="flex-1 mb-8 mx-2">
+        <div class="flex-1 mb-8 mx-2 h-full">
             <!-- Modern Messaging Interface -->
-            <div class="bg-[#121a25]/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-3xl flex flex-col overflow-hidden border border-[#263548] h-[600px] relative mt-2">
+            <div class="bg-[#121a25]/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-3xl flex flex-col overflow-hidden border border-[#263548] h-[700px] relative mt-2">
                 <!-- Chat Header -->
                 <div class="px-6 py-5 border-b border-[#263548] bg-[#121a25]/80 backdrop-blur-md/95 backdrop-blur-md flex-shrink-0 flex items-center shadow-sm z-10 relative">
                     <div class="relative flex-shrink-0">
@@ -47,7 +47,7 @@
                     @if(auth()->user()->messenger_background)
                         <div class="absolute inset-0 bg-black/40 pointer-events-none z-0"></div>
                     @endif
-                    <div class="space-y-5 max-w-full flex-col justify-end min-h-full pb-2 relative z-10">
+                    <div class="space-y-5 flex flex-col justify-end min-h-full pb-2 relative z-10">
                         @forelse($messages as $msg)
                             <div class="flex {{ $msg->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
                                 <div class="relative group max-w-[85%] lg:max-w-[75%] flex flex-col {{ $msg->sender_id === auth()->id() ? 'items-end' : 'items-start' }}">

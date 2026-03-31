@@ -24,11 +24,33 @@ class RecoveryController extends Controller
         return redirect()->route('recovery.index')->with('success', 'Customer restored successfully.');
     }
 
+    public function forceDeleteCustomer($id)
+    {
+        $customer = Customer::onlyTrashed()->findOrFail($id);
+        
+        // Also delete associated user if exists
+        if ($customer->user) {
+            $customer->user->forceDelete();
+        }
+        
+        $customer->forceDelete();
+
+        return redirect()->route('recovery.index')->with('success', 'Customer permanently deleted.');
+    }
+
     public function restoreBill($id)
     {
         $bill = Bill::onlyTrashed()->findOrFail($id);
         $bill->restore();
 
         return redirect()->route('recovery.index')->with('success', 'Bill restored successfully.');
+    }
+
+    public function forceDeleteBill($id)
+    {
+        $bill = Bill::onlyTrashed()->findOrFail($id);
+        $bill->forceDelete();
+
+        return redirect()->route('recovery.index')->with('success', 'Bill permanently deleted.');
     }
 }

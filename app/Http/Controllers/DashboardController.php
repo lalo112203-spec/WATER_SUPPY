@@ -26,6 +26,9 @@ class DashboardController extends Controller
             $totalRevenue = Bill::where('status', 'Paid')->sum('total_amount');
             $pendingRevenue = Bill::where('status', 'Pending')->sum('total_amount');
             $totalConsumption = WaterUsage::sum('usage');
+            if ($totalConsumption <= 0) {
+                $totalConsumption = Bill::sum('usage_units');
+            }
 
             $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
             

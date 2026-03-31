@@ -23,6 +23,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
     Route::post('messages/post', [\App\Http\Controllers\MessageController::class, 'storePost'])->name('messages.storePost');
     Route::post('messages/mark-read', [\App\Http\Controllers\MessageController::class, 'markRead'])->name('messages.markRead');
+    Route::put('messages/{message}', [\App\Http\Controllers\MessageController::class, 'update'])->name('messages.update');
+    Route::delete('messages/{message}', [\App\Http\Controllers\MessageController::class, 'destroy'])->name('messages.destroy');
 
     // Billing
     Route::get('billing', [BillingController::class, 'index'])->name('billing.index');
@@ -36,7 +38,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Recovery
     Route::get('recovery', [RecoveryController::class, 'index'])->name('recovery.index');
     Route::post('recovery/customers/{id}', [RecoveryController::class, 'restoreCustomer'])->name('recovery.restoreCustomer');
+    Route::delete('recovery/customers/{id}', [RecoveryController::class, 'forceDeleteCustomer'])->name('recovery.forceDeleteCustomer');
     Route::post('recovery/bills/{id}', [RecoveryController::class, 'restoreBill'])->name('recovery.restoreBill');
+    Route::delete('recovery/bills/{id}', [RecoveryController::class, 'forceDeleteBill'])->name('recovery.forceDeleteBill');
 
     // Settings
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');

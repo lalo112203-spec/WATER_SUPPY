@@ -111,4 +111,26 @@ class MessageController extends Controller
             
         return response()->json(['success' => true]);
     }
+
+    public function update(\Illuminate\Http\Request $request, \App\Models\Message $message)
+    {
+        if (auth()->id() !== $message->sender_id) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate(['message' => 'required|string']);
+        $message->update(['message' => $request->message]);
+
+        return response()->json(['success' => true, 'new_text' => $message->message]);
+    }
+
+    public function destroy(\App\Models\Message $message)
+    {
+        if (auth()->id() !== $message->sender_id && auth()->user()->role !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $message->delete();
+        return response()->json(['success' => true]);
+    }
 }

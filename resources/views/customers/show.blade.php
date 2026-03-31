@@ -3,8 +3,8 @@
         <h1 class="text-2xl font-bold mb-6 text-gray-200">Customers</h1>
 
         <!-- Customer Summary Table -->
-        <div class="bg-[#121a25]/80 backdrop-blur-md rounded shadow-sm overflow-x-auto mb-8 border border-[#263548]">
-            <table class="w-full text-left border-collapse min-w-max">
+        <div class="bg-[#121a25]/80 backdrop-blur-md rounded shadow-sm overflow-x-auto mb-8 border border-[#263548] scrollbar-thin scrollbar-thumb-blue-500/30">
+            <table class="w-full text-left border-collapse min-w-[700px]">
                 <thead>
                     <tr class="bg-[#42a5f5] text-white">
                         <th class="px-4 py-3 font-medium">No.</th>
@@ -34,8 +34,8 @@
             <!-- Reading History -->
             <div class="flex-1">
                 <h2 class="text-lg font-semibold mb-3">Reading History for [{{ $customer->customer_number ?? $customer->id }}]</h2>
-                <div class="bg-[#121a25]/80 backdrop-blur-md rounded shadow-sm overflow-x-auto border border-[#263548]">
-                    <table class="w-full text-left border-collapse min-w-max">
+                <div class="bg-[#121a25]/80 backdrop-blur-md rounded shadow-sm overflow-x-auto border border-[#263548] scrollbar-thin scrollbar-thumb-blue-500/30">
+                    <table class="w-full text-left border-collapse min-w-[700px]">
                         <thead>
                             <tr class="bg-[#42a5f5] text-white">
                                 <th class="px-4 py-3 font-medium">Period</th>

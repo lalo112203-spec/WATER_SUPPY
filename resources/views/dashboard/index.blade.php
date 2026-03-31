@@ -19,7 +19,7 @@
         <!-- Revenue Stats -->
         <div class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
             
-            <div class="bg-gradient-to-br from-[#1b2636] to-[#0f1722] rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059] p-6 flex items-start justify-between relative overflow-hidden group hover:border-cyan-500/50 transition-all">
+            <div class="bg-[#1b2636]/40 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059]/50 p-6 flex items-start justify-between relative overflow-hidden group hover:border-cyan-500/50 transition-all">
                 <div class="relative z-10">
                     <p class="text-[13px] font-medium text-gray-400 uppercase tracking-widest mb-1">Customers</p>
                     <h3 class="text-3xl font-extrabold text-white tracking-tight">{{ $totalCustomers }}</h3>
@@ -33,7 +33,7 @@
                 <div class="absolute -right-4 -bottom-4 bg-gradient-to-br from-cyan-600/20 to-blue-900/20 h-32 w-32 rounded-full blur-2xl"></div>
             </div>
 
-            <div class="bg-gradient-to-br from-[#1b2636] to-[#0f1722] rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059] p-6 flex items-start justify-between relative overflow-hidden group hover:border-blue-500/50 transition-all">
+            <div class="bg-[#1b2636]/40 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059]/50 p-6 flex items-start justify-between relative overflow-hidden group hover:border-blue-500/50 transition-all">
                 <div class="relative z-10">
                     <p class="text-[13px] font-medium text-gray-400 uppercase tracking-widest mb-1">Total Revenue</p>
                     <h3 class="text-3xl font-extrabold text-white tracking-tight">₱{{ number_format($totalRevenue, 2) }}</h3>
@@ -46,7 +46,7 @@
                 <div class="absolute -right-4 -bottom-4 bg-gradient-to-br from-blue-600/20 to-indigo-900/20 h-32 w-32 rounded-full blur-2xl"></div>
             </div>
 
-            <div class="bg-gradient-to-br from-[#1b2636] to-[#0f1722] rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059] p-6 flex items-start justify-between relative overflow-hidden group hover:border-emerald-500/50 transition-all">
+            <div class="bg-[#1b2636]/40 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059]/50 p-6 flex items-start justify-between relative overflow-hidden group hover:border-emerald-500/50 transition-all">
                 <div class="relative z-10">
                     <p class="text-[13px] font-medium text-gray-400 uppercase tracking-widest mb-1">Pending Rev.</p>
                     <h3 class="text-3xl font-extrabold text-emerald-400 tracking-tight">₱{{ number_format($pendingRevenue, 2) }}</h3>
@@ -59,7 +59,7 @@
                 <div class="absolute -right-4 -bottom-4 bg-gradient-to-br from-emerald-600/20 to-teal-900/20 h-32 w-32 rounded-full blur-2xl"></div>
             </div>
 
-            <div class="bg-gradient-to-br from-[#1b2636] to-[#0f1722] rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059] p-6 flex items-start justify-between relative overflow-hidden group hover:border-cyan-400/50 transition-all">
+            <div class="bg-[#1b2636]/40 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059]/50 p-6 flex items-start justify-between relative overflow-hidden group hover:border-cyan-400/50 transition-all">
                 <div class="relative z-10">
                     <p class="text-[13px] font-medium text-gray-400 uppercase tracking-widest mb-1">Total Usage</p>
                     <h3 class="text-3xl font-extrabold text-white tracking-tight">{{ number_format($totalConsumption, 2) }} <span class="text-xl text-cyan-300 font-medium">L</span></h3>

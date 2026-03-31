@@ -17,10 +17,19 @@
             html.custom-theme main,
             html.custom-theme main > div,
             html.custom-theme main > section,
+            html.custom-theme [data-flux-main] section,
             html.custom-theme main [class*="bg-white"],
-            html.custom-theme main [class*="dark:bg-"] {
-                background-color: rgba(0, 0, 0, 0.4) !important; /* semi-transparent overlay */
-                backdrop-filter: blur(2px) !important;
+            html.custom-theme main [class*="dark:bg-"],
+            html.custom-theme main .bg-slate-50,
+            html.custom-theme main .bg-gray-100 {
+                background-color: rgba(0, 0, 0, 0.25) !important; 
+                backdrop-filter: blur(12px) !important;
+                -webkit-backdrop-filter: blur(12px) !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            }
+            html.custom-theme main .border-gray-200, 
+            html.custom-theme main .border-slate-200 { 
+                border-color: rgba(255, 255, 255, 0.1) !important; 
             }
         @endif
 
@@ -109,6 +118,19 @@
         html.dark ::-webkit-scrollbar-track { background: #0b1118; }
         html.dark ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
         html.dark ::-webkit-scrollbar-thumb:hover { background: #334155; }
+        
+        /* Custom Scrollbar - Custom Theme */
+        html.custom-theme ::-webkit-scrollbar { width: 8px; height: 8px; }
+        html.custom-theme ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); }
+        html.custom-theme ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 4px; }
+        html.custom-theme ::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.5); }
+
+        /* Ensure body and html allow scrolling */
+        html, body {
+            overflow-y: auto !important;
+            height: auto !important;
+            min-height: 100vh !important;
+        }
         
         /* Add cool pattern overlay only in Dark Mode */
         html.dark:not(.custom-theme) body::before {
@@ -216,7 +238,7 @@
 
 <body class="min-h-screen text-gray-300 antialiased selection:bg-cyan-500/30">
     <flux:sidebar sticky collapsible="mobile"
-        class="border-e border-[#1e293b] bg-[#0b121c] bg-opacity-95 backdrop-blur-xl shadow-2xl">
+        class="border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
         <flux:sidebar.header>
             <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
             <flux:sidebar.collapse class="lg:hidden" />
@@ -291,14 +313,21 @@
         <flux:spacer />
 
         <flux:dropdown position="top" align="end">
-            <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
+            @if(auth()->user()->profile_photo)
+                <flux:profile :avatar="asset('storage/' . auth()->user()->profile_photo)" icon-trailing="chevron-down" />
+            @else
+                <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
+            @endif
 
             <flux:menu>
                 <flux:menu.radio.group>
                     <div class="p-0 text-sm font-normal">
-                        <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                            <flux:avatar :name="auth()->user()->name" :initials="auth()->user()->initials()" />
-
+                        <div class="flex items-center gap-3 px-2 py-3 text-start">
+                            @if(auth()->user()->profile_photo)
+                                <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}" class="h-10 w-10 rounded-xl object-cover">
+                            @else
+                                <flux:avatar :name="auth()->user()->name" :initials="auth()->user()->initials()" />
+                            @endif
                             <div class="grid flex-1 text-start text-sm leading-tight">
                                 <flux:heading class="truncate">{{ auth()->user()->name }}</flux:heading>
                                 <flux:text class="truncate">{{ auth()->user()->email }}</flux:text>
