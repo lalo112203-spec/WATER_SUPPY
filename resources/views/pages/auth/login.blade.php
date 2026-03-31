@@ -27,13 +27,13 @@
             <!-- Login Identifier -->
             <flux:input
                 name="email"
-                :label="__('Account ID / UID')"
+                :label="__('Customer ID')"
                 :value="old('email')"
                 type="text"
                 required
                 autofocus
                 autocomplete="username"
-                placeholder="e.g. 1001 or admin1"
+                placeholder="e.g. 1001"
             />
 
             <!-- Password -->
