@@ -64,7 +64,21 @@
         @endif
         html.custom-theme main { background-color: transparent !important; backdrop-filter: none !important; }
         
-        /* Light Mode Styles (Default) */
+        /* Permanent Dark Sidebar Styling (Unaffected by Theme) */
+        flux\:sidebar,
+        flux\:sidebar *,
+        [data-flux-sidebar],
+        [data-flux-sidebar] * {
+            background-color: transparent !important;
+            color: #ffffff !important; /* Pure White */
+        }
+        
+        flux\:sidebar .text-white, 
+        [data-flux-sidebar] .text-white {
+            color: #ffffff !important;
+        }
+
+        /* Light Mode Styles (ONLY affect Main Content) */
         html:not(.dark):not(.custom-theme) body {
             background-color: #ffffff !important;
             background-image: none !important;
@@ -76,23 +90,16 @@
             color: #000000 !important;
         }
 
-        /* Force black text for absolute visibility in Light Mode */
+        /* Force black text ONLY in the Main area for absolute visibility in Light Mode */
         html:not(.dark):not(.custom-theme) main,
-        html:not(.dark):not(.custom-theme) main h1,
-        html:not(.dark):not(.custom-theme) main h2,
-        html:not(.dark):not(.custom-theme) main h3,
-        html:not(.dark):not(.custom-theme) main h4,
-        html:not(.dark):not(.custom-theme) main p,
-        html:not(.dark):not(.custom-theme) main span,
-        html:not(.dark):not(.custom-theme) main label,
-        html:not(.dark):not(.custom-theme) main strong,
-        html:not(.dark):not(.custom-theme) main b,
-        html:not(.dark):not(.custom-theme) main small,
-        html:not(.dark):not(.custom-theme) [class*="text-gray-"],
-        html:not(.dark):not(.custom-theme) [class*="text-slate-"],
-        html:not(.dark):not(.custom-theme) [class*="text-zinc-"],
-        html:not(.dark):not(.custom-theme) .text-white {
+        html:not(.dark):not(.custom-theme) main * {
             color: #000000 !important;
+        }
+        
+        /* Exception for custom colored buttons in main */
+        html:not(.dark):not(.custom-theme) main button[class*="bg-"],
+        html:not(.dark):not(.custom-theme) main a[class*="bg-"] {
+             color: inherit !important;
         }
 
         /* Ensure form labels and descriptions are visible */
@@ -104,7 +111,7 @@
         }
 
         /* Ensure input boxes are visible and have borders */
-        html:not(.dark):not(.custom-theme) main input,
+        html:not(.dark):not(.custom-theme) main input:not([type="checkbox"]),
         html:not(.dark):not(.custom-theme) main textarea,
         html:not(.dark):not(.custom-theme) main select {
             background-color: #ffffff !important;
