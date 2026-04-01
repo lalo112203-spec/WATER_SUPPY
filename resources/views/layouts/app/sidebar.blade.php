@@ -68,22 +68,38 @@
         html:not(.dark):not(.custom-theme) body {
             background-color: #ffffff !important;
             background-image: none !important;
+            color: #000000 !important;
         }
+        
         html:not(.dark):not(.custom-theme) main {
+            background-color: #ffffff !important;
             color: #000000 !important;
         }
 
+        /* Force black text for absolute visibility in Light Mode */
+        html:not(.dark):not(.custom-theme) main h1,
+        html:not(.dark):not(.custom-theme) main h2,
+        html:not(.dark):not(.custom-theme) main h3,
+        html:not(.dark):not(.custom-theme) main p,
+        html:not(.dark):not(.custom-theme) main span,
+        html:not(.dark):not(.custom-theme) main label,
         html:not(.dark):not(.custom-theme) main .text-gray-100, 
         html:not(.dark):not(.custom-theme) main .text-gray-200, 
         html:not(.dark):not(.custom-theme) main .text-gray-300, 
         html:not(.dark):not(.custom-theme) main .text-gray-400, 
         html:not(.dark):not(.custom-theme) main .text-gray-500, 
-        html:not(.dark):not(.custom-theme) main .text-white,
-        html:not(.dark):not(.custom-theme) main label,
-        html:not(.dark):not(.custom-theme) main button,
-        html:not(.dark):not(.custom-theme) main button span,
-        html:not(.dark):not(.custom-theme) main .border-\[\#1e293b\] {
+        html:not(.dark):not(.custom-theme) main .text-slate-400,
+        html:not(.dark):not(.custom-theme) main .text-white {
             color: #000000 !important;
+        }
+
+        /* Ensure input boxes are visible and have borders */
+        html:not(.dark):not(.custom-theme) main input,
+        html:not(.dark):not(.custom-theme) main textarea,
+        html:not(.dark):not(.custom-theme) main select {
+            background-color: #ffffff !important;
+            border: 1px solid #d1d5db !important;
+            color: #111827 !important;
         }
 
         /* Dark Mode Styles */
