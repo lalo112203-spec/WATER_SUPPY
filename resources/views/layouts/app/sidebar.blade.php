@@ -66,8 +66,11 @@
         
         /* Permanent Dark Sidebar Styling (Unaffected by Theme) */
         flux\:sidebar,
+        [data-flux-sidebar] {
+            background-color: #0b121c !important; /* Permanent Dark Blue */
+        }
+
         flux\:sidebar *,
-        [data-flux-sidebar],
         [data-flux-sidebar] * {
             background-color: transparent !important;
             color: #ffffff !important; /* Pure White */
