@@ -291,6 +291,11 @@
                         :current="request()->routeIs('recovery.*')" wire:navigate>
                         {{ __('Recovery / Trash') }}
                     </flux:sidebar.item>
+
+                    <flux:sidebar.item icon="arrow-top-right-on-square" href="https://watersystem-production-00ee.up.railway.app" 
+                        target="_blank">
+                        {{ __('Visit Live Site') }}
+                    </flux:sidebar.item>
                 @endif
             </flux:sidebar.group>
         </flux:sidebar.nav>
