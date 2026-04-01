@@ -81,42 +81,33 @@
             color: #ffffff !important;
         }
 
-        /* Light Mode Styles (ONLY affect Main Content) */
+        /* Light Mode Styles (ONLY affect Body Content, NOT Sidebar) */
         html:not(.dark):not(.custom-theme) body {
             background-color: #ffffff !important;
             background-image: none !important;
-            color: #000000 !important;
-        }
-        
-        html:not(.dark):not(.custom-theme) main {
-            background-color: #ffffff !important;
-            color: #000000 !important;
+            color: #111827 !important;
         }
 
-        /* Force black text ONLY in the Main area for absolute visibility in Light Mode */
+        /* Force black text for visibility in Light Mode (Only outside Sidebar) */
         html:not(.dark):not(.custom-theme) main,
-        html:not(.dark):not(.custom-theme) main * {
-            color: #000000 !important;
-        }
-        
-        /* Exception for custom colored buttons in main */
-        html:not(.dark):not(.custom-theme) main button[class*="bg-"],
-        html:not(.dark):not(.custom-theme) main a[class*="bg-"] {
-             color: inherit !important;
+        html:not(.dark):not(.custom-theme) main *,
+        html:not(.dark):not(.custom-theme) .lg\:pl-64, /* Main content area wrapper */
+        html:not(.dark):not(.custom-theme) .lg\:pl-64 * {
+            color: #111827 !important;
         }
 
         /* Ensure form labels and descriptions are visible */
-        html:not(.dark):not(.custom-theme) main [data-flux-field] label,
-        html:not(.dark):not(.custom-theme) main [data-flux-header] h2,
-        html:not(.dark):not(.custom-theme) main [data-flux-header] p {
+        html:not(.dark):not(.custom-theme) [data-flux-field] label,
+        html:not(.dark):not(.custom-theme) [data-flux-header] h2,
+        html:not(.dark):not(.custom-theme) [data-flux-header] p {
             color: #000000 !important;
             opacity: 1 !important;
         }
 
         /* Ensure input boxes are visible and have borders */
-        html:not(.dark):not(.custom-theme) main input:not([type="checkbox"]),
-        html:not(.dark):not(.custom-theme) main textarea,
-        html:not(.dark):not(.custom-theme) main select {
+        html:not(.dark):not(.custom-theme) input:not([type="checkbox"]),
+        html:not(.dark):not(.custom-theme) textarea,
+        html:not(.dark):not(.custom-theme) select {
             background-color: #ffffff !important;
             border: 1px solid #d1d5db !important;
             color: #111827 !important;
