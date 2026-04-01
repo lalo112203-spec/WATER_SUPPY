@@ -77,20 +77,30 @@
         }
 
         /* Force black text for absolute visibility in Light Mode */
+        html:not(.dark):not(.custom-theme) main,
         html:not(.dark):not(.custom-theme) main h1,
         html:not(.dark):not(.custom-theme) main h2,
         html:not(.dark):not(.custom-theme) main h3,
+        html:not(.dark):not(.custom-theme) main h4,
         html:not(.dark):not(.custom-theme) main p,
         html:not(.dark):not(.custom-theme) main span,
         html:not(.dark):not(.custom-theme) main label,
-        html:not(.dark):not(.custom-theme) main .text-gray-100, 
-        html:not(.dark):not(.custom-theme) main .text-gray-200, 
-        html:not(.dark):not(.custom-theme) main .text-gray-300, 
-        html:not(.dark):not(.custom-theme) main .text-gray-400, 
-        html:not(.dark):not(.custom-theme) main .text-gray-500, 
-        html:not(.dark):not(.custom-theme) main .text-slate-400,
-        html:not(.dark):not(.custom-theme) main .text-white {
+        html:not(.dark):not(.custom-theme) main strong,
+        html:not(.dark):not(.custom-theme) main b,
+        html:not(.dark):not(.custom-theme) main small,
+        html:not(.dark):not(.custom-theme) [class*="text-gray-"],
+        html:not(.dark):not(.custom-theme) [class*="text-slate-"],
+        html:not(.dark):not(.custom-theme) [class*="text-zinc-"],
+        html:not(.dark):not(.custom-theme) .text-white {
             color: #000000 !important;
+        }
+
+        /* Ensure form labels and descriptions are visible */
+        html:not(.dark):not(.custom-theme) main [data-flux-field] label,
+        html:not(.dark):not(.custom-theme) main [data-flux-header] h2,
+        html:not(.dark):not(.custom-theme) main [data-flux-header] p {
+            color: #000000 !important;
+            opacity: 1 !important;
         }
 
         /* Ensure input boxes are visible and have borders */
