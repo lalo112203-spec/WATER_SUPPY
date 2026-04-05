@@ -8,15 +8,27 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $adminId = auth()->id();
-        $customersQuery = Customer::where('admin_id', $adminId);
-        
-        $totalCustomers = (clone $customersQuery)->count();
-        $activeCustomers = (clone $customersQuery)->where('status', 'active')->count();
-        $customers = $customersQuery->paginate(15);
-        
+        $search = $request->input('search');
+
+        $baseQuery = Customer::where('admin_id', $adminId);
+
+        // Stats should reflect the total state, not be filtered by the search bar
+        $totalCustomers = (clone $baseQuery)->count();
+        $activeCustomers = (clone $baseQuery)->where('status', 'active')->count();
+
+        $customersQuery = clone $baseQuery;
+        if ($search) {
+            $customersQuery->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('customer_id', 'like', "%{$search}%");
+            });
+        }
+
+        $customers = $customersQuery->paginate(15)->withQueryString();
+
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
         $monthExpr = "strftime('%Y-%m', created_at)";
         if ($driver === 'mysql' || $driver === 'mariadb') {
@@ -36,7 +48,7 @@ class CustomerController extends Controller
 
     public function create(): View
     {
-        $allIds = Customer::pluck('customer_id')->map(fn($val) => (int)$val)->toArray();
+        $allIds = Customer::pluck('customer_id')->map(fn($val) => (int) $val)->toArray();
         $nextId = (count($allIds) > 0 ? max($allIds) : 1000) + 1;
         return view('customers.create', compact('nextId'));
     }
@@ -55,7 +67,7 @@ class CustomerController extends Controller
             $validated['customer_id'] = $request->customer_id;
         } else {
             // Auto-generate customer ID if not provided. Use max existing customer_id integer.
-            $allIds = Customer::pluck('customer_id')->map(fn($val) => (int)$val)->toArray();
+            $allIds = Customer::pluck('customer_id')->map(fn($val) => (int) $val)->toArray();
             $nextId = (count($allIds) > 0 ? max($allIds) : 1000) + 1;
             $validated['customer_id'] = sprintf('%d', $nextId);
         }
@@ -77,8 +89,8 @@ class CustomerController extends Controller
         $usageCharge = 0;
         $totalAmount = $baseCharge + $usageCharge;
 
-        
-        
+
+
         \App\Models\Bill::create([
             'customer_id' => $customer->id,
             'billing_date' => now(),
@@ -91,15 +103,29 @@ class CustomerController extends Controller
         ]);
 
         if ($request->has('create_account') && $request->filled('password')) {
-            \App\Models\User::create([
-                'name' => $customer->name,
-                'email' => $customer->email,
-                'password' => \Illuminate\Support\Facades\Hash::make($request->input('password')),
-                'plain_password' => $request->input('password'),
-                'role' => 'consumer',
-                'customer_id' => $customer->id,
-                'email_verified_at' => now(),
-            ]);
+            $email = $customer->email;
+
+            // Check if user already exists with this email to avoid 500 error
+            if (\App\Models\User::where('email', $email)->exists()) {
+                // If it exists, update it instead of creating new one to avoid clash
+                $existingUser = \App\Models\User::where('email', $email)->first();
+                $existingUser->update([
+                    'name' => $customer->name,
+                    'password' => \Illuminate\Support\Facades\Hash::make($request->input('password')),
+                    'plain_password' => $request->input('password'),
+                    'customer_id' => $customer->id,
+                ]);
+            } else {
+                \App\Models\User::create([
+                    'name' => $customer->name,
+                    'email' => $email,
+                    'password' => \Illuminate\Support\Facades\Hash::make($request->input('password')),
+                    'plain_password' => $request->input('password'),
+                    'role' => 'consumer',
+                    'customer_id' => $customer->id,
+                    'email_verified_at' => now(),
+                ]);
+            }
         }
 
         return redirect()->route('customers.index')
@@ -146,10 +172,15 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
+        // Also delete the associated user account if it exists
+        if ($customer->user) {
+            $customer->user->delete();
+        }
+
         $customer->delete();
 
         return redirect()->route('customers.index')
-            ->with('success', 'Customer deleted successfully');
+            ->with('success', 'Customer and associated account deleted successfully');
     }
 
     public function createAccount(Customer $customer)
@@ -159,10 +190,25 @@ class CustomerController extends Controller
         }
 
         $password = \Illuminate\Support\Str::random(8);
+        $email = $customer->customer_id . '@system.local';
+
+        // Check for existing email to avoid Integrity Constraint Violation
+        if (\App\Models\User::where('email', $email)->exists()) {
+            $existingUser = \App\Models\User::where('email', $email)->first();
+
+            // Re-sync if it belongs to this customer but somehow the link was lost
+            $existingUser->update([
+                'customer_id' => $customer->id,
+                'password' => \Illuminate\Support\Facades\Hash::make($password),
+                'plain_password' => $password,
+            ]);
+
+            return back()->with('success', 'Account updated successfully. Password reset to: ' . $password);
+        }
 
         \App\Models\User::create([
             'name' => $customer->name,
-            'email' => $customer->customer_id . '@system.local',
+            'email' => $email,
             'password' => \Illuminate\Support\Facades\Hash::make($password),
             'plain_password' => $password,
             'role' => 'consumer',

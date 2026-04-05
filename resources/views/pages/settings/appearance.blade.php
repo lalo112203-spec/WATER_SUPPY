@@ -101,58 +101,63 @@ new #[Title('Appearance settings')] class extends Component {
 }; ?>
 
 <section class="w-full">
+    @if(auth()->user()->background_image)
     <style>
-        /* Glassmorphism for settings cards */
-        [data-flux-main] section, 
-        main section,
-        .bg-white, 
-        .dark\:bg-gray-800,
-        .bg-slate-50,
-        .dark\:bg-slate-900\/50 {
+        /* Glassmorphism for settings cards - ONLY in Custom Theme with Background */
+        html.custom-theme [data-flux-main] section, 
+        html.custom-theme main section,
+        html.custom-theme .bg-white, 
+        html.custom-theme .dark\:bg-gray-800,
+        html.custom-theme .bg-slate-50,
+        html.custom-theme .dark\:bg-slate-900\/50 {
             background-color: rgba(255, 255, 255, 0.05) !important;
-            backdrop-filter: blur(12px) !important;
-            -webkit-backdrop-filter: blur(12px) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
         }
 
         /* Glassmorphism for the appearance switcher */
-        [data-flux-radio-group][variant="segmented"] {
+        html.custom-theme [data-flux-radio-group][variant="segmented"] {
             background-color: rgba(255, 255, 255, 0.05) !important;
-            backdrop-filter: blur(10px) !important;
+            backdrop-filter: none !important;
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
             padding: 4px !important;
             border-radius: 9999px !important;
         }
 
-        [data-flux-radio-group][variant="segmented"] [data-flux-radio] {
+        html.custom-theme [data-flux-radio-group][variant="segmented"] [data-flux-radio] {
             color: #e2e8f0 !important;
             transition: all 0.3s ease !important;
             border-radius: 9999px !important;
         }
 
-        [data-flux-radio-group][variant="segmented"] [data-flux-radio][data-checked] {
-            background-color: rgba(56, 189, 248, 0.3) !important; /* light blue transparent */
+        html.custom-theme [data-flux-radio-group][variant="segmented"] [data-flux-radio][data-checked] {
+            background-color: var(--flux-custom-text, rgba(56, 189, 248, 0.3)) !important;
+            opacity: 0.5 !important; /* Make it slightly transparent so it's not too harsh if full red */
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
             color: #ffffff !important;
         }
 
         /* Make inputs more transparent */
-        input[type="file"],
-        input[type="color"] {
+        html.custom-theme input[type="file"],
+        html.custom-theme input[type="color"] {
             background-color: rgba(255, 255, 255, 0.05) !important;
             border-color: rgba(255, 255, 255, 0.1) !important;
             color: white !important;
         }
 
-        /* Ensure headings and text are readable on transparent cards */
-        [data-flux-heading], 
-        [data-flux-subheading],
-        h1, h2, h3, p {
-            color: #f8fafc !important;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        html.custom-theme [data-flux-heading], 
+        html.custom-theme [data-flux-subheading],
+        html.custom-theme h1, 
+        html.custom-theme h2, 
+        html.custom-theme h3, 
+        html.custom-theme p {
+            color: var(--flux-custom-text, #f8fafc) !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
         }
     </style>
+    @endif
     @include('partials.settings-heading')
 
     <flux:heading class="sr-only">{{ __('Appearance settings') }}</flux:heading>
@@ -166,7 +171,7 @@ new #[Title('Appearance settings')] class extends Component {
 
         <form wire:submit="updateAppearance" class="mt-8 space-y-6">
             @if (session('status'))
-                <div class="p-4 mb-4 text-sm text-green-400 rounded-lg bg-green-500/10 border border-green-500/20 backdrop-blur-md" role="alert">
+                <div class="p-4 mb-4 text-sm text-green-400 rounded-lg bg-green-500/10 border border-green-500/20" role="alert">
                     {{ session('status') }}
                 </div>
             @endif

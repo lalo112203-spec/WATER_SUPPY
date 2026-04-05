@@ -15,9 +15,12 @@ class DashboardController extends Controller
             $user = auth()->user();
             if ($user->role === 'consumer') {
                 $posts = \App\Models\Post::with('admin')->orderBy('created_at', 'desc')->get();
-                $customer = \App\Models\Customer::with(['bills' => function($q) {
-                    $q->orderBy('billing_date', 'desc');
-                }, 'waterUsages'])->find($user->customer_id);
+                $customer = \App\Models\Customer::with([
+                    'bills' => function ($q) {
+                        $q->orderBy('billing_date', 'desc');
+                    },
+                    'waterUsages'
+                ])->find($user->customer_id);
 
                 return view('dashboard.consumer', compact('customer', 'posts'));
             }
@@ -28,28 +31,28 @@ class DashboardController extends Controller
             $myCustomerIds = Customer::where('admin_id', $adminId)->pluck('id')->toArray();
 
             $totalCustomers = count($myCustomerIds);
-            
+
             $totalRevenue = Bill::where('status', 'Paid')
                 ->whereIn('customer_id', $myCustomerIds)
                 ->sum('total_amount');
-            
+
             $pendingRevenue = Bill::where('status', 'Pending')
                 ->whereIn('customer_id', $myCustomerIds)
                 ->sum('total_amount');
-            
+
             $totalConsumption = WaterUsage::whereIn('customer_id', $myCustomerIds)
                 ->sum('usage');
-            
+
             if ($totalConsumption <= 0) {
                 $totalConsumption = Bill::whereIn('customer_id', $myCustomerIds)
                     ->sum('usage_units');
             }
 
             $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
-            
+
             $billMonthExpr = "strftime('%Y-%m', billing_date)";
             $usageMonthExpr = "strftime('%Y-%m', reading_date)";
-            
+
             if ($driver === 'mysql' || $driver === 'mariadb') {
                 $billMonthExpr = "DATE_FORMAT(billing_date, '%Y-%m')";
                 $usageMonthExpr = "DATE_FORMAT(reading_date, '%Y-%m')";
