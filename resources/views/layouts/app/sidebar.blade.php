@@ -5,76 +5,72 @@
     @include('partials.head')
     <style>
         /* Custom Theme Styles */
-        @if(auth()->check() && auth()->user()->background_image)
+        @if(auth()->check() && (auth()->user()->background_image || auth()->user()->background_color))
             html.custom-theme body {
-                background-image: url("{{ asset('storage/' . auth()->user()->background_image) }}") !important;
-                background-size: cover !important;
-                background-attachment: fixed !important;
-                background-position: center !important;
-                background-color: transparent !important;
+                @if(auth()->user()->background_image)
+                    background-image: url("{{ asset('storage/' . auth()->user()->background_image) }}") !important;
+                    background-size: cover !important;
+                    background-attachment: fixed !important;
+                    background-position: center !important;
+                    background-color: transparent !important;
+                @elseif(auth()->user()->background_color)
+                    background-image: none !important;
+                    background-color:
+                        {{ auth()->user()->background_color }}
+                        !important;
+                    animation: none !important;
+                @endif
             }
 
-            /* Make main components transparent so custom background shines through */
-            html.custom-theme main,
-            html.custom-theme main>div,
-            html.custom-theme main>section,
-            html.custom-theme [data-flux-main] section,
-            html.custom-theme main [class*="bg-white"],
-            html.custom-theme main [class*="dark:bg-"],
-            html.custom-theme main .bg-slate-50,
-            html.custom-theme main .bg-gray-100 {
-                background-color: rgba(0, 0, 0, 0.15) !important;
-                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            /* Make sure all hardcoded dark component backgrounds become light when in a custom theme so text is visible */
+            /* We restrict this to 'main' so we don't accidentally turn the sidebar white! */
+            html.custom-theme main [class*="bg-[#121a25]"],
+            html.custom-theme [data-flux-main] [class*="bg-[#121a25]"],
+            html.custom-theme main [class*="bg-[#1b2636]"],
+            html.custom-theme [data-flux-main] [class*="bg-[#1b2636]"],
+            html.custom-theme main [class*="bg-[#0f1722]"],
+            html.custom-theme [data-flux-main] [class*="bg-[#0f1722]"],
+            html.custom-theme main [class*="bg-[#091522]"],
+            html.custom-theme [data-flux-main] [class*="bg-[#091522]"],
+            html.custom-theme main [class*="bg-[#0b121c]"],
+            html.custom-theme [data-flux-main] [class*="bg-[#0b121c]"] {
+                background-color: rgba(255, 255, 255, 0.95) !important;
+                border-color: rgba(0, 0, 0, 0.1) !important;
+            }
+            
+            html.custom-theme main [class*="hover:bg-[#1b2636]"]:hover,
+            html.custom-theme [data-flux-main] [class*="hover:bg-[#1b2636]"]:hover {
+                background-color: rgba(0, 0, 0, 0.05) !important;
             }
 
-            html.custom-theme main .border-gray-200,
-            html.custom-theme main .border-slate-200,
-            html.custom-theme main .border-\[\#263548\] {
-                border-color: rgba(255, 255, 255, 0.1) !important;
+            /* Fix action buttons that get faded on bright backgrounds */
+            /* Cyan Buttons */
+            html.custom-theme [data-flux-main] .bg-cyan-900\/20 {
+                background-color: rgba(6, 182, 212, 0.15) !important;
+                border-color: rgba(6, 182, 212, 0.4) !important;
+                color: #0891b2 !important;
             }
+            html.custom-theme [data-flux-main] .bg-cyan-900\/20 svg { color: #0891b2 !important; }
+            html.custom-theme [data-flux-main] .hover\:bg-cyan-600\/30:hover { background-color: rgba(6, 182, 212, 0.25) !important; }
 
-            /* Table & Component Transparency */
-            html.custom-theme main table,
-            html.custom-theme main table thead tr,
-            html.custom-theme main table tbody tr,
-            html.custom-theme main .bg-\[\#121a25\]\/80,
-            html.custom-theme main .bg-\[\#121a25\],
-            html.custom-theme main .bg-\[\#0f1722\],
-            html.custom-theme main #chat_area,
-            html.custom-theme main .bg-\[\#f8fafc\] {
-                background-color: rgba(0, 0, 0, 0.25) !important;
+            /* Emerald Buttons */
+            html.custom-theme [data-flux-main] .bg-emerald-900\/20 {
+                background-color: rgba(16, 185, 129, 0.15) !important;
+                border-color: rgba(16, 185, 129, 0.4) !important;
+                color: #059669 !important;
             }
+            html.custom-theme [data-flux-main] .bg-emerald-900\/20 svg { color: #059669 !important; }
+            html.custom-theme [data-flux-main] .hover\:bg-emerald-600\/30:hover { background-color: rgba(16, 185, 129, 0.25) !important; }
 
-            html.custom-theme main table thead tr {
-                background-color: rgba(0, 0, 0, 0.45) !important;
+            /* Rose Buttons */
+            html.custom-theme [data-flux-main] .bg-rose-900\/20 {
+                background-color: rgba(225, 29, 72, 0.15) !important;
+                border-color: rgba(225, 29, 72, 0.4) !important;
+                color: #e11d48 !important;
             }
-
-            html.custom-theme main table tbody tr:hover {
-                background-color: rgba(255, 255, 255, 0.05) !important;
-            }
-
-            html.custom-theme main table tr.hover\:bg-\[\#0f1722\]:hover {
-                background-color: rgba(255, 255, 255, 0.05) !important;
-            }
-
-            /* Fix dividers */
-            html.custom-theme main .divide-y>* {
-                border-color: rgba(255, 255, 255, 0.1) !important;
-            }
-
-            html.custom-theme main,
-            html.custom-theme main *,
-            html.custom-theme [data-flux-main],
-            html.custom-theme [data-flux-main] * {
-                backdrop-filter: none !important;
-                -webkit-backdrop-filter: none !important;
-            }
-
-            html.custom-theme flux\:sidebar,
-            html.custom-theme [data-flux-sidebar] {
-                backdrop-filter: none !important;
-            }
-
+            html.custom-theme [data-flux-main] .bg-rose-900\/20 svg { color: #e11d48 !important; }
+            html.custom-theme [data-flux-main] .hover\:bg-rose-600\/30:hover { background-color: rgba(225, 29, 72, 0.25) !important; }
+            
         @endif html.custom-theme {
             --flux-custom-text: #f8fafc;
             /* Default for custom theme */
@@ -84,7 +80,25 @@
             html.custom-theme {
                 --flux-custom-text:
                     {{ auth()->user()->text_color }}
+                ;
+            }
 
+        @endif
+
+        @if(auth()->check() && auth()->user()->font_family)
+            html.custom-theme {
+                --flux-custom-font:
+                    {{ auth()->user()->font_family }}
+                ;
+            }
+
+        @endif
+
+        @if(auth()->check() && auth()->user()->text_stroke_color && auth()->user()->text_stroke_width)
+            html.custom-theme {
+                --flux-custom-stroke:
+                    {{ auth()->user()->text_stroke_width }}
+                    {{ auth()->user()->text_stroke_color }}
                 ;
             }
 
@@ -96,9 +110,16 @@
         html.custom-theme [data-flux-main],
         html.custom-theme [data-flux-main] * {
             color: var(--flux-custom-text) !important;
+            @if(auth()->user() && auth()->user()->font_family)
+                font-family: var(--flux-custom-font) !important;
+            @endif
+            @if(auth()->user() && auth()->user()->text_stroke_color && auth()->user()->text_stroke_width)
+                -webkit-text-stroke: var(--flux-custom-stroke) !important;
+                paint-order: stroke fill;
+            @endif
         }
 
-        @if(auth()->check() && (auth()->user()->text_color || auth()->user()->background_image))
+        @if(auth()->check() && (auth()->user()->text_color || auth()->user()->background_image || auth()->user()->background_color))
             /* Make text inputs transparent and follow the custom text color */
             html.custom-theme main input,
             html.custom-theme main textarea,
@@ -127,7 +148,8 @@
             background-color: #0b121c !important;
             /* Permanent Dark Blue */
             height: 100vh !important;
-            position: sticky !important;
+            position: fixed !important;
+            left: 0 !important;
             top: 0 !important;
             z-index: 50 !important;
             border-right: 1px solid #1e293b !important;
@@ -145,10 +167,32 @@
             color: #ffffff !important;
         }
 
+        /* Ensure Cyan text remains Cyan */
+        flux\:sidebar .text-cyan-400,
+        [data-flux-sidebar] .text-cyan-400 {
+            color: #22d3ee !important;
+        }
+
+        /* Animated Gradient Background */
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
         /* Light Mode Styles (ONLY affect Body Content, NOT Sidebar) */
         html:not(.dark):not(.custom-theme) body {
-            background-color: #ffffff !important;
-            background-image: none !important;
+            background: linear-gradient(-45deg, #e0f2fe, #ddd6fe, #fbcfe8, #e0f2fe) !important;
+            background-size: 400% 400% !important;
+            animation: gradientAnimation 15s ease infinite !important;
             color: #111827 !important;
         }
 
@@ -180,8 +224,9 @@
 
         /* Dark Mode Styles */
         html.dark:not(.custom-theme) body {
-            background-color: #000000 !important;
-            background-image: none !important;
+            background: linear-gradient(-45deg, #0f172a, #2e1065, #4c1d95, #1e1b4b) !important;
+            background-size: 400% 400% !important;
+            animation: gradientAnimation 15s ease infinite !important;
         }
 
         html.dark:not(.custom-theme) main {
@@ -349,6 +394,15 @@
         html input:-webkit-autofill {
             -webkit-text-fill-color: #111827 !important;
         }
+
+        /* Shift main content on desktop to account for fixed sidebar */
+        @media (min-width: 1024px) {
+            [data-flux-main],
+            flux\:main,
+            main {
+                margin-left: 16rem !important;
+            }
+        }
     </style>
     <script>
         function shouldBeCustom() {
@@ -422,7 +476,7 @@
 </head>
 
 <body class="min-h-screen text-gray-300 antialiased selection:bg-cyan-500/30">
-    <flux:sidebar sticky collapsible="mobile"
+    <flux:sidebar collapsible="mobile"
         class="border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
         <flux:sidebar.header>
             <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
@@ -430,7 +484,7 @@
         </flux:sidebar.header>
 
         <flux:sidebar.nav>
-            <flux:sidebar.group :heading="__('Water System')" class="grid">
+            <flux:sidebar.group class="grid">
                 <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                     wire:navigate>
                     {{ __('Dashboard') }}
@@ -450,6 +504,11 @@
                     <flux:sidebar.item icon="adjustments-horizontal" :href="route('settings.index')"
                         :current="request()->routeIs('settings.*')" wire:navigate>
                         {{ __('Settings') }}
+                    </flux:sidebar.item>
+
+                    <flux:sidebar.item icon="key" :href="route('registration-codes.index')"
+                        :current="request()->routeIs('registration-codes.*')" wire:navigate>
+                        {{ __('Registration Codes') }}
                     </flux:sidebar.item>
                 @endif
 

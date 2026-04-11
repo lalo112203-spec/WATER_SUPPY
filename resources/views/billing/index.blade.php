@@ -29,24 +29,37 @@
                         <td class="px-4 py-3">{{ $bill->customer?->name ?? 'Deleted Customer' }}</td>
                         @php
                             $cType = $bill->customer?->type ?? 'Regular';
-                            $greenMax = $thresholds[$cType]['green_max'] ?? 12;
-                            $orangeMax = $thresholds[$cType]['orange_max'] ?? 14;
-                            $bgClass = $bill->usage_units <= $greenMax ? 'bg-emerald-500' : ($bill->usage_units <= $orangeMax ? 'bg-amber-500' : 'bg-red-500');
+                            $greenMax = $thresholds[$cType]['green_max'] ?? 10;
+                            $orangeMax = $thresholds[$cType]['orange_max'] ?? 20;
+                            $usage = $bill->consumption ?? 0;
+                            $bgClass = $usage <= $greenMax ? 'bg-emerald-500' : ($usage <= $orangeMax ? 'bg-amber-500' : 'bg-red-500');
                         @endphp
                         <td class="px-4 py-3">
                             <span class="px-2 py-1 rounded text-xs font-medium text-white shadow-sm {{ $bgClass }}">
-                                {{ $bill->usage_units }} L
+                                {{ $usage }} L
                             </span>
                         </td>
                         <td class="px-4 py-3 font-semibold text-gray-300">₱{{ number_format($bill->total_amount, 0) }}</td>
                         <td class="px-4 py-3">
-                            <form action="{{ route('billing.mark-paid', $bill) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium shadow-sm transition-transform hover:scale-105">
-                                    Mark as Paid
-                                </button>
-                            </form>
+                            <div class="flex items-center gap-2">
+                                <form action="{{ route('billing.mark-paid', $bill) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded text-sm font-medium shadow-sm transition-transform hover:scale-105">
+                                        Mark as Paid
+                                    </button>
+                                </form>
+
+                                <form action="{{ route('billing.destroy', $bill) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this bill?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors border border-rose-200" title="Delete Bill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @empty
@@ -83,21 +96,33 @@
                         <td class="px-4 py-3">{{ $bill->customer?->name ?? 'Deleted Customer' }}</td>
                         @php
                             $cType = $bill->customer?->type ?? 'Regular';
-                            $greenMax = $thresholds[$cType]['green_max'] ?? 12;
-                            $orangeMax = $thresholds[$cType]['orange_max'] ?? 14;
-                            $bgClass = $bill->usage_units <= $greenMax ? 'bg-emerald-500' : ($bill->usage_units <= $orangeMax ? 'bg-amber-500' : 'bg-red-500');
+                            $greenMax = $thresholds[$cType]['green_max'] ?? 10;
+                            $orangeMax = $thresholds[$cType]['orange_max'] ?? 20;
+                            $usage = $bill->consumption ?? 0;
+                            $bgClass = $usage <= $greenMax ? 'bg-emerald-500' : ($usage <= $orangeMax ? 'bg-amber-500' : 'bg-red-500');
                         @endphp
                         <td class="px-4 py-3">
                             <span class="px-2 py-1 rounded text-xs font-medium text-white shadow-sm {{ $bgClass }}">
-                                {{ $bill->usage_units }} L
+                                {{ $usage }} L
                             </span>
                         </td>
                         <td class="px-4 py-3 font-semibold text-gray-300">₱{{ number_format($bill->total_amount, 0) }}</td>
                         <td class="px-4 py-3">
-                            <a href="{{ route('billing.show', $bill) }}" class="text-blue-600 hover:text-blue-800 font-medium hover:underline text-sm flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
-                                View
-                            </a>
+                            <div class="flex items-center gap-2">
+                                <a href="{{ route('billing.show', $bill) }}" class="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200" title="View Bill">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                                </a>
+
+                                <form action="{{ route('billing.destroy', $bill) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this bill?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors border border-rose-200" title="Delete Bill">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @empty

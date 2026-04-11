@@ -93,15 +93,16 @@
                                             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
-                                <p class="text-xs text-gray-400 leading-relaxed">Enter the current water usage reading.
-                                    The system will automatically calculate the base and usage charges based on the
-                                    consumer type.</p>
+                                <div class="flex-1">
+                                    <p class="text-xs text-gray-400 leading-relaxed mb-2">Previous Reading: <span id="prev-reading-display" class="font-mono font-bold text-gray-200">0.00</span></p>
+                                    <p class="text-xs text-gray-400 leading-relaxed">Enter the current water meter reading.
+                                        The system will automatically calculate the consumption and charges.</p>
+                                </div>
                             </div>
 
-                            <label for="usage_units" class="block text-sm font-medium text-gray-300 mb-2 ml-1">Water
-                                Usage (L) *</label>
+                            <label for="usage_units" class="block text-sm font-medium text-gray-300 mb-2 ml-1">Present Reading (L) *</label>
                             <input type="number" step="0.01" id="usage_units" name="usage_units" required
-                                value="{{ old('usage_units') }}" oninput="calculateCharges()" placeholder="e.g. 12.5"
+                                value="{{ old('usage_units') }}" oninput="calculateCharges()" placeholder="e.g. 100.00"
                                 class="w-full bg-[#0f1722]/60 border border-[#2d4059] focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 text-gray-100 text-lg font-bold rounded-xl py-3 px-4 shadow-inner outline-none transition-all duration-300 placeholder:text-gray-600">
                             <p id="usage-calculation" class="text-xs mt-3 flex items-center gap-2 min-h-[1.25rem]"></p>
                             @error('usage_units') <p class="text-rose-400 text-xs mt-2 ml-1">{{ $message }}</p>
@@ -123,6 +124,16 @@
                             </h3>
 
                             <div class="grid grid-cols-1 gap-5">
+                                <div>
+                                    <label for="calculated_usage_display"
+                                        class="block text-xs font-medium text-gray-500 mb-1 ml-1">Calculated Consumption (L)</label>
+                                    <div class="relative">
+                                        <input type="text" id="calculated_usage_display" readonly value="0.00"
+                                            class="w-full bg-[#1b2636]/40 border border-[#2d4059] text-gray-300 rounded-xl py-2 px-4 font-mono outline-none transition-all">
+                                        <input type="hidden" name="consumption" id="consumption" value="0">
+                                    </div>
+                                </div>
+
                                 <div>
                                     <label for="base_charge"
                                         class="block text-xs font-medium text-gray-500 mb-1 ml-1">Base Charge</label>
@@ -212,7 +223,8 @@
             @foreach ($customers as $customer)
                         '{{ $customer->id }}': {
                     type: '{{ $customer->type }}',
-                    name: '{{ $customer->name }}'
+                    name: '{{ $customer->name }}',
+                    initial_reading: {{ $customer->meter_reading ?? 0 }}
                 },
             @endforeach
         };
@@ -230,10 +242,12 @@
         function loadCustomerHistory() {
             const customerId = document.getElementById('customer_id').value;
             const historyDiv = document.getElementById('customer-history');
+            const prevReadingDisplay = document.getElementById('prev-reading-display');
 
             if (!customerId) {
                 historyDiv.innerHTML = '<div class="text-center py-6 text-zinc-500">Select a customer to view reading history</div>';
                 previousReading = 0;
+                prevReadingDisplay.textContent = '0.00';
                 calculateCharges();
                 return;
             }
@@ -242,10 +256,16 @@
             fetch(`/api/customers/${customerId}/readings`)
                 .then(response => response.json())
                 .then(data => {
+                    // Set previous reading from latest bill or falling back to customer's initial reading
                     if (data.readings && data.readings.length > 0) {
-                        // Set previous reading for calculation
                         previousReading = data.readings[0].usage_units;
+                    } else {
+                        previousReading = customersData[customerId]?.initial_reading || 0;
+                    }
+                    
+                    prevReadingDisplay.textContent = previousReading.toLocaleString(undefined, { minimumFractionDigits: 2 });
 
+                    if (data.readings && data.readings.length > 0) {
                         let html = `
                             <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-emerald-500/30">
                                 <table class="w-full text-left border-collapse min-w-[600px]">
@@ -262,27 +282,36 @@
                         `;
 
                         data.readings.forEach((reading, index) => {
-                            const usage = index > 0 ? reading.usage_units - data.readings[index - 1].usage_units : 0;
+                            // Calculate usage as difference from PREVIOUS bill in time.
+                            // Since readings are DESC by date, the previous chronological reading is at index + 1
+                            let readingUsage = 0;
+                            if (index < data.readings.length - 1) {
+                                readingUsage = Math.abs(data.readings[index+1].usage_units - reading.usage_units);
+                            } else {
+                                // For the oldest bill, usage is difference from initial customer record reading
+                                readingUsage = Math.abs((customersData[customerId]?.initial_reading || 0) - reading.usage_units);
+                            }
+                            
                             const statusColor = reading.status === 'Paid' ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700/50' : 'bg-orange-900/40 text-orange-300 border-orange-700/50';
 
                             // Apply color coding to usage column based on thresholds
-                            const customerType = customersData[customerId]?.type || 'Regular';
+                            const customerType = data.customer?.type || 'Regular';
                             const t = thresholds[customerType] || { green_max: 12, orange_max: 14 };
                             let usageColor = 'text-gray-400';
 
-                            if (usage > 0 && usage <= t.green_max) {
+                            if (readingUsage > 0 && readingUsage <= t.green_max) {
                                 usageColor = 'text-emerald-400 font-bold';
-                            } else if (usage > t.green_max && usage <= t.orange_max) {
+                            } else if (readingUsage > t.green_max && readingUsage <= t.orange_max) {
                                 usageColor = 'text-orange-400 font-bold';
-                            } else if (usage > t.orange_max) {
+                            } else if (readingUsage > t.orange_max) {
                                 usageColor = 'text-rose-400 font-bold';
                             }
 
                             html += `
                                 <tr class="hover:bg-[#1b2636]/60 transition duration-300">
                                     <td class="px-6 py-4 text-gray-300 font-medium">${new Date(reading.billing_date).toLocaleDateString()}</td>
-                                    <td class="px-6 py-4 text-right font-mono text-gray-300">${reading.usage_units.toLocaleString()}</td>
-                                    <td class="px-6 py-4 text-right font-mono ${usageColor}">${usage.toFixed(2)}</td>
+                                    <td class="px-6 py-4 text-right font-mono text-gray-300">${reading.usage_units.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                                    <td class="px-6 py-4 text-right font-mono ${usageColor}">${readingUsage.toFixed(2)}</td>
                                     <td class="px-6 py-4 text-right font-mono font-bold text-gray-200">₱${reading.total_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="px-3 py-1 rounded-full text-xs font-semibold border ${statusColor}">
@@ -296,10 +325,10 @@
                         html += `</tbody></table></div>`;
                         historyDiv.innerHTML = html;
                     } else {
-                        previousReading = 0;
                         historyDiv.innerHTML = `
                             <div class="flex flex-col items-center py-6">
                                 <p class="text-gray-400 font-medium">No reading history yet</p>
+                                <p class="text-xs text-gray-600">Using initial reading: ${previousReading.toFixed(2)}</p>
                             </div>
                         `;
                     }
@@ -308,22 +337,25 @@
                 .catch(error => {
                     console.error('Error loading history:', error);
                     historyDiv.innerHTML = '<div class="text-center py-12 text-rose-500 font-medium">Failed to load customer history</div>';
-                    previousReading = 0;
+                    previousReading = customersData[customerId]?.initial_reading || 0;
+                    prevReadingDisplay.textContent = previousReading.toLocaleString(undefined, { minimumFractionDigits: 2 });
                     calculateCharges();
                 });
         }
 
         function calculateCharges() {
             const customerSelect = document.getElementById('customer_id');
-            const usageInput = document.getElementById('usage_units');
+            const presentReadingInput = document.getElementById('usage_units'); // this field stores the reading
             const baseChargeInput = document.getElementById('base_charge');
             const usageChargeInput = document.getElementById('usage_charge');
             const calculationText = document.getElementById('usage-calculation');
+            const consumptionDisplay = document.getElementById('calculated_usage_display');
 
-            if (!customerSelect.value || !usageInput.value) {
+            if (!customerSelect.value || !presentReadingInput.value) {
                 baseChargeInput.value = 0;
                 usageChargeInput.value = 0;
                 calculationText.textContent = '';
+                consumptionDisplay.value = '0.00';
                 updateTotal();
                 return;
             }
@@ -331,10 +363,18 @@
             const selectedOption = customerSelect.options[customerSelect.selectedIndex];
             const customerType = selectedOption.getAttribute('data-type');
 
-            // The user directly inputs the amount of water used THIS MONTH
-            const usage = parseFloat(usageInput.value) || 0;
+            // Formula: Previous Reading - Present Reading = Usage
+            const presentReading = parseFloat(presentReadingInput.value) || 0;
+            // The user formula uses (previous - present)
+            const usage = Math.abs(previousReading - presentReading);
+            
+            consumptionDisplay.value = usage.toFixed(2);
+            document.getElementById('consumption').value = usage.toFixed(2);
 
-            // Formula: (usage - 10) * rate + baseCharge
+            // Tiered Charge Formula from User:
+            // Regular: (usage - 10) * 15 + 100
+            // Commercial: (usage - 10) * 25 + 250
+            
             let baseCharge = 0;
             let rate = 0;
 
@@ -346,25 +386,22 @@
                 rate = 25;
             }
 
+            // Calculation as per "result - 10 = result x rate = result + base = total"
+            // We use Math.max to avoid negative charges if usage is < 10
             const billableUsage = Math.max(usage - 10, 0);
             const usageCharge = billableUsage * rate;
 
             baseChargeInput.value = baseCharge.toFixed(2);
             usageChargeInput.value = usageCharge.toFixed(2);
 
-            // Show calculation breakdown and color based on thresholds
-            calculationText.textContent = `Usage: ${usage}L | Calculation: (${usage} - 10) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
+            // Show calculation breakdown
+            calculationText.textContent = `Usage: ${usage.toFixed(2)}L | Calculation: (${usage.toFixed(2)} - 10) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
 
-            // Determine color class based on usage INCREASE (billable usage)
-            // The increase is the metered usage above the 10L threshold
-            const waterIncrease = billableUsage;
+            // Determine color class based on total usage
+            const waterIncrease = usage;
             const t = thresholds[customerType] || { green_max: 12, orange_max: 14 };
             let colorClass = 'text-zinc-500 dark:text-zinc-400';
 
-            // Color coding based on the increase amount:
-            // Green: 1 to green_max (inclusive)
-            // Orange: (green_max + 1) to orange_max (inclusive)
-            // Red: above orange_max
             if (waterIncrease > 0 && waterIncrease <= t.green_max) {
                 colorClass = 'text-green-600 dark:text-green-400';
             } else if (waterIncrease > t.green_max && waterIncrease <= t.orange_max) {

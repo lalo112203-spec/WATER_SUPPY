@@ -14,6 +14,7 @@ class Bill extends Model
         'customer_id',
         'billing_date',
         'usage_units',
+        'consumption',
         'base_charge',
         'usage_charge',
         'total_amount',

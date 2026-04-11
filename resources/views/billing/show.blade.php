@@ -48,7 +48,7 @@
             
             <div class="space-y-4">
                 <div class="flex justify-between">
-                    <flux:text>Water Usage ({{ $bill->usage_units }} m³)</flux:text>
+                    <flux:text>Water Consumption ({{ $bill->consumption ?? 0 }} m³)</flux:text>
                     <flux:text class="font-semibold">₱{{ number_format($bill->usage_charge, 2) }}</flux:text>
                 </div>
                 <div class="flex justify-between">

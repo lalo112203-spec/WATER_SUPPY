@@ -9,7 +9,7 @@
                     </div>
                     <div class="text-right">
                         <x-app-logo class="h-8 mb-2 justify-end" />
-                        <p class="text-sm font-semibold text-gray-400">Water System Comm.</p>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-tighter leading-none">DOLORES WATER<br>SERVICES SYSTEM</p>
                     </div>
                 </div>
 
@@ -37,7 +37,7 @@
                     
                     <div class="space-y-4">
                         <div class="flex justify-between items-center">
-                            <p class="text-gray-400">Water Usage ({{ $bill->usage_units }} m³)</p>
+                            <p class="text-gray-400">Water Consumption ({{ $bill->consumption ?? 0 }} m³)</p>
                             <p class="text-gray-200 font-medium">₱{{ number_format($bill->usage_charge, 2) }}</p>
                         </div>
                         <div class="flex justify-between items-center">

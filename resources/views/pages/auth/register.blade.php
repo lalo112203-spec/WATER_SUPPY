@@ -5,7 +5,7 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route('register') }}" class="flex flex-col gap-6">
             @csrf
             <!-- Name -->
             <flux:input
@@ -17,6 +17,17 @@
                 autofocus
                 autocomplete="name"
                 :placeholder="__('Full name')"
+            />
+
+            <!-- Registration Code -->
+            <flux:input
+                name="registration_code"
+                :label="__('Registration Code')"
+                :value="old('registration_code')"
+                type="text"
+                required
+                maxlength="8"
+                placeholder="Enter 8-digit code from admin"
             />
 
             <!-- Username -->

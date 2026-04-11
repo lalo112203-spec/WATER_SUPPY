@@ -29,6 +29,9 @@ class User extends Authenticatable
         'messenger_background',
         'background_image',
         'text_color',
+        'text_stroke_color',
+        'text_stroke_width',
+        'font_family',
         'profile_photo',
     ];
 

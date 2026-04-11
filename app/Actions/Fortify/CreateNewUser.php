@@ -5,6 +5,7 @@ namespace App\Actions\Fortify;
 use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
 use App\Models\User;
+use App\Models\RegistrationCode;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
@@ -22,14 +23,38 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make($input, [
             ...$this->profileRules(),
             'password' => $this->passwordRules(),
+            'registration_code' => [
+                'required',
+                'string',
+                'size:8',
+                function ($attribute, $value, $fail) {
+                    $code = RegistrationCode::where('code', $value)
+                        ->where('is_used', false)
+                        ->first();
+                    if (!$code) {
+                        $fail('The registration code is invalid or has already been used.');
+                    }
+                },
+            ],
         ])->validate();
 
-        return User::create([
+        $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => $input['password'],
             'plain_password' => $input['password'],
-            'role' => 'admin',
+            'role' => 'consumer',
         ]);
+
+        // Mark code as used
+        $code = RegistrationCode::where('code', $input['registration_code'])->first();
+        if ($code) {
+            $code->update([
+                'is_used' => true,
+                'used_by' => $user->id,
+            ]);
+        }
+
+        return $user;
     }
 }

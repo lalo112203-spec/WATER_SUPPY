@@ -81,6 +81,7 @@ class BillingController extends Controller
             'customer_id' => 'required|exists:customers,id',
             'billing_date' => 'required|date',
             'usage_units' => 'required|numeric',
+            'consumption' => 'required|numeric',
             'base_charge' => 'required|numeric',
             'usage_charge' => 'required|numeric',
             'due_date' => 'required|date|after:billing_date',
@@ -89,7 +90,15 @@ class BillingController extends Controller
         $validated['total_amount'] = $validated['base_charge'] + $validated['usage_charge'];
         $validated['status'] = 'Pending';
 
-        Bill::create($validated);
+        $bill = Bill::create($validated);
+
+        // Update customer's current meter reading
+        $customer = Customer::find($validated['customer_id']);
+        if ($customer) {
+            $customer->update([
+                'meter_reading' => $validated['usage_units']
+            ]);
+        }
 
         return redirect()->route('billing.index')
             ->with('success', 'Bill created successfully');

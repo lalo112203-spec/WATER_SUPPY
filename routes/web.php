@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\RecoveryController;
+use App\Http\Controllers\RegistrationCodeController;
 
 Route::redirect('/', '/dashboard')->name('home');
 
@@ -45,6 +46,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Settings
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
+
+    // Registration Codes (Admin Only)
+    Route::get('registration-codes', [RegistrationCodeController::class, 'index'])->name('registration-codes.index');
+    Route::post('registration-codes', [RegistrationCodeController::class, 'store'])->name('registration-codes.store');
+    Route::delete('registration-codes/{registrationCode}', [RegistrationCodeController::class, 'destroy'])->name('registration-codes.destroy');
 
     // API Routes for AJAX
     Route::get('api/customers/{customer}/readings', [BillingController::class, 'getCustomerReadings']);

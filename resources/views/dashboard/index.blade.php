@@ -2,9 +2,8 @@
     <div class="px-6 py-8 bg-transparent min-h-[calc(100vh-4rem)] font-sans text-gray-200 relative z-10">
         <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between">
             <div>
-                <h1 class="text-[28px] font-bold text-gray-100 tracking-tight drop-shadow-md">System Dashboard</h1>
-                <p class="mt-1 text-[15px] text-gray-400 font-medium">Overview of your water system metrics and
-                    performance.</p>
+                <h1 class="text-[28px] font-bold text-gray-100 tracking-tight drop-shadow-md">D.W.S.S Dashboard</h1>
+                <p class="mt-1 text-[15px] text-gray-400 font-medium">Overview of D.W.S.S metrics and performance.</p>
             </div>
             <div class="mt-4 md:mt-0">
                 <div
@@ -49,10 +48,7 @@
                 </div>
                 <div
                     class="h-12 w-12 rounded-xl bg-blue-900/30 text-blue-400 border border-blue-800/50 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(59,130,246,0.3)] group-hover:scale-110 transition-transform">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    <span class="text-2xl font-bold leading-none flex items-center justify-center translate-y-[1px]">₱</span>
                 </div>
                 <div
                     class="absolute -right-4 -bottom-4 bg-gradient-to-br from-blue-600/20 to-indigo-900/20 h-32 w-32 rounded-full blur-2xl">
@@ -68,10 +64,7 @@
                 </div>
                 <div
                     class="h-12 w-12 rounded-xl bg-emerald-900/30 text-emerald-400 border border-emerald-800/50 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover:scale-110 transition-transform">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    <span class="text-2xl font-bold leading-none flex items-center justify-center translate-y-[1px]">₱</span>
                 </div>
                 <div
                     class="absolute -right-4 -bottom-4 bg-gradient-to-br from-emerald-600/20 to-teal-900/20 h-32 w-32 rounded-full blur-2xl">
