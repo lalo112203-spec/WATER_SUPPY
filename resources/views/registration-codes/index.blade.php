@@ -48,8 +48,8 @@
                 </thead>
                 <tbody class="divide-y divide-[#263548]">
                     @forelse($codes as $code)
-                        <tr class="hover:bg-[#1b2636]/60 transition duration-300">
-                            <td class="px-6 py-4 font-bold text-xl text-cyan-400 tracking-widest font-mono">
+                        <tr class="hover:bg-[#1b2636]/60 transition duration-300 {{ $code->is_used ? 'opacity-50 grayscale-[0.5]' : '' }}">
+                            <td class="px-6 py-4 font-bold text-xl {{ $code->is_used ? 'text-gray-500' : 'text-cyan-400' }} tracking-widest font-mono">
                                 {{ $code->code }}
                             </td>
                             <td class="px-6 py-4">

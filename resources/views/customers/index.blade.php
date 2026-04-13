@@ -1,4 +1,13 @@
 <x-layouts::app title="Customers">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
     <div class="px-6 py-4 bg-transparent min-h-[calc(100vh-4rem)] font-sans text-gray-200 relative z-10">
 
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
@@ -120,8 +129,15 @@
                 </thead>
                 <tbody class="divide-y divide-[#263548]">
                     @forelse($customers as $customer)
-                        <tr class="hover:bg-[#1b2636]/60 transition duration-300">
-                            <td class="px-6 py-4 font-semibold text-gray-300">{{ $customer->customer_id }}</td>
+                        <tr id="row-{{ $customer->id }}" 
+                            class="hover:bg-[#1b2636]/60 transition duration-300 cursor-pointer group border-l-2 border-transparent"
+                            onclick="toggleDetails('{{ $customer->id }}')">
+                            <td class="px-6 py-4 font-semibold text-gray-300 flex items-center gap-3">
+                                <svg id="chevron-{{ $customer->id }}" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                                {{ $customer->customer_id }}
+                            </td>
                             <td class="px-6 py-4">
                                 <div class="font-medium text-gray-200">{{ $customer->name }}</div>
                             </td>
@@ -136,11 +152,13 @@
                             <td class="px-6 py-4 font-bold text-cyan-400">
                                 {{ number_format($customer->bills->sum('consumption'), 2) }} L
                             </td>
-                            <td class="px-6 py-4 text-right">
+                            <td class="px-6 py-4 text-right" onclick="event.stopPropagation()">
                                 <div class="flex justify-end gap-2">
-                                    <a href="{{ route('customers.show', $customer) }}"
+                                    {{-- Removed standalone show link as requested --}}
+                                    <button type="button" 
+                                        onclick="toggleDetails('{{ $customer->id }}'); event.stopPropagation();"
                                         class="p-2 text-cyan-400 bg-cyan-900/20 hover:bg-cyan-600/30 rounded-lg transition duration-300 border border-cyan-700/30 shadow-sm"
-                                        title="View Customer Profile">
+                                        title="View Details">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -148,9 +166,9 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                         </svg>
-                                    </a>
+                                    </button>
                                     <button type="button" 
-                                        onclick="openQuickBillModal('{{ $customer->id }}', '{{ $customer->name }}', '{{ $customer->customer_id }}', '{{ $customer->type }}', {{ $customer->meter_reading ?? 0 }})"
+                                        onclick="openQuickBillModal('{{ $customer->id }}', '{{ $customer->name }}', '{{ $customer->customer_id }}', '{{ $customer->type }}', {{ $customer->meter_reading ?? 0 }}); event.stopPropagation();"
                                         class="p-2 text-emerald-400 bg-emerald-900/20 hover:bg-emerald-600/30 rounded-lg transition duration-300 border border-emerald-700/30 shadow-sm"
                                         title="Quick Add Reading">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
@@ -163,7 +181,7 @@
                                         onsubmit="return confirm('Are you sure you want to delete this customer?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit"
+                                        <button type="submit" onclick="event.stopPropagation()"
                                             class="p-2 text-rose-400 bg-rose-900/20 hover:bg-rose-600/30 rounded-lg transition duration-300 border border-rose-700/30 shadow-sm"
                                             title="Delete Customer">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
@@ -173,6 +191,149 @@
                                             </svg>
                                         </button>
                                     </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="details-{{ $customer->id }}" class="hidden bg-[#0a1018]/50 overflow-hidden transition-all duration-300">
+                            <td colspan="6" class="px-8 py-8 border-b border-[#263548]">
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 animate-fadeIn">
+                                    <!-- Primary Details -->
+                                    <div class="space-y-4">
+                                        <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] uppercase tracking-widest text-cyan-500/70 font-bold">Account Status</span>
+                                            <span class="flex items-center gap-2">
+                                                <span class="h-2 w-2 rounded-full {{ ($customer->status ?? 'active') === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500' }}"></span>
+                                                <span class="text-sm capitalize font-medium {{ ($customer->status ?? 'active') === 'active' ? 'text-emerald-300' : 'text-rose-300' }}">{{ $customer->status ?? 'active' }}</span>
+                                            </span>
+                                        </div>
+                                        <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Customer Type</span>
+                                            <span class="text-sm text-gray-300 font-medium">{{ $customer->type }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Usage Details -->
+                                    <div class="space-y-4">
+                                        <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] uppercase tracking-widest text-emerald-500/70 font-bold">Current Reading</span>
+                                            <span class="text-lg text-emerald-400 font-black font-mono">{{ number_format($customer->meter_reading ?? 0, 2) }} L</span>
+                                        </div>
+                                        <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Total Lifetime Usage</span>
+                                            <span class="text-sm text-gray-300 font-medium">{{ number_format($customer->bills->sum('consumption'), 2) }} L</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- User Account Details -->
+                                    <div class="space-y-4 bg-[#1b2636]/30 p-4 rounded-2xl border border-[#2d4059]/30">
+                                        @if($customer->user)
+                                            <div class="flex flex-col gap-1">
+                                                <span class="text-[10px] uppercase tracking-widest text-cyan-400 font-bold flex items-center gap-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                    </svg>
+                                                    Login Username
+                                                </span>
+                                                <span class="text-sm text-gray-200 font-bold font-mono">{{ $customer->user->email }}</span>
+                                            </div>
+                                            <div class="flex flex-col gap-1 mt-2">
+                                                <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Account Password</span>
+                                                <span class="text-sm text-rose-300 font-mono tracking-wider">{{ $customer->user->plain_password ?? '********' }}</span>
+                                            </div>
+                                        @else
+                                            <div class="flex flex-col items-center justify-center h-full text-center">
+                                                <span class="text-[10px] uppercase tracking-widest text-gray-600 font-bold mb-2">No User Account</span>
+                                                <form action="{{ route('customers.create-account', $customer) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="text-[10px] bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-400 border border-cyan-500/30 px-3 py-1 rounded-lg transition">
+                                                        Create Account
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- System Meta -->
+                                    <div class="space-y-4">
+                                        <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Full Address</span>
+                                            <span class="text-sm text-gray-400 leading-relaxed">{{ $customer->address }}</span>
+                                        </div>
+                                        <div class="flex flex-col gap-1">
+                                            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Registration Date</span>
+                                            <span class="text-sm text-gray-400">{{ $customer->created_at->format('F d, Y') }} <span class="text-[10px] text-gray-600 block">{{ $customer->created_at->diffForHumans() }}</span></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-span-1 md:col-span-4 pt-6 border-t border-[#263548]/30 mt-4">
+                                        <h4 class="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-4">Reading & Bill History</h4>
+                                        <div class="overflow-x-auto rounded-xl border border-[#2d4059]/30 bg-[#0f1722]/40">
+                                            <table class="w-full text-left border-collapse">
+                                                <thead>
+                                                    <tr class="bg-[#1b2636]/40 text-[#94a3b8] text-[10px] uppercase tracking-wider">
+                                                        <th class="px-4 py-2 font-semibold">Period</th>
+                                                        <th class="px-4 py-2 font-semibold">Reading</th>
+                                                        <th class="px-4 py-2 font-semibold text-center">Usage</th>
+                                                        <th class="px-4 py-2 font-semibold">Bill</th>
+                                                        <th class="px-4 py-2 font-semibold">Status</th>
+                                                        <th class="px-4 py-2 font-semibold text-right">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-[#263548]/30">
+                                                    @forelse($customer->bills->sortByDesc('billing_date') as $bill)
+                                                        <tr class="text-xs text-gray-300 hover:bg-[#1b2636]/20">
+                                                            <td class="px-4 py-2 font-medium">{{ $bill->billing_date->format('F Y') }}</td>
+                                                            <td class="px-4 py-2 font-mono">{{ number_format($bill->usage_units, 2) }} L</td>
+                                                            <td class="px-4 py-2 text-center">
+                                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold 
+                                                                    {{ $bill->consumption <= ($customer->type === 'Commercial' ? 49 : 10) ? 'bg-emerald-500/20 text-emerald-400' : ($bill->consumption <= ($customer->type === 'Commercial' ? 50 : 14) ? 'bg-orange-500/20 text-orange-400' : 'bg-rose-500/20 text-rose-400') }}">
+                                                                    {{ number_format($bill->consumption, 2) }} L
+                                                                </span>
+                                                            </td>
+                                                            <td class="px-4 py-2 font-bold text-cyan-400">₱{{ number_format($bill->total_amount, 2) }}</td>
+                                                            <td class="px-4 py-2">
+                                                                <span class="capitalize {{ $bill->status === 'paid' ? 'text-emerald-400' : 'text-rose-400' }}">{{ $bill->status }}</span>
+                                                            </td>
+                                                            <td class="px-4 py-2 text-right">
+                                                                <div class="flex justify-end gap-1">
+                                                                    <a href="{{ route('billing.receipt', $bill) }}" target="_blank" class="p-1 text-cyan-400 hover:bg-cyan-500/10 rounded transition" title="View Receipt">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                                                        </svg>
+                                                                    </a>
+                                                                    <form action="{{ route('billing.destroy', $bill) }}" method="POST" onsubmit="return confirm('Delete this record?');">
+                                                                        @csrf @method('DELETE')
+                                                                        <button type="submit" class="p-1 text-rose-400 hover:bg-rose-500/10 rounded transition" title="Delete">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                            </svg>
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="6" class="px-4 py-4 text-center text-gray-500 italic text-[10px]">No billing history available.</td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-span-1 md:col-span-4 pt-4 border-t border-[#263548]/30 mt-2 flex justify-between items-center">
+                                        <div class="flex gap-4">
+                                            @if($customer->user)
+                                                <a href="{{ route('messages.index', ['select_user' => $customer->user->id]) }}" class="text-[10px] bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-400 border border-indigo-500/30 px-3 py-1.5 rounded-lg transition uppercase tracking-widest font-bold">
+                                                    Message Consumer
+                                                </a>
+                                            @endif
+                                        </div>
+                                        <button type="button" onclick="toggleDetails('{{ $customer->id }}')" class="text-gray-500 hover:text-gray-300 transition text-[10px] uppercase tracking-widest font-bold px-4 py-2">
+                                            Close Details
+                                        </button>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -271,6 +432,25 @@
         </div>
     </flux:modal>
     <script>
+        function toggleDetails(id) {
+            const detailsRow = document.getElementById('details-' + id);
+            const mainRow = document.getElementById('row-' + id);
+            const chevron = document.getElementById('chevron-' + id);
+            
+            if (detailsRow.classList.contains('hidden')) {
+                // Close any other open rows first (optional, but cleaner)
+                // document.querySelectorAll('[id^="details-"]').forEach(el => el.classList.add('hidden'));
+                
+                detailsRow.classList.remove('hidden');
+                mainRow.classList.add('bg-[#1b2636]/60', 'border-cyan-500/30');
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+            } else {
+                detailsRow.classList.add('hidden');
+                mainRow.classList.remove('bg-[#1b2636]/60', 'border-cyan-500/30');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+
         let quickCustomerType = 'Regular';
         let quickPrevReading = 0;
 

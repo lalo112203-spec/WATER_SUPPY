@@ -15,7 +15,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Customers
-    Route::resource('customers', CustomerController::class);
+    Route::resource('customers', CustomerController::class)->except(['show']);
     Route::post('customers/{customer}/create-account', [CustomerController::class, 'createAccount'])->name('customers.create-account');
     Route::post('customers/{customer}/update-password', [CustomerController::class, 'updatePassword'])->name('customers.update-password');
 

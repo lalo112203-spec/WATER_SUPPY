@@ -27,7 +27,7 @@ class CustomerController extends Controller
             });
         }
 
-        $customers = $customersQuery->paginate(15)->withQueryString();
+        $customers = $customersQuery->with(['user', 'bills'])->paginate(15)->withQueryString();
 
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
         $monthExpr = "strftime('%Y-%m', created_at)";
@@ -81,27 +81,6 @@ class CustomerController extends Controller
             'customer_id' => $validated['customer_id'],
         ]);
 
-        // automatically create initial bill
-        // base charge depends on customer type
-        $baseCharge = $customer->type === 'Commercial' ? 250 : 100;
-        // initial usage 0, so usage charge = max(0 - 10,0) * rate = 0
-        $rate = $customer->type === 'Commercial' ? 25 : 15;
-        $usageCharge = 0;
-        $totalAmount = $baseCharge + $usageCharge;
-
-
-
-        \App\Models\Bill::create([
-            'customer_id' => $customer->id,
-            'billing_date' => now(),
-            'usage_units' => 0,
-            'base_charge' => $baseCharge,
-            'usage_charge' => $usageCharge,
-            'total_amount' => $totalAmount,
-            'status' => 'Pending',
-            'due_date' => now()->addDays(30),
-        ]);
-
         if ($request->has('create_account') && $request->filled('password')) {
             $email = $customer->email;
 
@@ -132,17 +111,7 @@ class CustomerController extends Controller
             ->with('success', 'Customer created successfully');
     }
 
-    public function show(Customer $customer): View
-    {
-        $customer->load(['waterUsages', 'bills']);
-        $settings = [
-            'regular_green_max' => \App\Models\SystemSetting::get('regular_green_max', 10),
-            'commercial_green_max' => \App\Models\SystemSetting::get('commercial_green_max', 49),
-            'regular_orange_max' => \App\Models\SystemSetting::get('regular_orange_max', 14),
-            'commercial_orange_max' => \App\Models\SystemSetting::get('commercial_orange_max', 50),
-        ];
-        return view('customers.show', compact('customer', 'settings'));
-    }
+
 
     public function edit(Customer $customer): View
     {

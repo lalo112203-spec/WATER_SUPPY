@@ -32,13 +32,28 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-3 gap-4 py-6 border-b border-[#263548] print:border-zinc-200">
+                    <div class="text-center">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1 print:text-zinc-500">Prev. Reading</p>
+                        <p class="font-bold text-gray-200 print:text-black">{{ number_format($bill->usage_units - $bill->consumption, 2) }}</p>
+                    </div>
+                    <div class="text-center border-x border-[#263548] print:border-zinc-200">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1 print:text-zinc-500">Curr. Reading</p>
+                        <p class="font-bold text-gray-200 print:text-black">{{ number_format($bill->usage_units, 2) }}</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1 print:text-zinc-500">Consumption</p>
+                        <p class="font-bold text-blue-400 print:text-black">{{ number_format($bill->consumption, 2) }} m³</p>
+                    </div>
+                </div>
+
                 <div class="py-6">
-                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-4">Payment Details</p>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-4 print:text-zinc-500">Charge Breakdown</p>
                     
                     <div class="space-y-4">
                         <div class="flex justify-between items-center">
-                            <p class="text-gray-400">Water Consumption ({{ $bill->consumption ?? 0 }} m³)</p>
-                            <p class="text-gray-200 font-medium">₱{{ number_format($bill->usage_charge, 2) }}</p>
+                            <p class="text-gray-400 print:text-zinc-700">Usage Charge ({{ $bill->consumption }} m³)</p>
+                            <p class="text-gray-200 font-medium print:text-black">₱{{ number_format($bill->usage_charge, 2) }}</p>
                         </div>
                         <div class="flex justify-between items-center">
                             <p class="text-gray-400">Base Charge</p>
@@ -47,11 +62,16 @@
                     </div>
                 </div>
 
-                <div class="bg-[#0f1722] -mx-8 -mb-8 p-8 border-t border-[#263548]">
+                <div class="bg-[#0f1722] -mx-8 -mb-8 p-8 border-t border-[#263548] print:bg-white print:border-zinc-200">
                     <div class="flex justify-between items-center">
-                        <p class="text-lg text-gray-400 font-semibold uppercase tracking-wider">Total Paid</p>
-                        <p class="text-2xl text-green-600 font-bold tracking-tight">₱{{ number_format($bill->total_amount, 2) }}</p>
+                        <p class="text-lg text-gray-400 font-semibold uppercase tracking-wider print:text-zinc-700">Total Paid</p>
+                        <p class="text-2xl text-green-600 font-bold tracking-tight print:text-black">₱{{ number_format($bill->total_amount, 2) }}</p>
                     </div>
+                </div>
+                <div class="mt-12 hidden mt-8 text-center print:block">
+                    <div class="w-48 border-b border-black mx-auto mb-1"></div>
+                    <p class="text-[10px] uppercase text-black font-bold">Authorized Signature</p>
+                    <p class="text-[9px] text-zinc-500 mt-8 italic">This serves as your official receipt for water services rendered.</p>
                 </div>
             </div>
         </div>
@@ -69,10 +89,14 @@
     
     <style type="text/css" media="print">
         @page { size: auto; margin: 0; }
-        body { background: white; margin: 2cm; }
-        header, nav, aside.flux-sidebar { display: none !important; }
+        body { background: white !important; margin: 2cm; color: black !important; }
+        header, nav, aside, .print\:hidden { display: none !important; }
         .flex-1 { margin: 0 !important; padding: 0 !important; }
         main { background: white !important; height: auto !important; }
+        .bg-\[\#121a25\]\/80 { background-color: white !important; border: 1px solid #e5e7eb !important; border-top: 8px solid #3b82f6 !important; border-radius: 8px !important; box-shadow: none !important; }
+        .text-gray-400, .text-gray-200, .text-zinc-500 { color: black !important; }
+        .border-\[\#263548\] { border-color: #e5e7eb !important; }
+        .backdrop-blur-md { backdrop-filter: none !important; }
     </style>
 </x-layouts::app>
 

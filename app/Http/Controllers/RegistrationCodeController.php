@@ -9,7 +9,10 @@ class RegistrationCodeController extends Controller
 {
     public function index()
     {
-        $codes = RegistrationCode::with('user')->latest()->paginate(20);
+        $codes = RegistrationCode::with('user')
+            ->orderBy('is_used', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
         return view('registration-codes.index', compact('codes'));
     }
 
