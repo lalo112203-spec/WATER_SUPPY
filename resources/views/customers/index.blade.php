@@ -12,9 +12,9 @@
 
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <div class="flex items-center gap-3">
-                <h1 class="text-2xl font-bold text-gray-100 flex items-center gap-2 drop-shadow-md">
+                <h1 class="text-2xl font-bold flex items-center gap-2 drop-shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-8 w-8 text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" fill="none"
+                        class="h-8 w-8 text-blue-600 drop-shadow-[0_0_8px_rgba(37,99,235,0.4)]" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -24,13 +24,13 @@
 
                 <form action="{{ route('customers.index') }}" method="GET" class="ml-4 w-full md:w-64">
                     <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400 group-focus-within:text-cyan-400 transition-colors duration-300">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400 group-focus-within:text-blue-600 transition-colors duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search person..."
-                            class="w-full bg-[#1b2636]/40 backdrop-blur-md border border-[#2d4059]/50 focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 text-gray-200 text-sm rounded-xl py-2 pl-10 pr-10 outline-none transition-all duration-300"
+                            class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 text-sm rounded-xl py-2 pl-10 pr-10 outline-none transition-all duration-300 shadow-sm"
                             autofocus>
                         @if (request('search'))
                             <div class="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -46,7 +46,7 @@
             </div>
 
             <a href="{{ route('customers.create') }}"
-                class="bg-cyan-600/80 hover:bg-cyan-500 border border-cyan-400/50 text-white px-4 py-2 rounded-xl font-medium shadow-[0_0_15px_rgba(6,182,212,0.3)] flex items-center gap-2 transition duration-300 backdrop-blur-sm">
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-medium shadow-md flex items-center gap-2 transition duration-300 backdrop-blur-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd"
                         d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
@@ -65,16 +65,16 @@
                         class="absolute -right-4 -bottom-4 bg-gradient-to-br from-cyan-600/20 to-blue-900/20 h-32 w-32 rounded-full blur-2xl">
                     </div>
                     <div class="relative z-10">
-                        <h3 class="text-gray-400 text-sm font-medium uppercase tracking-wider mb-2">Total Active
+                        <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider mb-2">Total Active
                             Customers</h3>
                         <div
-                            class="text-5xl font-bold text-cyan-400 flex items-center justify-center gap-3 drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-cyan-500/50" fill="none"
+                            class="text-5xl font-bold text-blue-600 dark:text-blue-400 flex items-center justify-center gap-3 drop-shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-500/30" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
-                            {{ $activeCustomers }} <span class="text-sm font-normal text-gray-500">/
+                            {{ $activeCustomers }} <span class="text-sm font-normal text-slate-400">/
                                 {{ $totalCustomers }}</span>
                         </div>
                     </div>
@@ -89,8 +89,8 @@
                         class="absolute top-0 right-0 w-64 h-64 bg-cyan-600/10 rounded-full blur-3xl point-events-none">
                     </div>
                     <h3
-                        class="text-gray-200 font-semibold text-base mb-4 border-b border-[#263548] pb-2 flex items-center gap-2 relative z-10">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400" fill="none"
+                        class="text-slate-700 dark:text-slate-200 font-semibold text-base mb-4 border-b border-slate-200 dark:border-slate-800 pb-2 flex items-center gap-2 relative z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
@@ -397,7 +397,7 @@
                             <label for="modal_present_reading" class="block text-sm font-medium text-gray-300">Present Reading (L)</label>
                             <input type="number" step="0.01" id="modal_present_reading" name="usage_units" required
                                 oninput="calculateQuickCharges()" placeholder="Enter reading..."
-                                class="w-full bg-[#0f1722]/60 border border-[#2d4059] focus:border-emerald-500/50 text-emerald-400 text-2xl font-black rounded-xl py-3 px-4 outline-none transition-all duration-300">
+                                class="w-full bg-[#0f1722]/60 border border-[#2d4059] focus:border-emerald-500/50 text-emerald-400 placeholder-teal-800 text-2xl font-black rounded-xl py-3 px-4 outline-none transition-all duration-300">
                         </div>
 
                         <div id="modal_calc_breakdown" class="text-xs mt-3 min-h-[1.25rem] text-zinc-500"></div>
@@ -483,8 +483,17 @@
             const breakdown = document.getElementById('modal_calc_breakdown');
             const hiddenConsumption = document.getElementById('modal_consumption_hidden');
 
+            if (input.value === '') {
+                baseInput.value = 0;
+                usageInput.value = 0;
+                hiddenConsumption.value = 0;
+                updateQuickTotal();
+                breakdown.textContent = '';
+                return;
+            }
+
             const presentReading = parseFloat(input.value) || 0;
-            const consumption = Math.abs(quickPrevReading - presentReading);
+            const consumption = Math.max(0, presentReading - quickPrevReading);
             
             hiddenConsumption.value = consumption.toFixed(2);
 
@@ -517,63 +526,80 @@
             document.getElementById('modal_total_display').textContent = total.toLocaleString(undefined, { minimumFractionDigits: 2 });
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const customerCtx = document.getElementById('customerChart');
-            if (customerCtx) {
-                // Gradient
-                const custGradient = customerCtx.getContext('2d').createLinearGradient(0, 0, 0, 200);
-                custGradient.addColorStop(0, 'rgba(6, 182, 212, 0.4)');
-                custGradient.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+        function initializeCustomerChart() {
+            if (typeof window.Chart === 'undefined') {
+                setTimeout(initializeCustomerChart, 50);
+                return;
+            }
 
-                new Chart(customerCtx.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: {!! json_encode($customerGrowth->pluck('month')->count() ? $customerGrowth->pluck('month') : ['Current']) !!},
-                        datasets: [{
-                            label: 'New Customers',
-                            data: {!! json_encode($customerGrowth->pluck('count')->count() ? $customerGrowth->pluck('count') : [1]) !!},
-                            borderColor: '#06b6d4',
-                            backgroundColor: custGradient,
-                            borderWidth: 3,
-                            pointBackgroundColor: '#06b6d4',
-                            pointBorderColor: '#164e63',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                            fill: true,
-                            tension: 0.4 // Smooth "flow" curve
-                        }]
+            const customerCtxEl = document.getElementById('customerChart');
+            if (!customerCtxEl) return;
+
+            if (window.customerFlowChartInstance) window.customerFlowChartInstance.destroy();
+
+            const customerCtx = customerCtxEl.getContext('2d');
+            
+            // Gradient
+            const custGradient = customerCtx.createLinearGradient(0, 0, 0, 200);
+            custGradient.addColorStop(0, 'rgba(6, 182, 212, 0.4)');
+            custGradient.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+
+            window.customerFlowChartInstance = new Chart(customerCtx, {
+                type: 'line',
+                data: {
+                    labels: {!! json_encode($customerGrowth->pluck('month')->count() ? $customerGrowth->pluck('month') : ['Current']) !!},
+                    datasets: [{
+                        label: 'New Customers',
+                        data: {!! json_encode($customerGrowth->pluck('count')->count() ? $customerGrowth->pluck('count') : [1]) !!},
+                        borderColor: '#06b6d4',
+                        backgroundColor: custGradient,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#06b6d4',
+                        pointBorderColor: '#164e63',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4 // Smooth "flow" curve
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(15, 23, 34, 0.95)',
+                            titleColor: '#e2e8f0',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#1e293b',
+                            borderWidth: 1
+                        }
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                mode: 'index',
-                                intersect: false,
-                                backgroundColor: 'rgba(15, 23, 34, 0.95)',
-                                titleColor: '#e2e8f0',
-                                bodyColor: '#cbd5e1',
-                                borderColor: '#1e293b',
-                                borderWidth: 1
-                            }
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1, color: '#64748b' },
+                            grid: { color: '#1e293b', drawBorder: false },
+                            border: { display: false }
                         },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { stepSize: 1, color: '#64748b' },
-                                grid: { color: '#1e293b', drawBorder: false },
-                                border: { display: false }
-                            },
-                            x: {
-                                grid: { display: false },
-                                border: { display: false },
-                                ticks: { color: '#64748b' }
-                            }
+                        x: {
+                            grid: { display: false },
+                            border: { display: false },
+                            ticks: { color: '#64748b' }
                         }
                     }
-                });
-            }
-        });
+                }
+            });
+        }
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(initializeCustomerChart, 1);
+        } else {
+            document.addEventListener('DOMContentLoaded', initializeCustomerChart);
+        }
+        
+        document.addEventListener('livewire:navigated', initializeCustomerChart);
     </script>
 </x-layouts::app>

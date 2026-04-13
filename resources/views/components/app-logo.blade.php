@@ -3,12 +3,13 @@
 ])
 
 @if($sidebar)
-    <a {{ $attributes->merge(['class' => 'flex items-center gap-3 px-2 py-2']) }}>
-        <div class="flex aspect-square size-12 items-center justify-center rounded-full bg-white/10 p-0.5 shadow-[0_0_18px_rgba(255,255,255,0.12)] border border-white/20">
+    <a {{ $attributes->merge(['class' => 'flex items-center gap-4 px-2 py-2']) }}>
+        <div class="flex aspect-square size-12 items-center justify-center rounded-full bg-white/10 p-0.5 shadow-[0_0_18px_rgba(255,255,255,0.12)] border border-white/20 shrink-0">
             <x-app-logo-icon class="size-10" />
         </div>
-        <div class="flex flex-col leading-none tracking-tighter">
-            <span class="text-2xl font-black text-cyan-400 drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]" style="@if(auth()->user()->font_family) font-family: {{ auth()->user()->font_family }} !important; @endif @if(auth()->user()->text_stroke_width && auth()->user()->text_stroke_color) -webkit-text-stroke: {{ auth()->user()->text_stroke_width }} {{ auth()->user()->text_stroke_color }}; paint-order: stroke fill; @endif">D.W.S.S</span>
+        <div class="flex flex-col leading-none">
+            <span class="text-[46px] font-black tracking-[0.15em] whitespace-nowrap drop-shadow-[0_0_12px_rgba(34,211,238,0.7)]" 
+                style="color: #22d3ee !important; @if(auth()->user()->font_family) font-family: {{ auth()->user()->font_family }} !important; @endif @if(auth()->user()->text_stroke_width && auth()->user()->text_stroke_color) -webkit-text-stroke: {{ auth()->user()->text_stroke_width }} {{ auth()->user()->text_stroke_color }}; paint-order: stroke fill; @endif">D.W.S.S</span>
         </div>
     </a>
 @else

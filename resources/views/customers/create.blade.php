@@ -18,21 +18,21 @@
                     <div>
                         <label class="block text-gray-400 mb-1 text-sm font-medium">Customer ID (Leave blank to auto-generate)</label>
                         <input type="text" name="customer_id" value="{{ old('customer_id') }}" placeholder="e.g. {{ $nextId ?? 1001 }}"
-                            class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-300 bg-[#fefefe] shadow-sm">
+                            class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
                         @error('customer_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div>
                         <label class="block text-gray-400 mb-1 text-sm font-medium">Full Name <span class="text-red-500">*</span></label>
                         <input type="text" name="name" value="{{ old('name') }}" required
-                            class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-300 bg-[#fefefe] shadow-sm">
+                            class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
                         @error('name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div>
                         <label class="block text-gray-400 mb-1 text-sm font-medium">Customer Type <span class="text-red-500">*</span></label>
                         <select name="type" required
-                            class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-300 bg-[#fefefe] shadow-sm">
+                            class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
                             <option value="">Select Type</option>
                             <option value="Regular" {{ old('type') === 'Regular' ? 'selected' : '' }}>Regular</option>
                             <option value="Commercial" {{ old('type') === 'Commercial' ? 'selected' : '' }}>Commercial</option>
@@ -45,19 +45,19 @@
                 <div class="mb-8">
                     <label class="block text-gray-400 mb-1 text-sm font-medium">Home/Business Address <span class="text-red-500">*</span></label>
                     <textarea name="address" rows="3" required
-                        class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-300 bg-[#fefefe] shadow-sm">{{ old('address') }}</textarea>
+                        class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">{{ old('address') }}</textarea>
                     @error('address') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                 </div>
 
-                <div class="mb-6 bg-blue-50/50 p-4 border border-blue-100 rounded">
-                    <label class="flex items-center space-x-2 text-gray-300 font-medium mb-3 cursor-pointer">
-                        <input type="checkbox" name="create_account" id="create_account" value="1" class="rounded text-[#42a5f5] focus:border-[#42a5f5] w-5 h-5" {{ old('create_account') ? 'checked' : '' }}>
+                <div class="mb-6 bg-[#1a2432]/50 p-4 border border-[#263548] rounded">
+                    <label class="flex items-center space-x-3 text-gray-300 font-medium mb-3 cursor-pointer">
+                        <input type="checkbox" name="create_account" id="create_account" value="1" class="rounded text-[#42a5f5] focus:ring-[#42a5f5] focus:ring-offset-[#121a25] bg-[#0f151e] border-[#263548] w-5 h-5 cursor-pointer" {{ old('create_account') ? 'checked' : '' }}>
                         <span>Also Create Login Account for this Customer</span>
                     </label>
                     <div id="password_field" style="{{ old('create_account') ? 'display: block;' : 'display: none;' }}">
                         <label class="block text-gray-400 mb-1 text-sm font-medium">Password <span class="text-red-500">*</span></label>
                         <input type="password" name="password" id="password"
-                            class="w-full md:w-1/2 px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-300 bg-[#fefefe] shadow-sm">
+                            class="w-full md:w-1/2 px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
                         <p class="text-xs text-gray-400 mt-1">Minimum 8 characters. The customer can log in using their ID/Email and this password.</p>
                         @error('password') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                     </div>

@@ -4,405 +4,213 @@
 <head>
     @include('partials.head')
     <style>
-        /* Custom Theme Styles */
+        :root {
+            --sidebar-bg: #0a1931;
+            --main-bg-light: #f4f6fa;
+            --main-bg-dark: #020617;
+            --card-bg-light: #ffffff;
+            --card-bg-dark: #0f172a;
+            --accent-blue: #0026ff;
+            --text-main-light: #0f172a;
+            --text-main-dark: #f8fafc;
+        }
+
+        /* Base resets and layout */
+        html, body {
+            overflow-y: auto !important;
+            height: auto !important;
+            min-height: 100vh !important;
+            font-family: 'Inter', system-ui, sans-serif !important;
+        }
+
+        /* Sidebar Styling (Fixed, Dark, Premium) */
+        flux\:sidebar,
+        [data-flux-sidebar] {
+            background-color: var(--sidebar-bg) !important;
+            border-right: none !important;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2) !important;
+            z-index: 50 !important;
+        }
+
+        /* Enforce desktop fixed behavior without breaking mobile transform */
+        @media (min-width: 1024px) {
+            flux\:sidebar,
+            [data-flux-sidebar] {
+                height: 100vh !important;
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+            }
+        }
+
+        flux\:sidebar *,
+        [data-flux-sidebar] * {
+            background-color: transparent !important;
+            color: #cbd5e1 !important; /* Muted slate for non-active */
+        }
+
+        /* Active Sidebar Item - Pill Style */
+        flux\:sidebar [data-flux-sidebar-item][data-current],
+        [data-flux-sidebar] [data-flux-sidebar-item][data-current] {
+            background-color: var(--accent-blue) !important;
+            color: #ffffff !important;
+            border-radius: 9999px !important;
+            margin: 0 16px !important;
+            box-shadow: 0 4px 12px rgba(0, 38, 255, 0.3) !important;
+        }
+
+        flux\:sidebar [data-flux-sidebar-item][data-current] *,
+        [data-flux-sidebar] [data-flux-sidebar-item][data-current] * {
+            color: #ffffff !important;
+        }
+
+        flux\:sidebar [data-flux-sidebar-item]:hover:not([data-current]),
+        [data-flux-sidebar] [data-flux-sidebar-item]:hover:not([data-current]) {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: #ffffff !important;
+            border-radius: 9999px !important;
+            margin: 0 16px !important;
+        }
+
+        /* Default Light Mode Appearance (Clean & Comfortable) */
+        html:not(.dark):not(.custom-theme) body {
+            background-color: var(--main-bg-light) !important;
+            color: var(--text-main-light) !important;
+        }
+
+        /* Map hardcoded dark themes to beautiful light cards in Default Mode */
+        html:not(.dark):not(.custom-theme) main [class*="bg-[#121a25]"],
+        html:not(.dark):not(.custom-theme) main [class*="bg-[#1b2636]"],
+        html:not(.dark):not(.custom-theme) main [class*="bg-[#0f1722]"],
+        html:not(.dark):not(.custom-theme) main [class*="bg-[#091522]"],
+        html:not(.dark):not(.custom-theme) main [class*="bg-[#0b121c]"],
+        html:not(.dark):not(.custom-theme) [data-flux-main] [class*="bg-[#121a25]"],
+        html:not(.dark):not(.custom-theme) [data-flux-main] [class*="bg-[#1b2636]"] {
+            background-color: var(--card-bg-light) !important;
+            border: 1px solid rgba(0, 0, 0, 0.05) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02) !important;
+            color: var(--text-main-light) !important;
+        }
+
+        html:not(.dark):not(.custom-theme) h1,
+        html:not(.dark):not(.custom-theme) h2,
+        html:not(.dark):not(.custom-theme) h3 {
+            color: #1e293b !important;
+        }
+
+        /* Text Overrides for Light Mode */
+        html:not(.dark):not(.custom-theme) main .text-gray-100,
+        html:not(.dark):not(.custom-theme) main .text-gray-200,
+        html:not(.dark):not(.custom-theme) main .text-gray-300,
+        html:not(.dark):not(.custom-theme) main .text-white {
+            color: var(--text-main-light) !important;
+        }
+
+        html:not(.dark):not(.custom-theme) main .text-gray-400,
+        html:not(.dark):not(.custom-theme) main .text-gray-500 {
+            color: #475569 !important;
+        }
+
+        /* Default Dark Mode Appearance (Deep Slate & Eye-Comfortable) */
+        html.dark:not(.custom-theme) body {
+            background-color: var(--main-bg-dark) !important;
+            color: var(--text-main-dark) !important;
+        }
+
+        html.dark:not(.custom-theme) main [class*="bg-[#121a25]"],
+        html.dark:not(.custom-theme) main [class*="bg-[#1b2636]"],
+        html.dark:not(.custom-theme) [data-flux-main] [class*="bg-[#121a25]"],
+        html.dark:not(.custom-theme) [data-flux-main] [class*="bg-[#1b2636]"] {
+             background-color: var(--card-bg-dark) !important;
+             border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        /* Text Overrides for Dark Mode */
+        html.dark:not(.custom-theme) main .text-gray-800,
+        html.dark:not(.custom-theme) main .text-gray-900,
+        html.dark:not(.custom-theme) main .text-black {
+            color: #f8fafc !important;
+        }
+
+        html.dark:not(.custom-theme) main .text-gray-400,
+        html.dark:not(.custom-theme) main .text-gray-500 {
+            color: #94a3b8 !important;
+        }
+
+        /* Enforce readable cards in Custom Theme mode */
+        html.custom-theme main [class*="bg-[#121a25]"],
+        html.custom-theme main [class*="bg-[#1b2636]"],
+        html.custom-theme main [class*="bg-[#0f1722]"],
+        html.custom-theme main [class*="bg-[#0b121c]"],
+        html.custom-theme [data-flux-main] [class*="bg-[#121a25]"],
+        html.custom-theme [data-flux-main] [class*="bg-[#1b2636]"] {
+            background-color: rgba(15, 23, 42, 0.75) !important;
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-radius: 16px !important;
+            color: #f8fafc !important;
+        }
+
+        html.custom-theme main .text-gray-800,
+        html.custom-theme main .text-gray-900,
+        html.custom-theme main .text-black {
+            color: #f8fafc !important;
+        }
+
+        /* Custom Theme Overrides (Keeping Logic Intact) */
         @if(auth()->check() && (auth()->user()->background_image || auth()->user()->background_color))
             html.custom-theme body {
                 @if(auth()->user()->background_image)
                     background-image: url("{{ asset('storage/' . auth()->user()->background_image) }}") !important;
                     background-size: cover !important;
                     background-attachment: fixed !important;
-                    background-position: center !important;
-                    background-color: transparent !important;
                 @elseif(auth()->user()->background_color)
-                    background-image: none !important;
-                    background-color:
-                        {{ auth()->user()->background_color }}
-                        !important;
-                    animation: none !important;
+                    background-color: {{ auth()->user()->background_color }} !important;
                 @endif
             }
-
-            /* Make sure all hardcoded dark component backgrounds become light when in a custom theme so text is visible */
-            /* We restrict this to 'main' so we don't accidentally turn the sidebar white! */
-            html.custom-theme main [class*="bg-[#121a25]"],
-            html.custom-theme [data-flux-main] [class*="bg-[#121a25]"],
-            html.custom-theme main [class*="bg-[#1b2636]"],
-            html.custom-theme [data-flux-main] [class*="bg-[#1b2636]"],
-            html.custom-theme main [class*="bg-[#0f1722]"],
-            html.custom-theme [data-flux-main] [class*="bg-[#0f1722]"],
-            html.custom-theme main [class*="bg-[#091522]"],
-            html.custom-theme [data-flux-main] [class*="bg-[#091522]"],
-            html.custom-theme main [class*="bg-[#0b121c]"],
-            html.custom-theme [data-flux-main] [class*="bg-[#0b121c]"] {
-                background-color: rgba(255, 255, 255, 0.95) !important;
-                border-color: rgba(0, 0, 0, 0.1) !important;
-            }
-            
-            html.custom-theme main [class*="hover:bg-[#1b2636]"]:hover,
-            html.custom-theme [data-flux-main] [class*="hover:bg-[#1b2636]"]:hover {
-                background-color: rgba(0, 0, 0, 0.05) !important;
-            }
-
-            /* Fix action buttons that get faded on bright backgrounds */
-            /* Cyan Buttons */
-            html.custom-theme [data-flux-main] .bg-cyan-900\/20 {
-                background-color: rgba(6, 182, 212, 0.15) !important;
-                border-color: rgba(6, 182, 212, 0.4) !important;
-                color: #0891b2 !important;
-            }
-            html.custom-theme [data-flux-main] .bg-cyan-900\/20 svg { color: #0891b2 !important; }
-            html.custom-theme [data-flux-main] .hover\:bg-cyan-600\/30:hover { background-color: rgba(6, 182, 212, 0.25) !important; }
-
-            /* Emerald Buttons */
-            html.custom-theme [data-flux-main] .bg-emerald-900\/20 {
-                background-color: rgba(16, 185, 129, 0.15) !important;
-                border-color: rgba(16, 185, 129, 0.4) !important;
-                color: #059669 !important;
-            }
-            html.custom-theme [data-flux-main] .bg-emerald-900\/20 svg { color: #059669 !important; }
-            html.custom-theme [data-flux-main] .hover\:bg-emerald-600\/30:hover { background-color: rgba(16, 185, 129, 0.25) !important; }
-
-            /* Rose Buttons */
-            html.custom-theme [data-flux-main] .bg-rose-900\/20 {
-                background-color: rgba(225, 29, 72, 0.15) !important;
-                border-color: rgba(225, 29, 72, 0.4) !important;
-                color: #e11d48 !important;
-            }
-            html.custom-theme [data-flux-main] .bg-rose-900\/20 svg { color: #e11d48 !important; }
-            html.custom-theme [data-flux-main] .hover\:bg-rose-600\/30:hover { background-color: rgba(225, 29, 72, 0.25) !important; }
-            
-        @endif html.custom-theme {
-            --flux-custom-text: #f8fafc;
-            /* Default for custom theme */
-        }
-
-        @if(auth()->check() && auth()->user()->text_color)
-            html.custom-theme {
-                --flux-custom-text:
-                    {{ auth()->user()->text_color }}
-                ;
-            }
-
         @endif
 
-        @if(auth()->check() && auth()->user()->font_family)
-            html.custom-theme {
-                --flux-custom-font:
-                    {{ auth()->user()->font_family }}
-                ;
-            }
-
-        @endif
-
-        @if(auth()->check() && auth()->user()->text_stroke_color && auth()->user()->text_stroke_width)
-            html.custom-theme {
-                --flux-custom-stroke:
-                    {{ auth()->user()->text_stroke_width }}
-                    {{ auth()->user()->text_stroke_color }}
-                ;
-            }
-
-        @endif
-
-        /* Penetrate all elements in main */
-        html.custom-theme main,
-        html.custom-theme main *,
-        html.custom-theme [data-flux-main],
-        html.custom-theme [data-flux-main] * {
-            color: var(--flux-custom-text) !important;
-            @if(auth()->user() && auth()->user()->font_family)
-                font-family: var(--flux-custom-font) !important;
-            @endif
-            @if(auth()->user() && auth()->user()->text_stroke_color && auth()->user()->text_stroke_width)
-                -webkit-text-stroke: var(--flux-custom-stroke) !important;
-                paint-order: stroke fill;
-            @endif
+        /* Smooth transitions */
+        * {
+            transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        @if(auth()->check() && (auth()->user()->text_color || auth()->user()->background_image || auth()->user()->background_color))
-            /* Make text inputs transparent and follow the custom text color */
-            html.custom-theme main input,
-            html.custom-theme main textarea,
-            html.custom-theme main select,
-            html.custom-theme [data-flux-main] input,
-            html.custom-theme [data-flux-main] textarea,
-            html.custom-theme [data-flux-main] select {
-                background-color: rgba(0, 0, 0, 0.3) !important;
-                border-color: rgba(255, 255, 255, 0.2) !important;
-                color: var(--flux-custom-text) !important;
-
-            }
-
-            html.custom-theme main input:focus,
-            html.custom-theme main textarea:focus,
-            html.custom-theme main select:focus {
-                background-color: rgba(0, 0, 0, 0.4) !important;
-                border-color: rgba(255, 255, 255, 0.4) !important;
-            }
-
-        @endif
-
-        /* Permanent Dark Sidebar Styling (Unaffected by Theme) */
-        flux\:sidebar,
-        [data-flux-sidebar] {
-            background-color: #0b121c !important;
-            /* Permanent Dark Blue */
-            height: 100vh !important;
-            position: fixed !important;
-            left: 0 !important;
-            top: 0 !important;
-            z-index: 50 !important;
-            border-right: 1px solid #1e293b !important;
+        /* Scrollbars (Modern Slate) */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { 
+            background: #cbd5e1; 
+            border-radius: 20px; 
+            border: 2px solid transparent;
+            background-clip: content-box;
         }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
 
-        flux\:sidebar *,
-        [data-flux-sidebar] * {
-            background-color: transparent !important;
-            color: #ffffff !important;
-            /* Pure White */
+        /* Ensure main content is shifted correctly */
+        main, [data-flux-main], flux\:main {
+            padding-top: 1rem !important; /* Mobile padding so it doesn't hide behind mobile header */
         }
-
-        flux\:sidebar .text-white,
-        [data-flux-sidebar] .text-white {
-            color: #ffffff !important;
-        }
-
-        /* Ensure Cyan text remains Cyan */
-        flux\:sidebar .text-cyan-400,
-        [data-flux-sidebar] .text-cyan-400 {
-            color: #22d3ee !important;
-        }
-
-        /* Animated Gradient Background */
-        @keyframes gradientAnimation {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        /* Light Mode Styles (ONLY affect Body Content, NOT Sidebar) */
-        html:not(.dark):not(.custom-theme) body {
-            background: linear-gradient(-45deg, #e0f2fe, #ddd6fe, #fbcfe8, #e0f2fe) !important;
-            background-size: 400% 400% !important;
-            animation: gradientAnimation 15s ease infinite !important;
-            color: #111827 !important;
-        }
-
-        /* Force black text for visibility in Light Mode (Only outside Sidebar) */
-        html:not(.dark):not(.custom-theme) main,
-        html:not(.dark):not(.custom-theme) main *,
-        html:not(.dark):not(.custom-theme) .lg\:pl-64,
-        /* Main content area wrapper */
-        html:not(.dark):not(.custom-theme) .lg\:pl-64 * {
-            color: #111827 !important;
-        }
-
-        /* Ensure form labels and descriptions are visible */
-        html:not(.dark):not(.custom-theme) [data-flux-field] label,
-        html:not(.dark):not(.custom-theme) [data-flux-header] h2,
-        html:not(.dark):not(.custom-theme) [data-flux-header] p {
-            color: #000000 !important;
-            opacity: 1 !important;
-        }
-
-        /* Ensure input boxes are visible and have borders */
-        html:not(.dark):not(.custom-theme) input:not([type="checkbox"]),
-        html:not(.dark):not(.custom-theme) textarea,
-        html:not(.dark):not(.custom-theme) select {
-            background-color: #ffffff !important;
-            border: 1px solid #d1d5db !important;
-            color: #111827 !important;
-        }
-
-        /* Dark Mode Styles */
-        html.dark:not(.custom-theme) body {
-            background: linear-gradient(-45deg, #0f172a, #2e1065, #4c1d95, #1e1b4b) !important;
-            background-size: 400% 400% !important;
-            animation: gradientAnimation 15s ease infinite !important;
-        }
-
-        html.dark:not(.custom-theme) main {
-            color: #ffffff !important;
-        }
-
-        html.dark:not(.custom-theme) main .text-gray-100,
-        html.dark:not(.custom-theme) main .text-gray-200,
-        html.dark:not(.custom-theme) main .text-gray-300,
-        html.dark:not(.custom-theme) main .text-gray-400,
-        html.dark:not(.custom-theme) main .text-gray-500,
-        html.dark:not(.custom-theme) main .text-black,
-        html.dark:not(.custom-theme) main label,
-        html.dark:not(.custom-theme) main button,
-        html.dark:not(.custom-theme) main button span {
-            color: #ffffff !important;
-        }
-
-        /* Custom Scrollbar - Light */
-        html:not(.dark) ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        html:not(.dark) ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-
-        html:not(.dark) ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-
-        html:not(.dark) ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        /* Custom Scrollbar - Dark */
-        html.dark ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        html.dark ::-webkit-scrollbar-track {
-            background: #0b1118;
-        }
-
-        html.dark ::-webkit-scrollbar-thumb {
-            background: #1e293b;
-            border-radius: 4px;
-        }
-
-        html.dark ::-webkit-scrollbar-thumb:hover {
-            background: #334155;
-        }
-
-        /* Custom Scrollbar - Custom Theme */
-        html.custom-theme ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        html.custom-theme ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        html.custom-theme ::-webkit-scrollbar-thumb {
-            background: rgba(56, 189, 248, 0.3);
-            border-radius: 4px;
-        }
-
-        html.custom-theme ::-webkit-scrollbar-thumb:hover {
-            background: rgba(56, 189, 248, 0.5);
-        }
-
-        /* Ensure body and html allow scrolling */
-        html,
-        body {
-            overflow-y: auto !important;
-            height: auto !important;
-            min-height: 100vh !important;
-        }
-
-        /* Add cool pattern overlay only in Dark Mode */
-        html.dark:not(.custom-theme) body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.15;
-            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2.5L40 20 20 20.5zM0 38h20v-2.5L40 40 20 40.5V38H0v-2h20v-2.5L40 38 20 38.5V38H0z' fill='%2338bdf8' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
-        }
-
-        /* Map hardcoded dark themes back to light styles globally for Light Mode only */
-        html:not(.dark):not(.custom-theme) main .bg-\[\#121a25\]\/80 {
-            background-color: rgba(255, 255, 255, 0.95) !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-        }
-
-        html:not(.dark):not(.custom-theme) main .bg-\[\#0b121c\] {
-            background-color: #ffffff !important;
-        }
-
-        html:not(.dark):not(.custom-theme) main .border-\[\#263548\],
-        html:not(.dark):not(.custom-theme) main .border-\[\#1e293b\],
-        html:not(.dark):not(.custom-theme) main .border-\[\#2d4059\] {
-            border-color: #e5e7eb !important;
-        }
-
-        html:not(.dark):not(.custom-theme) main .text-gray-100,
-        html:not(.dark):not(.custom-theme) main .text-white {
-            color: #111827 !important;
-        }
-
-        html:not(.dark):not(.custom-theme) main .text-gray-200 {
-            color: #374151 !important;
-        }
-
-        html:not(.dark):not(.custom-theme) main .text-gray-300 {
-            color: #4b5563 !important;
-        }
-
-        html:not(.dark):not(.custom-theme) main .text-gray-400 {
-            color: #6b7280 !important;
-        }
-
-        html:not(.dark):not(.custom-theme) main .text-gray-500 {
-            color: #9ca3af !important;
-        }
-
-        html:not(.dark):not(.custom-theme) main .bg-\[\#0f1722\] {
-            background-color: #f3f4f6 !important;
-            border: 1px solid #e5e7eb !important;
-        }
-
-        html:not(.dark):not(.custom-theme) main .bg-\[\#0f1722\]\/80 {
-            background-color: rgba(243, 244, 246, 0.9) !important;
-            border: 1px solid #e5e7eb !important;
-        }
-
-        html:not(.dark):not(.custom-theme) main .from-\[\#1b2636\] {
-            background-image: none !important;
-            background-color: white !important;
-        }
-
-        html:not(.dark):not(.custom-theme) main .bg-\[\#091522\]\/80 {
-            background-color: #f0fdfa !important;
-        }
-
-        html:not(.dark):not(.custom-theme) main .shadow-\[0_8px_30px_rgb\(0\,0\,0\,0\.5\)\] {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-        }
-
-        /* Fix text color turning white while typing in forms */
-        html input,
-        html textarea,
-        html select {
-            color: #111827 !important;
-        }
-
-        html input:-webkit-autofill {
-            -webkit-text-fill-color: #111827 !important;
-        }
-
-        /* Shift main content on desktop to account for fixed sidebar */
         @media (min-width: 1024px) {
-            [data-flux-main],
-            flux\:main,
-            main {
+            main, [data-flux-main], flux\:main {
                 margin-left: 16rem !important;
+                padding-top: 2rem !important;
             }
         }
+
+        /* Form Controls visibility in Light Mode */
+        html:not(.dark) input:not([type="checkbox"]),
+        html:not(.dark) textarea,
+        html:not(.dark) select {
+            background-color: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #0f172a !important;
+        }
+        
+        /* Vibrant action buttons */
+        .bg-cyan-600\/80 { background-color: var(--accent-blue) !important; }
+        .text-cyan-400 { color: var(--accent-blue) !important; }
+        
     </style>
     <script>
         function shouldBeCustom() {
@@ -536,10 +344,6 @@
                         {{ __('Recovery / Trash') }}
                     </flux:sidebar.item>
 
-                    <flux:sidebar.item icon="arrow-top-right-on-square"
-                        href="https://watersystem-production-00ee.up.railway.app" target="_blank">
-                        {{ __('Visit Live Site') }}
-                    </flux:sidebar.item>
                 @endif
             </flux:sidebar.group>
         </flux:sidebar.nav>

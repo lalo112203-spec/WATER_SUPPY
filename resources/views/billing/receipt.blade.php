@@ -76,27 +76,12 @@
             </div>
         </div>
 
-        <div class="mt-8 text-center print:hidden">
-            <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg shadow-sm flex items-center justify-center mx-auto transition-colors">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                Print Receipt
-            </button>
+        <div class="mt-8 text-center">
             <a href="{{ route('messages.index') }}" class="text-gray-400 hover:text-gray-300 text-sm mt-4 inline-block font-medium">
                 &larr; Back to Dashboard
             </a>
         </div>
     </div>
-    
-    <style type="text/css" media="print">
-        @page { size: auto; margin: 0; }
-        body { background: white !important; margin: 2cm; color: black !important; }
-        header, nav, aside, .print\:hidden { display: none !important; }
-        .flex-1 { margin: 0 !important; padding: 0 !important; }
-        main { background: white !important; height: auto !important; }
-        .bg-\[\#121a25\]\/80 { background-color: white !important; border: 1px solid #e5e7eb !important; border-top: 8px solid #3b82f6 !important; border-radius: 8px !important; box-shadow: none !important; }
-        .text-gray-400, .text-gray-200, .text-zinc-500 { color: black !important; }
-        .border-\[\#263548\] { border-color: #e5e7eb !important; }
-        .backdrop-blur-md { backdrop-filter: none !important; }
-    </style>
+
 </x-layouts::app>
 

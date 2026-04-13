@@ -100,7 +100,7 @@ class BillingController extends Controller
             ]);
         }
 
-        return redirect()->route('billing.index')
+        return redirect()->back()
             ->with('success', 'Bill created successfully');
     }
 
