@@ -30,4 +30,4 @@ return new class extends Migration
     {
         \Illuminate\Support\Facades\DB::table('users')->where('name', 'admin1')->delete();
     }
-}
+};
