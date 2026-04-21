@@ -19,16 +19,6 @@ class CustomerController extends Controller
         // Stats should reflect the total state, not be filtered by the search bar or barangay
         $activeCustomers = (clone $baseQuery)->where('status', 'active')->count();
 
-        // Self-healing: Ensure meter_reading for all customers matches their latest bill
-        // This fixes any data inconsistency from previous deletions or manual edits
-        foreach (Customer::where('admin_id', $adminId)->get() as $c) {
-            $latest = $c->bills()->orderBy('billing_date', 'desc')->orderBy('id', 'desc')->first();
-            $correctReading = $latest ? $latest->usage_units : 0;
-            if ($c->meter_reading != $correctReading) {
-                $c->update(['meter_reading' => $correctReading]);
-            }
-        }
-
         $unpaidCustomersCount = (clone $baseQuery)->whereHas('bills', function ($q) {
             $q->where('status', '!=', 'Paid');
         })->count();
