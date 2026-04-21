@@ -1,187 +1,138 @@
 <x-layouts::app title="Dashboard">
     <div class="px-6 py-8 bg-transparent min-h-[calc(100vh-4rem)] font-sans text-gray-200 relative z-10">
-        <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between">
+        <!-- Hero Glow Background -->
+        <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between relative z-20">
             <div>
-                <h1 class="text-[28px] font-bold text-gray-100 tracking-tight drop-shadow-md">D.W.S.S Dashboard</h1>
-                <p class="mt-1 text-[15px] text-gray-400 font-medium">Overview of D.W.S.S metrics and performance.</p>
+                <h1 class="text-[32px] font-black text-white tracking-tight leading-none mb-2 drop-shadow-2xl">
+                    Dolores <span class="text-blue-500">Dashboard</span>
+                </h1>
+                <p class="text-[15px] text-gray-400 font-medium tracking-wide">Real-time infrastructure analytics & performance metrics.</p>
             </div>
-            <div class="mt-4 md:mt-0">
-                <div
-                    class="inline-flex items-center px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full shadow-sm text-sm font-semibold text-emerald-600 backdrop-blur-sm">
-                    <span class="flex h-2 w-2 relative mr-2">
-                        <span
-                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            <div class="mt-6 md:mt-0">
+                <div class="inline-flex items-center px-5 py-2.5 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl shadow-xl backdrop-blur-xl group hover:border-emerald-500/40 transition-all duration-500">
+                    <span class="flex h-2.5 w-2.5 relative mr-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></span>
                     </span>
-                    Status: System Online
+                    <span class="text-sm font-bold text-emerald-400/90 tracking-wider uppercase">System Live</span>
                 </div>
             </div>
         </div>
 
-        <!-- Revenue Stats -->
-        <div class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3">
+        <!-- Metric Cards -->
+        <div class="grid grid-cols-1 gap-6 mb-10 md:grid-cols-2 lg:grid-cols-3 relative z-20">
+            @php
+                $cards = [
+                    ['Total Customers', $totalCustomers, 'users', 'from-blue-600/20 to-blue-900/20', 'blue-500', 'blue'],
+                    ['Paid Customers', $paidCustomersCount, 'check-circle', 'from-emerald-600/20 to-teal-900/20', 'emerald-400', 'emerald'],
+                    ['Unpaid Customers', $unpaidCustomersCount, 'exclamation-triangle', 'from-orange-600/20 to-red-900/20', 'orange-400', 'orange'],
+                    ['Total Revenue', '₱' . number_format($totalRevenue, 2), 'currency-peso', 'from-cyan-600/20 to-blue-900/20', 'cyan-400', 'cyan'],
+                    ['Pending Revenue', '₱' . number_format($pendingRevenue, 2), 'banknotes', 'from-indigo-600/20 to-purple-900/20', 'indigo-400', 'indigo'],
+                    ['Total Consumption', number_format($totalConsumption, 2) . ' L', 'beaker', 'from-sky-600/20 to-blue-950/20', 'sky-400', 'sky'],
+                ];
+            @endphp
 
-            <div
-                class="bg-[#1b2636]/40 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059]/50 p-6 flex items-start justify-between relative overflow-hidden group hover:border-cyan-500/50 transition-all">
-                <div class="relative z-10">
-                    <p class="text-[13px] font-medium text-gray-400 uppercase tracking-widest mb-1">Total Customers</p>
-                    <h3 class="text-3xl font-extrabold text-white tracking-tight">{{ $totalCustomers }}</h3>
+            @foreach($cards as $card)
+            <div class="group relative bg-[#0f172a]/40 backdrop-blur-2xl rounded-[32px] border border-white/5 p-8 transition-all duration-500 hover:scale-[1.02] hover:bg-[#0f172a]/60 hover:border-{{ $card[4] }}/30 overflow-hidden shadow-2xl">
+                <div class="absolute inset-0 bg-gradient-to-br {{ $card[3] }} opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                
+                <div class="relative z-10 flex flex-col h-full">
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="text-[13px] font-black text-gray-400 uppercase tracking-[0.2em] opacity-80">{{ $card[0] }}</span>
+                        <div class="h-12 w-12 rounded-2xl bg-{{ $card[5] }}-500/10 border border-{{ $card[5] }}-500/20 flex items-center justify-center text-{{ $card[5] }}-400 shadow-inner group-hover:shadow-{{ $card[5] }}-500/20 group-hover:scale-110 transition-all duration-500">
+                             @if($card[2] == 'users')
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                             @elseif($card[2] == 'check-circle')
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                             @elseif($card[2] == 'exclamation-triangle')
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                             @elseif($card[2] == 'currency-peso' || $card[2] == 'banknotes')
+                                <span class="text-2xl font-black">₱</span>
+                             @else
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.644.322a6 6 0 01-3.86.517l-2.387-.477a2 2 0 00-1.022.547l-1.16 1.16a2 2 0 00.442 3.322l.926.471l13.626-6.81l-.926-.47a2 2 0 00-1.742.067l-.644.322a2 2 0 01-1.288.172l-2.387-.477z" /></svg>
+                             @endif
+                        </div>
+                    </div>
+                    <h3 class="text-[34px] font-black text-{{ $card[4] }} tracking-tight group-hover:translate-x-1 transition-transform duration-500">{{ $card[1] }}</h3>
                 </div>
-                <div
-                    class="h-12 w-12 rounded-xl bg-blue-500/10 text-blue-600 border border-blue-500/20 flex items-center justify-center relative z-10 shadow-sm group-hover:scale-110 transition-transform">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                </div>
-                <div
-                    class="absolute -right-4 -bottom-4 bg-gradient-to-br from-cyan-600/20 to-blue-900/20 h-32 w-32 rounded-full blur-2xl">
-                </div>
+                
+                <!-- Decorative Blur -->
+                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-{{ $card[5] }}-600/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             </div>
-
-            <div
-                class="bg-[#1b2636]/40 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059]/50 p-6 flex items-start justify-between relative overflow-hidden group hover:border-emerald-500/50 transition-all">
-                <div class="relative z-10">
-                    <p class="text-[13px] font-medium text-gray-400 uppercase tracking-widest mb-1">Paid Customers</p>
-                    <h3 class="text-3xl font-extrabold text-emerald-400 tracking-tight">{{ $paidCustomersCount }}</h3>
-                </div>
-                <div
-                    class="h-12 w-12 rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center relative z-10 shadow-sm group-hover:scale-110 transition-transform">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div
-                    class="absolute -right-4 -bottom-4 bg-gradient-to-br from-emerald-600/20 to-teal-900/20 h-32 w-32 rounded-full blur-2xl">
-                </div>
-            </div>
-
-            <div
-                class="bg-[#1b2636]/40 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059]/50 p-6 flex items-start justify-between relative overflow-hidden group hover:border-orange-500/50 transition-all">
-                <div class="relative z-10">
-                    <p class="text-[13px] font-medium text-gray-400 uppercase tracking-widest mb-1">Unpaid Customers</p>
-                    <h3 class="text-3xl font-extrabold text-orange-400 tracking-tight">{{ $unpaidCustomersCount }}</h3>
-                </div>
-                <div
-                    class="h-12 w-12 rounded-xl bg-orange-500/10 text-orange-500 border border-orange-500/20 flex items-center justify-center relative z-10 shadow-sm group-hover:scale-110 transition-transform">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                </div>
-                <div
-                    class="absolute -right-4 -bottom-4 bg-gradient-to-br from-orange-600/20 to-red-900/20 h-32 w-32 rounded-full blur-2xl">
-                </div>
-            </div>
-
-            <div
-                class="bg-[#1b2636]/40 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059]/50 p-6 flex items-start justify-between relative overflow-hidden group hover:border-blue-500/50 transition-all">
-                <div class="relative z-10">
-                    <p class="text-[13px] font-medium text-gray-400 uppercase tracking-widest mb-1">Total Revenue</p>
-                    <h3 class="text-3xl font-extrabold text-white tracking-tight">₱{{ number_format($totalRevenue, 2) }}
-                    </h3>
-                </div>
-                <div
-                    class="h-12 w-12 rounded-xl bg-blue-900/30 text-blue-400 border border-blue-800/50 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(59,130,246,0.3)] group-hover:scale-110 transition-transform">
-                    <span class="text-2xl font-bold leading-none flex items-center justify-center translate-y-[1px]">₱</span>
-                </div>
-                <div
-                    class="absolute -right-4 -bottom-4 bg-gradient-to-br from-blue-600/20 to-indigo-900/20 h-32 w-32 rounded-full blur-2xl">
-                </div>
-            </div>
-
-            <div
-                class="bg-[#1b2636]/40 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059]/50 p-6 flex items-start justify-between relative overflow-hidden group hover:border-emerald-500/50 transition-all">
-                <div class="relative z-10">
-                    <p class="text-[13px] font-medium text-gray-400 uppercase tracking-widest mb-1">Pending Rev.</p>
-                    <h3 class="text-3xl font-extrabold text-emerald-400 tracking-tight">
-                        ₱{{ number_format($pendingRevenue, 2) }}</h3>
-                </div>
-                <div
-                    class="h-12 w-12 rounded-xl bg-emerald-900/30 text-emerald-400 border border-emerald-800/50 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover:scale-110 transition-transform">
-                    <span class="text-2xl font-bold leading-none flex items-center justify-center translate-y-[1px]">₱</span>
-                </div>
-                <div
-                    class="absolute -right-4 -bottom-4 bg-gradient-to-br from-emerald-600/20 to-teal-900/20 h-32 w-32 rounded-full blur-2xl">
-                </div>
-            </div>
-
-            <div
-                class="bg-[#1b2636]/40 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059]/50 p-6 flex items-start justify-between relative overflow-hidden group hover:border-cyan-400/50 transition-all">
-                <div class="relative z-10">
-                    <p class="text-[13px] font-medium text-gray-400 uppercase tracking-widest mb-1">Total Usage</p>
-                    <h3 class="text-3xl font-extrabold text-white tracking-tight">
-                        {{ number_format($totalConsumption, 2) }} <span
-                            class="text-xl text-cyan-300 font-medium">L</span></h3>
-                </div>
-                <div
-                    class="h-12 w-12 rounded-xl bg-cyan-900/30 text-cyan-400 border border-cyan-800/50 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(6,182,212,0.3)] group-hover:scale-110 transition-transform">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                </div>
-                <div
-                    class="absolute -right-4 -bottom-4 bg-gradient-to-br from-cyan-600/20 to-blue-900/20 h-32 w-32 rounded-full blur-2xl">
-                </div>
-            </div>
-
+            @endforeach
         </div>
 
         <!-- Charts Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10 relative z-20">
+            <!-- Left Chart Column -->
             <div class="lg:col-span-2 flex flex-col gap-8">
-                <!-- Revenue Flow Chart -->
-                <div
-                    class="bg-[#121a25]/80 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.6)] overflow-hidden border border-[#263548] flex flex-col pt-2 relative">
-                    <div class="absolute top-0 right-0 w-64 h-64 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none">
+                <!-- Revenue Trend -->
+                <div class="bg-[#0f172a]/60 backdrop-blur-2xl rounded-[40px] border border-white/5 overflow-hidden shadow-2xl flex flex-col relative group">
+                    <div class="absolute top-0 right-0 w-80 h-80 bg-blue-600/5 rounded-full blur-[100px] pointer-events-none group-hover:bg-blue-600/10 transition-all duration-700"></div>
+                    <div class="px-10 py-8 flex items-center justify-between border-b border-white/5">
+                        <div>
+                            <h2 class="text-xl font-black text-white tracking-tight">Revenue Stream</h2>
+                            <p class="text-sm text-gray-500 font-medium tracking-wide">Monthly aggregated collection metrics</p>
+                        </div>
+                        <div class="h-10 w-10 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                        </div>
                     </div>
-                    <div class="px-6 py-4 flex items-center justify-between relative z-10">
-                        <h2 class="text-[17px] font-bold text-gray-200 tracking-tight flex items-center">
-                            <span class="mr-2 text-cyan-400">Performance</span>
-                            <span class="text-gray-500 font-normal text-sm ml-2">Revenue Trend</span>
-                        </h2>
-                    </div>
-                    <div class="p-6 pt-0 flex-1 relative min-h-[300px] z-10">
+                    <div class="p-10 pt-4 flex-1 min-h-[350px]">
                         <canvas id="revenueChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Usage Flow Chart -->
-                <div
-                    class="bg-[#121a25]/80 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.6)] overflow-hidden border border-[#263548] flex flex-col pt-2 relative">
-                    <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none">
+                <!-- Usage Trend -->
+                <div class="bg-[#0f172a]/60 backdrop-blur-2xl rounded-[40px] border border-white/5 overflow-hidden shadow-2xl flex flex-col relative group">
+                    <div class="absolute bottom-0 left-0 w-80 h-80 bg-indigo-600/5 rounded-full blur-[100px] pointer-events-none group-hover:bg-indigo-600/10 transition-all duration-700"></div>
+                    <div class="px-10 py-8 flex items-center justify-between border-b border-white/5">
+                        <div>
+                            <h2 class="text-xl font-black text-white tracking-tight">Consumption Flow</h2>
+                            <p class="text-sm text-gray-500 font-medium tracking-wide">Infrastructure usage volume over time</p>
+                        </div>
+                        <div class="h-10 w-10 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.644.322a6 6 0 01-3.86.517l-2.387-.477a2 2 0 00-1.022.547l-1.16 1.16a2 2 0 00.442 3.322l.926.471l13.626-6.81l-.926-.47a2 2 0 00-1.742.067l-.644.322a2 2 0 01-1.288.172l-2.387-.477z" /></svg>
+                        </div>
                     </div>
-                    <div class="px-6 py-4 flex items-center justify-between relative z-10">
-                        <h2 class="text-[17px] font-bold text-gray-200 tracking-tight flex items-center">
-                            <span class="mr-2 text-indigo-400">Consumption</span>
-                            <span class="text-gray-500 font-normal text-sm ml-2">Usage Flow</span>
-                        </h2>
-                    </div>
-                    <div class="p-6 pt-0 flex-1 relative min-h-[300px] z-10">
+                    <div class="p-10 pt-4 flex-1 min-h-[350px]">
                         <canvas id="usageChart"></canvas>
                     </div>
                 </div>
             </div>
 
+            <!-- Right Column -->
             <div class="flex flex-col gap-8">
-                <div class="bg-[#121a25]/80 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.6)] overflow-hidden border border-[#263548] flex flex-col p-6 flex-1 relative min-h-[220px]">
-                    <h2 class="text-[15px] font-bold text-gray-200 mb-2">Customer Types</h2>
-                    <div class="relative flex-1 flex items-center justify-center min-h-[160px]">
+                <!-- Customer Segments -->
+                <div class="bg-[#0f172a]/60 backdrop-blur-2xl rounded-[40px] border border-white/5 p-8 shadow-2xl flex-1 relative group overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-t from-blue-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                    <h2 class="text-lg font-black text-white mb-8 tracking-tight flex items-center">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                        Customer Segments
+                    </h2>
+                    <div class="relative h-[250px] flex items-center justify-center">
                         <canvas id="customerChart"></canvas>
                     </div>
                 </div>
 
-                <div class="bg-[#121a25]/80 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.6)] overflow-hidden border border-[#263548] flex flex-col p-6 flex-1 relative min-h-[220px]">
-                    <h2 class="text-[15px] font-bold text-gray-200 mb-6">Revenue Source</h2>
-                    <div class="relative flex-1 min-h-[160px]">
+                <!-- Revenue distribution -->
+                <div class="bg-[#0f172a]/60 backdrop-blur-2xl rounded-[40px] border border-white/5 p-8 shadow-2xl flex-1 relative group overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-indigo-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                    <h2 class="text-lg font-black text-white mb-8 tracking-tight flex items-center">
+                        <span class="w-2 h-2 bg-indigo-500 rounded-full mr-3"></span>
+                        Revenue Sources
+                    </h2>
+                    <div class="relative h-[250px]">
                         <canvas id="revenueTypeChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+ </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js" data-navigate-track></script>
     <script>
