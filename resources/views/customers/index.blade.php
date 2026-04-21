@@ -10,16 +10,19 @@
     </style>
     <div class="px-6 py-4 bg-transparent min-h-[calc(100vh-4rem)] font-sans text-gray-200 relative z-10">
 
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-6">
-            <div class="flex items-center gap-4">
-                <h1 class="text-2xl font-bold flex items-center gap-3 drop-shadow-sm whitespace-nowrap">
-                    <div class="p-2 bg-blue-600/10 rounded-xl border border-blue-600/20 shadow-[0_0_15px_rgba(37,99,235,0.1)]">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="flex flex-col xl:flex-row xl:items-end justify-between mb-10 gap-8">
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-blue-600/20 rounded-2xl border border-blue-500/30 shadow-[0_0_20px_rgba(37,99,235,0.15)]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
-                    <span>Customers</span>
-                </h1>
+                    <div>
+                        <h1 class="text-3xl font-extrabold text-white tracking-tight">Customers</h1>
+                        <p class="text-gray-500 text-sm font-medium mt-0.5">Manage and monitor water service consumers</p>
+                    </div>
+                </div>
             </div>
 
             <div class="flex-1 flex flex-col md:flex-row items-center justify-end gap-4">
@@ -85,35 +88,34 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
             <!-- Stats -->
-            <div class="col-span-1 flex flex-col gap-4">
+            <div class="lg:col-span-4 h-full">
                 <div
-                    class="bg-[#1b2636]/40 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059]/50 p-6 flex flex-col justify-center text-center items-center h-full relative overflow-hidden group hover:border-cyan-500/50 transition-all">
-                    <div
-                        class="absolute -right-4 -bottom-4 bg-gradient-to-br from-cyan-600/20 to-blue-900/20 h-32 w-32 rounded-full blur-2xl">
-                    </div>
-                    <div class="relative z-10">
-                        <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider mb-2">Total Active
-                            Customers</h3>
-                        <div
-                            class="text-5xl font-bold text-blue-600 dark:text-blue-400 flex items-center justify-center gap-3 drop-shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-500/30" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    class="bg-[#0f172a]/60 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-white/5 p-8 flex flex-col justify-between items-start h-full relative overflow-hidden group hover:border-blue-500/30 transition-all duration-500">
+                    <div class="absolute -right-16 -top-16 bg-blue-600/10 h-64 w-64 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-600/20 transition-all duration-700"></div>
+                    
+                    <div class="relative z-10 w-full">
+                        <div class="h-14 w-14 bg-blue-600/20 rounded-2xl flex items-center justify-center text-blue-400 mb-6 group-hover:scale-110 transition-transform">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
-                            {{ $activeCustomers }} <span class="text-sm font-normal text-slate-400">/
-                                {{ $totalCustomers }}</span>
                         </div>
+                        <h3 class="text-gray-400 text-sm font-bold uppercase tracking-[0.15em] mb-1">Total Active Customers</h3>
+                        <p class="text-xs text-gray-500 mb-6">Currently enrolled in the system</p>
+                    </div>
+
+                    <div class="relative z-10 flex items-baseline gap-2">
+                        <span class="text-7xl font-black text-white tracking-tighter leading-none">{{ $activeCustomers }}</span>
+                        <span class="text-xl font-bold text-gray-600 tracking-tight">/ {{ $totalCustomers }}</span>
                     </div>
                 </div>
             </div>
 
             <!-- Chart -->
-            <div class="col-span-1 lg:col-span-2">
+            <div class="lg:col-span-8 h-full">
                 <div
-                    class="bg-[#121a25]/80 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.6)] overflow-hidden border border-[#263548] p-4 w-full h-full relative">
+                    class="bg-[#0f172a]/40 backdrop-blur-md rounded-[2rem] shadow-2xl overflow-hidden border border-white/5 p-8 w-full h-full relative group hover:border-blue-500/20 transition-all duration-500">
                     <div
                         class="absolute top-0 right-0 w-64 h-64 bg-cyan-600/10 rounded-full blur-3xl point-events-none">
                     </div>
