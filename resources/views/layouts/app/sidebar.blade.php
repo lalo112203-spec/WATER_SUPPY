@@ -26,29 +26,37 @@
         /* Sidebar Styling (Fixed, Dark, Premium) */
         flux\:sidebar,
         [data-flux-sidebar] {
-            background-color: #020617 !important; /* Deepest blue/black */
-            border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3) !important;
+            background-color: var(--sidebar-bg) !important;
+            border-right: none !important;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2) !important;
             z-index: 50 !important;
         }
 
-        /* Active Sidebar Item - Modern Pill Style */
-        flux\:sidebar [data-flux-sidebar-item][data-current],
-        [data-flux-sidebar] [data-flux-sidebar-item][data-current] {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
-            color: #ffffff !important;
-            border-radius: 12px !important;
-            margin: 0 12px !important;
-            padding: 8px 16px !important;
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3) !important;
+        /* Enforce desktop fixed behavior without breaking mobile transform */
+        @media (min-width: 1024px) {
+            flux\:sidebar,
+            [data-flux-sidebar] {
+                height: 100vh !important;
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+            }
         }
 
-        flux\:sidebar [data-flux-sidebar-item],
-        [data-flux-sidebar] [data-flux-sidebar-item] {
-            margin: 4px 12px !important;
-            padding: 8px 16px !important;
-            border-radius: 12px !important;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        flux\:sidebar *,
+        [data-flux-sidebar] * {
+            background-color: transparent !important;
+            color: #cbd5e1 !important; /* Muted slate for non-active */
+        }
+
+        /* Active Sidebar Item - Pill Style */
+        flux\:sidebar [data-flux-sidebar-item][data-current],
+        [data-flux-sidebar] [data-flux-sidebar-item][data-current] {
+            background-color: var(--accent-blue) !important;
+            color: #ffffff !important;
+            border-radius: 9999px !important;
+            margin: 0 16px !important;
+            box-shadow: 0 4px 12px rgba(0, 38, 255, 0.3) !important;
         }
 
         flux\:sidebar [data-flux-sidebar-item][data-current] *,
@@ -187,10 +195,6 @@
             main, [data-flux-main], flux\:main {
                 margin-left: 16rem !important;
                 padding-top: 2rem !important;
-                padding-left: 3rem !important;
-                padding-right: 3rem !important;
-                max-width: 1280px !important; /* Keep design cohesive on wide screens */
-                margin-right: auto !important;
             }
         }
 
@@ -282,14 +286,8 @@
 <body class="min-h-screen text-gray-300 antialiased selection:bg-cyan-500/30">
     <flux:sidebar collapsible="mobile"
         class="border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
-        <flux:sidebar.header class="flex flex-col items-start px-6 py-8">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-900/50">D</div>
-                <div class="flex flex-col">
-                    <span class="text-white font-bold tracking-tight text-lg">D.W.S.S</span>
-                    <span class="text-blue-400 text-[10px] uppercase tracking-widest font-medium opacity-80">Water Supply</span>
-                </div>
-            </div>
+        <flux:sidebar.header>
+            <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
             <flux:sidebar.collapse class="lg:hidden" />
         </flux:sidebar.header>
 
