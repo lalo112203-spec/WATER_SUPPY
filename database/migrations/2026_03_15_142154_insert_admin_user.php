@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        \App\Models\User::firstOrCreate(
-            ['name' => 'admin1'],
-            [
+        if (\Illuminate\Support\Facades\DB::table('users')->where('name', 'admin1')->doesntExist()) {
+            \Illuminate\Support\Facades\DB::table('users')->insert([
+                'name' => 'admin1',
                 'email' => 'admin@water.system',
-                'password' => bcrypt('09092200129'),
+                'password' => \Illuminate\Support\Facades\Hash::make('09092200129'),
                 'role' => 'admin',
-            ]
-        );
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     /**
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        \App\Models\User::where('name', 'admin1')->delete();
+        \Illuminate\Support\Facades\DB::table('users')->where('name', 'admin1')->delete();
     }
-};
+}
