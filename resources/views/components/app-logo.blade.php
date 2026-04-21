@@ -8,7 +8,7 @@
             <x-app-logo-icon class="size-10" />
         </div>
         <div class="flex flex-col leading-none">
-            <span class="text-[46px] font-black tracking-[0.15em] whitespace-nowrap drop-shadow-[0_0_12px_rgba(34,211,238,0.7)]" 
+            <span class="text-[24px] font-black tracking-normal whitespace-nowrap drop-shadow-[0_0_12px_rgba(34,211,238,0.7)]" 
                 style="color: #22d3ee !important; @if(auth()->user()->font_family) font-family: {{ auth()->user()->font_family }} !important; @endif @if(auth()->user()->text_stroke_width && auth()->user()->text_stroke_color) -webkit-text-stroke: {{ auth()->user()->text_stroke_width }} {{ auth()->user()->text_stroke_color }}; paint-order: stroke fill; @endif">D.W.S.S</span>
         </div>
     </a>
