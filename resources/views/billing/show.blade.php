@@ -48,13 +48,29 @@
             
             <div class="space-y-4">
                 <div class="flex justify-between">
-                    <flux:text>Water Consumption ({{ $bill->consumption ?? 0 }} m³)</flux:text>
+                    <flux:text>Water Consumption ({{ $bill->consumption ?? 0 }} L)</flux:text>
                     <flux:text class="font-semibold">₱{{ number_format($bill->usage_charge, 2) }}</flux:text>
                 </div>
                 <div class="flex justify-between">
                     <flux:text>Base Charge</flux:text>
                     <flux:text class="font-semibold">₱{{ number_format($bill->base_charge, 2) }}</flux:text>
                 </div>
+
+                @if(!empty($bill->applied_additional_charges))
+                    @foreach($bill->applied_additional_charges as $charge)
+                        <div class="flex justify-between text-blue-600 dark:text-blue-400">
+                            <flux:text>Additional Charge: {{ $charge['name'] }}</flux:text>
+                            <flux:text class="font-semibold">+ ₱{{ number_format($charge['amount'], 2) }}</flux:text>
+                        </div>
+                    @endforeach
+                @endif
+                
+                @if($bill->additional_charge_amount > 0)
+                    <div class="flex justify-between text-blue-600 dark:text-blue-400">
+                        <flux:text>Additional Charge: {{ $bill->additional_charge_note ?? 'Manual' }}</flux:text>
+                        <flux:text class="font-semibold">+ ₱{{ number_format($bill->additional_charge_amount, 2) }}</flux:text>
+                    </div>
+                @endif
                 
                 <div class="border-t border-zinc-200 dark:border-zinc-700 pt-4 flex justify-between">
                     <flux:heading size="sm">Total Amount</flux:heading>
@@ -75,6 +91,25 @@
                     @csrf
                     @method('PATCH')
                 </form>
+                <flux:button :href="route('billing.edit', $bill)" variant="ghost">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit Statement
+                </flux:button>
+                <flux:button :href="route('billing.receipt', $bill)" variant="ghost">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    Print Statement
+                </flux:button>
+            @else
+                <flux:button :href="route('billing.receipt', $bill)" variant="primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    Print Receipt
+                </flux:button>
             @endif
             <flux:button 
                 onclick="confirm('Are you sure?') && document.getElementById('delete-form').submit()"

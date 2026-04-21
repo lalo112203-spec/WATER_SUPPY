@@ -91,7 +91,10 @@
                                         </td>
                                         <td class="px-6 py-5 whitespace-nowrap text-right">
                                             @if(strtolower($bill->status) !== 'paid')
-                                                <span class="text-red-500 font-bold text-xs uppercase tracking-wide border-2 border-red-100 bg-red-50 rounded-lg px-3 py-1.5 inline-block text-center shadow-sm">Not Paid</span>
+                                                <a href="{{ route('billing.receipt', $bill->id) }}" class="text-amber-700 font-bold text-xs uppercase tracking-wide border-2 border-amber-200 bg-amber-50 hover:bg-amber-100 hover:border-amber-300 rounded-lg px-3 py-1.5 inline-flex items-center text-center shadow-sm transition-all ml-auto w-max">
+                                                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                    Statement
+                                                </a>
                                             @else
                                                 <a href="{{ route('billing.receipt', $bill->id) }}" class="text-green-700 font-bold text-xs uppercase tracking-wide border-2 border-green-200 bg-green-50 hover:bg-green-100 hover:border-green-300 rounded-lg px-3 py-1.5 inline-flex items-center text-center shadow-sm transition-all ml-auto w-max">
                                                     <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>

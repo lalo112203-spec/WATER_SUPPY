@@ -15,6 +15,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Customers
+    Route::get('customers/report', [CustomerController::class, 'report'])->name('customers.report');
     Route::resource('customers', CustomerController::class)->except(['show']);
     Route::post('customers/{customer}/create-account', [CustomerController::class, 'createAccount'])->name('customers.create-account');
     Route::post('customers/{customer}/update-password', [CustomerController::class, 'updatePassword'])->name('customers.update-password');
@@ -32,6 +33,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('billing/create', [BillingController::class, 'create'])->name('billing.create');
     Route::post('billing', [BillingController::class, 'store'])->name('billing.store');
     Route::get('billing/{bill}', [BillingController::class, 'show'])->name('billing.show');
+    Route::get('billing/{bill}/edit', [BillingController::class, 'edit'])->name('billing.edit');
+    Route::put('billing/{bill}', [BillingController::class, 'update'])->name('billing.update');
     Route::get('billing/{bill}/receipt', [BillingController::class, 'receipt'])->name('billing.receipt');
     Route::patch('billing/{bill}/mark-paid', [BillingController::class, 'markAsPaid'])->name('billing.mark-paid');
     Route::delete('billing/{bill}', [BillingController::class, 'destroy'])->name('billing.destroy');
@@ -45,6 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Settings
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::post('settings/authorize', [SettingsController::class, 'authorize'])->name('settings.authorize');
     Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
 
     // Registration Codes (Admin Only)

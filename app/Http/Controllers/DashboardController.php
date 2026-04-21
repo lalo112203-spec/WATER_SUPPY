@@ -43,6 +43,17 @@ class DashboardController extends Controller
             $totalConsumption = Bill::whereIn('customer_id', $myCustomerIds)
                 ->sum('consumption');
 
+            $unpaidCustomersCount = Customer::whereIn('id', $myCustomerIds)
+                ->whereHas('bills', function ($q) {
+                    $q->where('status', '!=', 'Paid');
+                })->count();
+
+            $paidCustomersCount = Customer::whereIn('id', $myCustomerIds)
+                ->whereHas('bills')
+                ->whereDoesntHave('bills', function ($q) {
+                    $q->where('status', '!=', 'Paid');
+                })->count();
+
             $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
 
             $billMonthExpr = "strftime('%Y-%m', billing_date)";
@@ -87,6 +98,8 @@ class DashboardController extends Controller
                 'totalRevenue' => $totalRevenue,
                 'pendingRevenue' => $pendingRevenue,
                 'totalConsumption' => $totalConsumption,
+                'paidCustomersCount' => $paidCustomersCount,
+                'unpaidCustomersCount' => $unpaidCustomersCount,
                 'monthlyRevenue' => $monthlyRevenue,
                 'usageTrend' => $usageTrend,
                 'customerTypes' => $customerTypes,

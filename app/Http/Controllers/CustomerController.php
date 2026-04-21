@@ -11,14 +11,37 @@ class CustomerController extends Controller
     public function index(Request $request): View
     {
         $adminId = auth()->id();
-        $search = $request->input('search');
+        $barangay = $request->input('barangay');
 
         $baseQuery = Customer::where('admin_id', $adminId);
 
-        // Stats should reflect the total state, not be filtered by the search bar
         $totalCustomers = (clone $baseQuery)->count();
+        // Stats should reflect the total state, not be filtered by the search bar or barangay
         $activeCustomers = (clone $baseQuery)->where('status', 'active')->count();
 
+        // Self-healing: Ensure meter_reading for all customers matches their latest bill
+        // This fixes any data inconsistency from previous deletions or manual edits
+        foreach (Customer::where('admin_id', $adminId)->get() as $c) {
+            $latest = $c->bills()->orderBy('billing_date', 'desc')->orderBy('id', 'desc')->first();
+            $correctReading = $latest ? $latest->usage_units : 0;
+            if ($c->meter_reading != $correctReading) {
+                $c->update(['meter_reading' => $correctReading]);
+            }
+        }
+
+        $unpaidCustomersCount = (clone $baseQuery)->whereHas('bills', function ($q) {
+            $q->where('status', '!=', 'Paid');
+        })->count();
+
+        $paidCustomersCount = (clone $baseQuery)->whereHas('bills')
+            ->whereDoesntHave('bills', function ($q) {
+                $q->where('status', '!=', 'Paid');
+            })->count();
+
+        // Get list of barangays for the filter/grouping if needed
+        $barangays = (clone $baseQuery)->whereNotNull('barangay')->distinct()->pluck('barangay')->sort();
+
+        $search = $request->input('search');
         $customersQuery = clone $baseQuery;
         if ($search) {
             $customersQuery->where(function ($query) use ($search) {
@@ -27,7 +50,15 @@ class CustomerController extends Controller
             });
         }
 
-        $customers = $customersQuery->with(['user', 'bills'])->paginate(15)->withQueryString();
+        if ($barangay) {
+            $customersQuery->where('barangay', $barangay);
+        }
+
+        $customers = $customersQuery->with(['user', 'bills'])
+            ->orderBy('barangay', 'asc')
+            ->orderBy('name', 'asc')
+            ->paginate(15)
+            ->withQueryString();
 
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
         $monthExpr = "strftime('%Y-%m', created_at)";
@@ -37,20 +68,63 @@ class CustomerController extends Controller
             $monthExpr = "to_char(created_at, 'YYYY-MM')";
         }
 
-        // Get customer growth data for the chart, specific to this admin
-        $customerGrowth = (clone $customersQuery)->selectRaw("{$monthExpr} as month, COUNT(*) as count")
-            ->groupByRaw($monthExpr)
-            ->orderByRaw("{$monthExpr} asc")
+        // Get cumulative customer growth data for the last 6 months
+        $startOfRange = now()->subMonths(5)->startOfMonth();
+        $initialCount = (clone $baseQuery)->where('created_at', '<', $startOfRange)->count();
+        
+        $customerGrowth = collect();
+        $runningTotal = $initialCount;
+        
+        for ($i = 5; $i >= 0; $i--) {
+            $monthObj = now()->subMonths($i);
+            $monthStr = $monthObj->format('Y-m');
+            $newInMonth = (clone $baseQuery)->whereRaw("{$monthExpr} = ?", [$monthStr])->count();
+            $runningTotal += $newInMonth;
+            
+            $customerGrowth->push([
+                'month' => $monthObj->format('M Y'),
+                'count' => $runningTotal
+            ]);
+        }
+
+        return view('customers.index', [
+            'customers' => $customers,
+            'totalCustomers' => $totalCustomers,
+            'activeCustomers' => $activeCustomers,
+            'customerGrowth' => $customerGrowth,
+            'paidCustomersCount' => $paidCustomersCount,
+            'unpaidCustomersCount' => $unpaidCustomersCount,
+            'barangays' => $barangays
+        ]);
+    }
+
+    public function report(Request $request)
+    {
+        $adminId = auth()->id();
+        // Default to current month if no month is specified
+        $date = $request->filled('month') ? \Carbon\Carbon::parse($request->month) : now();
+        $endOfPeriod = $date->isFuture() ? now() : $date->endOfMonth();
+
+        // Get all customers who were registered up to the selected period
+        $customers = Customer::where('admin_id', $adminId)
+            ->where('created_at', '<=', $endOfPeriod)
+            ->orderBy('barangay', 'asc')
+            ->orderBy('name', 'asc')
             ->get();
 
-        return view('customers.index', compact('customers', 'totalCustomers', 'activeCustomers', 'customerGrowth'));
+        $monthName = $endOfPeriod->format('F Y');
+
+        return view('customers.report', compact('customers', 'monthName'));
     }
 
     public function create(): View
     {
         $allIds = Customer::pluck('customer_id')->map(fn($val) => (int) $val)->toArray();
         $nextId = (count($allIds) > 0 ? max($allIds) : 1000) + 1;
-        return view('customers.create', compact('nextId'));
+        
+        $barangays = Customer::where('admin_id', auth()->id())->whereNotNull('barangay')->distinct()->pluck('barangay')->sort();
+        
+        return view('customers.create', compact('nextId', 'barangays'));
     }
 
     public function store(Request $request)
@@ -59,9 +133,12 @@ class CustomerController extends Controller
             'customer_id' => 'nullable|string|unique:customers,customer_id',
             'name' => 'required|string',
             'type' => 'required|in:Regular,Commercial',
-            'address' => 'required|string',
+            'barangay' => 'required|string',
             'password' => 'nullable|string|min:8',
         ]);
+
+        $validated['barangay'] = strtoupper($validated['barangay']);
+        $validated['address'] = $validated['barangay'] . ' DOLORES EASTERN SAMAR';
 
         if ($request->filled('customer_id')) {
             $validated['customer_id'] = $request->customer_id;
@@ -78,6 +155,7 @@ class CustomerController extends Controller
             'type' => $validated['type'],
             'email' => $validated['customer_id'] . '@system.local',
             'address' => $validated['address'],
+            'barangay' => $validated['barangay'],
             'customer_id' => $validated['customer_id'],
         ]);
 
@@ -85,9 +163,10 @@ class CustomerController extends Controller
             $email = $customer->email;
 
             // Check if user already exists with this email to avoid 500 error
-            if (\App\Models\User::where('email', $email)->exists()) {
+            if (\App\Models\User::withTrashed()->where('email', $email)->exists()) {
                 // If it exists, update it instead of creating new one to avoid clash
-                $existingUser = \App\Models\User::where('email', $email)->first();
+                $existingUser = \App\Models\User::withTrashed()->where('email', $email)->first();
+                $existingUser->restore();
                 $existingUser->update([
                     'name' => $customer->name,
                     'password' => \Illuminate\Support\Facades\Hash::make($request->input('password')),
@@ -115,7 +194,9 @@ class CustomerController extends Controller
 
     public function edit(Customer $customer): View
     {
-        return view('customers.edit', compact('customer'));
+        $barangays = Customer::where('admin_id', auth()->id())->whereNotNull('barangay')->distinct()->pluck('barangay')->sort();
+        
+        return view('customers.edit', compact('customer', 'barangays'));
     }
 
     public function update(Request $request, Customer $customer)
@@ -124,8 +205,11 @@ class CustomerController extends Controller
             'customer_id' => 'required|string|unique:customers,customer_id,' . $customer->id,
             'name' => 'required|string',
             'type' => 'required|in:Regular,Commercial',
-            'address' => 'required|string',
+            'barangay' => 'required|string',
         ]);
+
+        $validated['barangay'] = strtoupper($validated['barangay']);
+        $validated['address'] = $validated['barangay'] . ' DOLORES EASTERN SAMAR';
 
         // Keep existing email, just update others
         $customer->update([
@@ -133,6 +217,7 @@ class CustomerController extends Controller
             'name' => $validated['name'],
             'type' => $validated['type'],
             'address' => $validated['address'],
+            'barangay' => $validated['barangay'],
         ]);
 
         return redirect()->route('customers.index')
@@ -146,10 +231,14 @@ class CustomerController extends Controller
             $customer->user->delete();
         }
 
+        // Also soft-delete associated bills and water usages
+        $customer->bills()->delete();
+        $customer->waterUsages()->delete();
+
         $customer->delete();
 
         return redirect()->route('customers.index')
-            ->with('success', 'Customer and associated account deleted successfully');
+            ->with('success', 'Customer and all associated data deleted successfully');
     }
 
     public function createAccount(Customer $customer)
@@ -162,10 +251,11 @@ class CustomerController extends Controller
         $email = $customer->customer_id . '@system.local';
 
         // Check for existing email to avoid Integrity Constraint Violation
-        if (\App\Models\User::where('email', $email)->exists()) {
-            $existingUser = \App\Models\User::where('email', $email)->first();
+        if (\App\Models\User::withTrashed()->where('email', $email)->exists()) {
+            $existingUser = \App\Models\User::withTrashed()->where('email', $email)->first();
 
-            // Re-sync if it belongs to this customer but somehow the link was lost
+            // Re-sync if it belongs to this customer but somehow the link was lost or it was soft-deleted
+            $existingUser->restore();
             $existingUser->update([
                 'customer_id' => $customer->id,
                 'password' => \Illuminate\Support\Facades\Hash::make($password),

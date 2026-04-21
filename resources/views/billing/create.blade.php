@@ -43,9 +43,9 @@
                                 <select id="customer_id" name="customer_id" required
                                     onchange="loadCustomerHistory(); calculateCharges()"
                                     class="w-full bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059] focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 text-gray-200 text-sm rounded-xl py-3 pl-4 pr-10 outline-none transition-all duration-300 appearance-none">
-                                    <option value="">Choose a customer...</option>
+                                    <option class="bg-[#1b2636] text-gray-200" value="">Choose a customer...</option>
                                     @foreach ($customers as $customer)
-                                        <option value="{{ $customer->id }}" data-type="{{ $customer->type }}" {{ old('customer_id', request('customer_id')) == $customer->id ? 'selected' : '' }}>
+                                        <option class="bg-[#1b2636] text-gray-200" value="{{ $customer->id }}" data-type="{{ $customer->type }}" {{ old('customer_id', request('customer_id')) == $customer->id ? 'selected' : '' }}>
                                             {{ $customer->name }} ({{ $customer->customer_id }}) - {{ $customer->type }}
                                         </option>
                                     @endforeach
@@ -93,14 +93,12 @@
                                             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
-                                <div class="flex-1">
-                                    <p class="text-xs text-gray-400 leading-relaxed mb-2">Previous Reading: <span id="prev-reading-display" class="font-mono font-bold text-gray-200">0.00</span></p>
-                                    <p class="text-xs text-gray-400 leading-relaxed">Enter the current water meter reading.
-                                        The system will automatically calculate the consumption and charges.</p>
+                                <div class="flex-1 text-center py-2">
+                                    <p class="text-[11px] text-gray-400 font-bold uppercase tracking-widest">Billing Logic: Direct Usage Entry</p>
                                 </div>
                             </div>
 
-                            <label for="usage_units" class="block text-sm font-medium text-gray-300 mb-2 ml-1">Present Reading (L) *</label>
+                            <label for="usage_units" class="block text-sm font-medium text-gray-300 mb-2 ml-1">Total Usage (L) *</label>
                             <input type="number" step="0.01" id="usage_units" name="usage_units" required
                                 value="{{ old('usage_units') }}" oninput="calculateCharges()" placeholder="e.g. 100.00"
                                 class="w-full bg-[#0f1722]/60 border border-[#2d4059] focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 text-gray-100 text-lg font-bold rounded-xl py-3 px-4 shadow-inner outline-none transition-all duration-300 placeholder:text-gray-600">
@@ -156,7 +154,21 @@
                                     </div>
                                 </div>
 
+                                <!-- Manual deduction removed as per request -->
+
                                 <div class="pt-4 mt-4 border-t border-[#263548]">
+                                    @if($globalAdditionalChargeTotal > 0)
+                                    <div class="mb-4 space-y-1">
+                                        <p class="text-[10px] text-gray-500 uppercase font-black">Additional Charges:</p>
+                                        @foreach($globalAdditionalCharges as $gd)
+                                            <div class="flex justify-between text-[11px] text-blue-400 italic">
+                                                <span>{{ $gd['name'] }}</span>
+                                                <span>+ ₱{{ number_format($gd['amount'], 2) }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    @endif
+
                                     <label for="total_amount"
                                         class="block text-xs font-medium text-emerald-500/80 mb-2 ml-1 uppercase tracking-tighter">Total
                                         Payable Amount</label>
@@ -284,13 +296,8 @@
                         data.readings.forEach((reading, index) => {
                             // Calculate usage as difference from PREVIOUS bill in time.
                             // Since readings are DESC by date, the previous chronological reading is at index + 1
-                            let readingUsage = 0;
-                            if (index < data.readings.length - 1) {
-                                readingUsage = Math.abs(data.readings[index+1].usage_units - reading.usage_units);
-                            } else {
-                                // For the oldest bill, usage is difference from initial customer record reading
-                                readingUsage = Math.abs((customersData[customerId]?.initial_reading || 0) - reading.usage_units);
-                            }
+                            // The user wants 'Reading = Usage' for all historical data as well
+                            readingUsage = reading.usage_units;
                             
                             const statusColor = reading.status === 'Paid' ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700/50' : 'bg-orange-900/40 text-orange-300 border-orange-700/50';
 
@@ -363,10 +370,9 @@
             const selectedOption = customerSelect.options[customerSelect.selectedIndex];
             const customerType = selectedOption.getAttribute('data-type');
 
-            // Formula: Previous Reading - Present Reading = Usage
+            // The user wants the Present Reading to be reflected directly as the Total Usage
             const presentReading = parseFloat(presentReadingInput.value) || 0;
-            // The user formula uses (previous - present)
-            const usage = Math.abs(previousReading - presentReading);
+            const usage = presentReading;
             
             consumptionDisplay.value = usage.toFixed(2);
             document.getElementById('consumption').value = usage.toFixed(2);
@@ -418,7 +424,9 @@
         function updateTotal() {
             const baseCharge = parseFloat(document.getElementById('base_charge').value) || 0;
             const usageCharge = parseFloat(document.getElementById('usage_charge').value) || 0;
-            const totalAmount = baseCharge + usageCharge;
+            const globalAdditionalChargeTotal = {{ $globalAdditionalChargeTotal }};
+            
+            const totalAmount = baseCharge + usageCharge + globalAdditionalChargeTotal;
             document.getElementById('total_amount').value = totalAmount.toFixed(2);
         }
 

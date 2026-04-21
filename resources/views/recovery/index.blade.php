@@ -25,7 +25,7 @@
                         <tbody class="divide-y divide-gray-200">
                             @forelse($deletedCustomers as $customer)
                             <tr class="hover:bg-[#0f1722]">
-                                <td class="px-4 py-3">{{ $customer->customer_number ?? $customer->id }}</td>
+                                <td class="px-4 py-3">{{ $customer->customer_id ?? $customer->id }}</td>
                                 <td class="px-4 py-3">{{ $customer->name }}</td>
                                 <td class="px-4 py-3">{{ $customer->deleted_at->format('M d, Y h:i A') }}</td>
                                 <td class="px-4 py-3 text-right">

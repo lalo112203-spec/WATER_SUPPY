@@ -10,8 +10,12 @@ class RecoveryController extends Controller
 {
     public function index()
     {
+        // Get all trashed customers
         $deletedCustomers = Customer::onlyTrashed()->get();
-        $deletedBills = Bill::onlyTrashed()->with('customer')->get();
+        // Get all trashed bills with their (possibly trashed) customers
+        $deletedBills = Bill::onlyTrashed()->with(['customer' => function($q) {
+            $q->withTrashed();
+        }])->get();
 
         return view('recovery.index', compact('deletedCustomers', 'deletedBills'));
     }
@@ -21,21 +25,36 @@ class RecoveryController extends Controller
         $customer = Customer::onlyTrashed()->findOrFail($id);
         $customer->restore();
 
-        return redirect()->route('recovery.index')->with('success', 'Customer restored successfully.');
+        // Also restore associated user if it was soft deleted
+        $user = \App\Models\User::onlyTrashed()->where('customer_id', $customer->id)->first();
+        if ($user) {
+            $user->restore();
+        }
+
+        // Also restore all associated bills and water usages
+        Bill::onlyTrashed()->where('customer_id', $customer->id)->restore();
+        \App\Models\WaterUsage::onlyTrashed()->where('customer_id', $customer->id)->restore();
+
+        return redirect()->route('recovery.index')->with('success', 'Customer and associated accounts/data restored successfully.');
     }
 
     public function forceDeleteCustomer($id)
     {
         $customer = Customer::onlyTrashed()->findOrFail($id);
         
-        // Also delete associated user if exists
-        if ($customer->user) {
-            $customer->user->forceDelete();
+        // Permanently delete associated user
+        $user = \App\Models\User::withTrashed()->where('customer_id', $customer->id)->first();
+        if ($user) {
+            $user->forceDelete();
         }
+
+        // Permanently delete associated bills and water usages
+        Bill::withTrashed()->where('customer_id', $customer->id)->forceDelete();
+        \App\Models\WaterUsage::withTrashed()->where('customer_id', $customer->id)->forceDelete();
         
         $customer->forceDelete();
 
-        return redirect()->route('recovery.index')->with('success', 'Customer permanently deleted.');
+        return redirect()->route('recovery.index')->with('success', 'Customer and all associated data permanently deleted.');
     }
 
     public function restoreBill($id)

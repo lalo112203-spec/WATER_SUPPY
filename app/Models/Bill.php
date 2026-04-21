@@ -17,6 +17,9 @@ class Bill extends Model
         'consumption',
         'base_charge',
         'usage_charge',
+        'additional_charge_amount',
+        'additional_charge_note',
+        'applied_additional_charges',
         'total_amount',
         'status',
         'due_date',
@@ -27,6 +30,7 @@ class Bill extends Model
         'billing_date' => 'date',
         'due_date' => 'date',
         'paid_date' => 'date',
+        'applied_additional_charges' => 'array',
     ];
 
     public function customer(): BelongsTo

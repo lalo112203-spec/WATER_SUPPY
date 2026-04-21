@@ -53,15 +53,39 @@
 
 
                     <flux:field>
-                        <flux:label for="address">Address</flux:label>
-                        <flux:textarea
-                            id="address"
-                            name="address"
-                            required
-                        >{{ old('address', $customer->address) }}</flux:textarea>
-                        @error('address')
+                        <flux:label for="barangay">Barangay</flux:label>
+                        <div class="flex gap-4 items-center">
+                            <flux:input
+                                id="barangay"
+                                name="barangay"
+                                type="text"
+                                list="barangays_list"
+                                required
+                                value="{{ old('barangay', $customer->barangay) }}"
+                                class="flex-1 uppercase"
+                                oninput="updateAddressPreview()"
+                            />
+                            <datalist id="barangays_list">
+                                @foreach($barangays as $brgy)
+                                    <option value="{{ $brgy }}">
+                                @endforeach
+                            </datalist>
+                            <div class="px-3 py-1.5 bg-[#1a2432]/30 border border-[#263548] rounded text-sm text-gray-500 font-mono">
+                                <span id="brgy_text" class="text-cyan-400 font-bold">{{ $customer->barangay ?? '...' }}</span> DOLORES EASTERN SAMAR
+                            </div>
+                        </div>
+                        @error('barangay')
                             <flux:error>{{ $message }}</flux:error>
                         @enderror
+
+                        <script>
+                            function updateAddressPreview() {
+                                const brgy = document.getElementById('barangay');
+                                const brgyText = document.getElementById('brgy_text');
+                                brgyText.textContent = brgy.value || '...';
+                                brgyText.className = brgy.value ? 'text-cyan-400 font-bold' : 'text-gray-500';
+                            }
+                        </script>
                     </flux:field>
                 </flux:fieldset>
 

@@ -10,50 +10,79 @@
     </style>
     <div class="px-6 py-4 bg-transparent min-h-[calc(100vh-4rem)] font-sans text-gray-200 relative z-10">
 
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-            <div class="flex items-center gap-3">
-                <h1 class="text-2xl font-bold flex items-center gap-2 drop-shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-8 w-8 text-blue-600 drop-shadow-[0_0_8px_rgba(37,99,235,0.4)]" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    Customers
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-6">
+            <div class="flex items-center gap-4">
+                <h1 class="text-2xl font-bold flex items-center gap-3 drop-shadow-sm whitespace-nowrap">
+                    <div class="p-2 bg-blue-600/10 rounded-xl border border-blue-600/20 shadow-[0_0_15px_rgba(37,99,235,0.1)]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <span>Customers</span>
                 </h1>
+            </div>
 
-                <form action="{{ route('customers.index') }}" method="GET" class="ml-4 w-full md:w-64">
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400 group-focus-within:text-blue-600 transition-colors duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="flex-1 flex flex-col md:flex-row items-center justify-end gap-4">
+                <form action="{{ route('customers.index') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full md:w-80 h-[46px] shadow-inner">
+                        <div class="pl-4 pr-1 flex items-center justify-center text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[50px]">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search person..."
-                            class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 text-sm rounded-xl py-2 pl-10 pr-10 outline-none transition-all duration-300 shadow-sm"
-                            autofocus>
+                            class="flex-1 bg-transparent border-none text-[14px] px-0 py-0 outline-none text-gray-100 placeholder-gray-500 h-full w-full">
                         @if (request('search'))
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                <a href="{{ route('customers.index') }}" class="text-gray-500 hover:text-rose-400 transition-colors duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="px-4 flex items-center justify-center">
+                                <a href="{{ route('customers.index', request()->except('search')) }}" class="text-gray-500 hover:text-rose-400 transition-colors duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </a>
                             </div>
                         @endif
                     </div>
-                </form>
-            </div>
 
-            <a href="{{ route('customers.create') }}"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-medium shadow-md flex items-center gap-2 transition duration-300 backdrop-blur-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd"
-                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                        clip-rule="evenodd" />
-                </svg>
-                Register New Customer
-            </a>
+                    <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-cyan-500/50 focus-within:ring-1 focus-within:ring-cyan-500/30 transition-all duration-300 w-full md:w-64 h-[46px] shadow-inner">
+                        <div class="pl-4 pr-1 flex items-center justify-center text-gray-400 group-focus-within:text-cyan-500 transition-colors duration-300 min-w-[50px]">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        <select name="barangay" onchange="this.form.submit()"
+                            class="flex-1 bg-transparent border-none text-[14px] px-0 py-0 outline-none appearance-none text-gray-100 font-medium cursor-pointer h-full w-full">
+                            <option value="" class="bg-[#0f1722]">All Barangays</option>
+                            @foreach($barangays as $brgy)
+                                <option value="{{ $brgy }}" {{ request('barangay') == $brgy ? 'selected' : '' }} class="bg-[#0f1722]">{{ $brgy }}</option>
+                            @endforeach
+                        </select>
+                        <div class="px-4 flex items-center justify-center text-gray-400 pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('customers.report') }}" target="_blank"
+                        class="bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-500 border border-emerald-500/30 px-5 py-3 rounded-2xl font-bold shadow-sm flex items-center gap-2 transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        Print Monthly Backup
+                    </a>
+
+                    <a href="{{ route('customers.create') }}"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl font-bold shadow-[0_4px_15px_rgba(37,99,235,0.3)] flex items-center gap-2 transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        Register New Customer
+                    </a>
+                </div>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -128,7 +157,20 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-[#263548]">
+                    @php $lastBarangay = null; @endphp
                     @forelse($customers as $customer)
+                        {{-- Only show barangay separator if we are NOT filtering by a specific barangay --}}
+                        @if(!request('barangay') && $customer->barangay !== $lastBarangay)
+                            <tr class="bg-[#1b2636]/60 text-[#94a3b8] uppercase text-[10px] tracking-widest">
+                                <td colspan="6" class="px-6 py-2 font-bold border-y border-[#263548]/50">
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-1.5 w-1.5 rounded-full bg-cyan-500"></div>
+                                        {{ $customer->barangay ?? 'No Barangay Set' }}
+                                    </div>
+                                </td>
+                            </tr>
+                            @php $lastBarangay = $customer->barangay; @endphp
+                        @endif
                         <tr id="row-{{ $customer->id }}" 
                             class="hover:bg-[#1b2636]/60 transition duration-300 cursor-pointer group border-l-2 border-transparent"
                             onclick="toggleDetails('{{ $customer->id }}')">
@@ -431,6 +473,7 @@
             </form>
         </div>
     </flux:modal>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" data-navigate-track></script>
     <script>
         function toggleDetails(id) {
             const detailsRow = document.getElementById('details-' + id);
@@ -527,71 +570,73 @@
         }
 
         function initializeCustomerChart() {
-            if (typeof window.Chart === 'undefined') {
-                setTimeout(initializeCustomerChart, 50);
-                return;
-            }
+            try {
+                if (typeof window.Chart === 'undefined') {
+                    setTimeout(initializeCustomerChart, 50);
+                    return;
+                }
 
-            const customerCtxEl = document.getElementById('customerChart');
-            if (!customerCtxEl) return;
+                const customerCtxEl = document.getElementById('customerChart');
+                if (!customerCtxEl) return;
 
-            if (window.customerFlowChartInstance) window.customerFlowChartInstance.destroy();
+                if (window.customerFlowChartInstance) window.customerFlowChartInstance.destroy();
 
-            const customerCtx = customerCtxEl.getContext('2d');
-            
-            // Gradient
-            const custGradient = customerCtx.createLinearGradient(0, 0, 0, 200);
-            custGradient.addColorStop(0, 'rgba(6, 182, 212, 0.4)');
-            custGradient.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+                const customerCtx = customerCtxEl.getContext('2d');
+                
+                let labels = {!! json_encode($customerGrowth->pluck('month')) !!};
+                let data = {!! json_encode($customerGrowth->pluck('count')) !!};
 
-            window.customerFlowChartInstance = new Chart(customerCtx, {
-                type: 'line',
-                data: {
-                    labels: {!! json_encode($customerGrowth->pluck('month')->count() ? $customerGrowth->pluck('month') : ['Current']) !!},
-                    datasets: [{
-                        label: 'New Customers',
-                        data: {!! json_encode($customerGrowth->pluck('count')->count() ? $customerGrowth->pluck('count') : [1]) !!},
-                        borderColor: '#06b6d4',
-                        backgroundColor: custGradient,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#06b6d4',
-                        pointBorderColor: '#164e63',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        fill: true,
-                        tension: 0.4 // Smooth "flow" curve
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(15, 23, 34, 0.95)',
-                            titleColor: '#e2e8f0',
-                            bodyColor: '#cbd5e1',
-                            borderColor: '#1e293b',
-                            borderWidth: 1
-                        }
+                window.customerFlowChartInstance = new Chart(customerCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Customers',
+                            data: data,
+                            borderColor: '#06b6d4',
+                            backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#06b6d4',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { stepSize: 1, color: '#64748b' },
-                            grid: { color: '#1e293b', drawBorder: false },
-                            border: { display: false }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 23, 34, 0.95)',
+                                titleColor: '#e2e8f0',
+                                bodyColor: '#cbd5e1',
+                                borderColor: '#1e293b',
+                                borderWidth: 1,
+                                padding: 12
+                            }
                         },
-                        x: {
-                            grid: { display: false },
-                            border: { display: false },
-                            ticks: { color: '#64748b' }
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1, color: '#64748b' },
+                                grid: { color: 'rgba(148, 163, 184, 0.05)', drawBorder: false },
+                                border: { display: false }
+                            },
+                            x: {
+                                grid: { display: false },
+                                border: { display: false },
+                                ticks: { color: '#64748b' }
+                            }
                         }
                     }
-                }
-            });
+                });
+            } catch (e) {
+                console.error("Customer chart error:", e);
+            }
         }
 
         if (document.readyState === 'complete' || document.readyState === 'interactive') {
