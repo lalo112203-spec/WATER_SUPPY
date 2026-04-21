@@ -187,6 +187,10 @@
             main, [data-flux-main], flux\:main {
                 margin-left: 16rem !important;
                 padding-top: 2rem !important;
+                padding-left: 3rem !important;
+                padding-right: 3rem !important;
+                max-width: 1280px !important; /* Keep design cohesive on wide screens */
+                margin-right: auto !important;
             }
         }
 
@@ -282,7 +286,7 @@
             <div class="flex items-center gap-3 mb-4">
                 <div class="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-900/50">D</div>
                 <div class="flex flex-col">
-                    <span class="text-white font-bold tracking-tight text-lg">W.S.S.S</span>
+                    <span class="text-white font-bold tracking-tight text-lg">D.W.S.S</span>
                     <span class="text-blue-400 text-[10px] uppercase tracking-widest font-medium opacity-80">Water Supply</span>
                 </div>
             </div>
