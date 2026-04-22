@@ -52,7 +52,7 @@
 
                     @forelse($users as $u)
                         <li data-user-id="{{ $u->id }}" class="user-list-item p-4 hover:bg-slate-50 cursor-pointer transition-colors duration-200 border-l-4 border-transparent hover:border-[#263548] group" 
-                            onclick="selectConversation('{{ $u->id }}', '{{ addslashes($u->name) }}', 'Customer ID: {{ $u->customer?->customer_id ?? $u->id }}', '{{ $u->profile_photo ? asset('storage/' . $u->profile_photo) : '' }}', '{{ substr($u->name, 0, 1) }}')">
+                            onclick="selectConversation('{{ $u->id }}', '{{ addslashes($u->name) }}', 'Account Number: {{ $u->customer?->customer_id ?? $u->id }}', '{{ $u->profile_photo ? asset('storage/' . $u->profile_photo) : '' }}', '{{ substr($u->name, 0, 1) }}')">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-4 w-full">
                                     <div class="relative flex-shrink-0">
@@ -71,7 +71,7 @@
                                         <div class="flex justify-between items-baseline mb-0.5">
                                             <p class="text-[15px] truncate tracking-tight {{ $u->unread_count > 0 ? 'text-gray-100 font-bold' : 'text-gray-200 font-semibold' }}">{{ $u->name }}</p>
                                         </div>
-                                        <p class="text-xs truncate {{ $u->unread_count > 0 ? 'text-gray-200 font-semibold' : 'text-gray-400 font-medium' }}">ID: {{ $u->customer?->customer_id ?? $u->id }}</p>
+                                        <p class="text-xs truncate {{ $u->unread_count > 0 ? 'text-gray-200 font-semibold' : 'text-gray-400 font-medium' }}">Account No: {{ $u->customer?->customer_id ?? $u->id }}</p>
                                     </div>
                                     @if($u->unread_count > 0)
                                         <div class="flex-shrink-0">

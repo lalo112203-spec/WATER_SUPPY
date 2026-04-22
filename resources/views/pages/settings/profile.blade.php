@@ -15,6 +15,7 @@ new #[Title('Profile settings')] class extends Component {
 
     public string $name = '';
     public string $email = '';
+    public string $registration_code = '';
     public $profile_photo;
 
     /**
@@ -33,9 +34,31 @@ new #[Title('Profile settings')] class extends Component {
     {
         $user = Auth::user();
 
-        $validated = $this->validate($this->profileRules($user->id));
+        $rules = $this->profileRules($user->id);
+        
+        // Require registration code ONLY if name is being changed
+        if ($this->name !== $user->name) {
+            $rules['registration_code'] = [
+                'required',
+                'string',
+                'size:8',
+                function ($attribute, $value, $fail) {
+                    $code = \App\Models\RegistrationCode::where('code', $value)
+                        ->where('is_used', false)
+                        ->first();
+                    if (!$code) {
+                        $fail('The registration code is invalid or has already been used.');
+                    }
+                },
+            ];
+        }
 
-        $user->fill($validated);
+        $validated = $this->validate($rules);
+
+        $user->fill([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
@@ -48,6 +71,18 @@ new #[Title('Profile settings')] class extends Component {
 
         $user->save();
 
+        // Mark code as used if it was provided
+        if (isset($validated['registration_code'])) {
+            $code = \App\Models\RegistrationCode::where('code', $validated['registration_code'])->first();
+            if ($code) {
+                $code->update([
+                    'is_used' => true,
+                    'used_by' => $user->id,
+                ]);
+            }
+        }
+
+        $this->registration_code = '';
         $this->dispatch('profile-updated', name: $user->name);
     }
 
@@ -115,7 +150,25 @@ new #[Title('Profile settings')] class extends Component {
                 </div>
             </div>
 
-            <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
+            <flux:input wire:model.live="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
+
+            <div x-data="{ nameChanged: false }" x-init="$watch('$wire.name', value => nameChanged = value !== '{{ Auth::user()->name }}')">
+                <template x-if="nameChanged">
+                    <div class="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl">
+                        <flux:input 
+                            wire:model="registration_code" 
+                            :label="__('Registration Code')" 
+                            type="text" 
+                            required 
+                            placeholder="Enter 8-digit code to change Name"
+                            maxlength="8"
+                        />
+                        <p class="mt-2 text-[11px] text-yellow-500/70 italic">
+                            Changing your account name requires a valid registration code. You can obtain this at the **D.W.S.S. Office** by providing a valid ID to confirm your identity.
+                        </p>
+                    </div>
+                </template>
+            </div>
 
             <div>
                 <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />

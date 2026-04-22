@@ -9,7 +9,7 @@
 
                 <flux:fieldset>
                     <flux:field>
-                        <flux:label for="customer_id">Customer ID</flux:label>
+                        <flux:label for="customer_id">Account Number</flux:label>
                         <flux:input
                             id="customer_id"
                             name="customer_id"

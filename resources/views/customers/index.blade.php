@@ -148,7 +148,7 @@
             <table class="w-full text-left border-collapse min-w-[800px]">
                 <thead>
                     <tr class="bg-[#0f1722] text-[#94a3b8] uppercase text-xs tracking-wider">
-                        <th class="px-6 py-4 font-semibold border-b border-[#263548]">Customer ID</th>
+                        <th class="px-6 py-4 font-semibold border-b border-[#263548]">Account Number</th>
                         <th class="px-6 py-4 font-semibold border-b border-[#263548]">Name</th>
                         <th class="px-6 py-4 font-semibold border-b border-[#263548]">Type</th>
                         <th class="px-6 py-4 font-semibold hidden md:table-cell border-b border-[#263548]">Address</th>

@@ -27,7 +27,7 @@
             <!-- Login Identifier -->
             <flux:input
                 name="email"
-                :label="__('Customer ID')"
+                :label="__('Account Number')"
                 :value="old('email')"
                 type="text"
                 required

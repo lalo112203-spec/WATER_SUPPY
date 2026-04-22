@@ -19,16 +19,42 @@
                 :placeholder="__('Full name')"
             />
 
-            <!-- Registration Code -->
+            <!-- Account Number -->
             <flux:input
-                name="registration_code"
-                :label="__('Registration Code')"
-                :value="old('registration_code')"
+                name="account_number"
+                :label="__('Account Number')"
+                :value="old('account_number')"
                 type="text"
                 required
-                maxlength="8"
-                placeholder="Enter 8-digit code from admin"
+                placeholder="Enter your account number"
             />
+
+            <!-- Address -->
+            <flux:input
+                name="address"
+                :label="__('Address')"
+                :value="old('address')"
+                type="text"
+                required
+                placeholder="Enter your address"
+            />
+
+            <!-- Registration Code (Only appears if override is needed) -->
+            <div x-data="{ showCode: {{ $errors->has('registration_code') ? 'true' : 'false' }} }">
+                <div x-show="showCode" x-transition class="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl mb-4">
+                    <flux:input
+                        name="registration_code"
+                        :label="__('Registration Code')"
+                        :value="old('registration_code')"
+                        type="text"
+                        maxlength="8"
+                        placeholder="Enter 8-digit code"
+                    />
+                    <p class="mt-2 text-[11px] text-yellow-500/70 italic leading-snug">
+                        An account already exists for this customer. Please provide a registration code from the **D.W.S.S. Office** to confirm your identity and override the existing account.
+                    </p>
+                </div>
+            </div>
 
             <!-- Username -->
             <flux:input

@@ -87,7 +87,7 @@
                     <div>
                         <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Billed To</p>
                         <p class="font-medium text-gray-200">{{ $bill->customer->name }}</p>
-                        <p class="text-sm text-gray-400 mt-1">Customer ID: {{ $bill->customer->customer_id ?? $bill->customer->id }}</p>
+                        <p class="text-sm text-gray-400 mt-1">Account Number: {{ $bill->customer->customer_id ?? $bill->customer->id }}</p>
                         <p class="text-sm text-gray-400 mt-1">{{ $bill->customer->address }}</p>
                     </div>
                     <div class="text-right">

@@ -12,6 +12,7 @@ new #[Title('Password settings')] class extends Component {
     public string $current_password = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public string $registration_code = '';
 
     /**
      * Update the password for the currently authenticated user.
@@ -22,18 +23,41 @@ new #[Title('Password settings')] class extends Component {
             $validated = $this->validate([
                 'current_password' => $this->currentPasswordRules(),
                 'password' => $this->passwordRules(),
+                'registration_code' => [
+                    'required',
+                    'string',
+                    'size:8',
+                    function ($attribute, $value, $fail) {
+                        $code = \App\Models\RegistrationCode::where('code', $value)
+                            ->where('is_used', false)
+                            ->first();
+                        if (!$code) {
+                            $fail('The registration code is invalid or has already been used.');
+                        }
+                    },
+                ],
             ]);
         } catch (ValidationException $e) {
-            $this->reset('current_password', 'password', 'password_confirmation');
+            $this->reset('current_password', 'password', 'password_confirmation', 'registration_code');
 
             throw $e;
         }
 
-        Auth::user()->update([
+        $user = Auth::user();
+        $user->update([
             'password' => $validated['password'],
         ]);
 
-        $this->reset('current_password', 'password', 'password_confirmation');
+        // Mark code as used
+        $code = \App\Models\RegistrationCode::where('code', $validated['registration_code'])->first();
+        if ($code) {
+            $code->update([
+                'is_used' => true,
+                'used_by' => $user->id,
+            ]);
+        }
+
+        $this->reset('current_password', 'password', 'password_confirmation', 'registration_code');
 
         $this->dispatch('password-updated');
     }
@@ -93,6 +117,20 @@ new #[Title('Password settings')] class extends Component {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                     </svg>
                 </button>
+            </div>
+
+            <div class="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl">
+                <flux:input 
+                    wire:model="registration_code" 
+                    :label="__('Registration Code')" 
+                    type="text" 
+                    required 
+                    placeholder="Enter 8-digit code to change password"
+                    maxlength="8"
+                />
+                <p class="mt-2 text-[11px] text-yellow-500/70 italic">
+                    Changing your password requires a valid registration code. You can obtain this at the **D.W.S.S. Office** by providing a valid ID to confirm your identity.
+                </p>
             </div>
 
             <div class="flex items-center gap-4">

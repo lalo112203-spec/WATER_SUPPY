@@ -16,7 +16,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <label class="block text-gray-400 mb-1 text-sm font-medium">Customer ID (Leave blank to auto-generate)</label>
+                        <label class="block text-gray-400 mb-1 text-sm font-medium">Account Number (Leave blank to auto-generate)</label>
                         <input type="text" name="customer_id" value="{{ old('customer_id') }}" placeholder="e.g. {{ $nextId ?? 1001 }}"
                             class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
                         @error('customer_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
@@ -106,7 +106,7 @@
 
                 <div class="flex justify-end pt-4 border-t border-[#263548]">
                     <div class="text-sm text-gray-400 mr-auto self-center">
-                        Note: The Customer No. (ID) will be automatically generated.
+                        Note: The Account Number will be automatically generated.
                     </div>
                     <button type="submit" class="bg-[#5cb85c] hover:bg-[#4cae4c] text-white px-6 py-2 rounded font-medium shadow-sm flex items-center gap-2">
                         <span>Save Customer</span>
