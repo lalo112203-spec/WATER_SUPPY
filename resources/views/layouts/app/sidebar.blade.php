@@ -16,7 +16,8 @@
         }
 
         /* Base resets and layout */
-        html, body {
+        html,
+        body {
             overflow-y: auto !important;
             height: auto !important;
             min-height: 100vh !important;
@@ -34,6 +35,7 @@
 
         /* Enforce desktop fixed behavior without breaking mobile transform */
         @media (min-width: 1024px) {
+
             flux\:sidebar,
             [data-flux-sidebar] {
                 height: 100vh !important;
@@ -46,7 +48,8 @@
         flux\:sidebar *,
         [data-flux-sidebar] * {
             background-color: transparent !important;
-            color: #cbd5e1 !important; /* Muted slate for non-active */
+            color: #cbd5e1 !important;
+            /* Muted slate for non-active */
         }
 
         /* Active Sidebar Item - Pill Style */
@@ -122,8 +125,8 @@
         html.dark:not(.custom-theme) main [class*="bg-[#1b2636]"],
         html.dark:not(.custom-theme) [data-flux-main] [class*="bg-[#121a25]"],
         html.dark:not(.custom-theme) [data-flux-main] [class*="bg-[#1b2636]"] {
-             background-color: var(--card-bg-dark) !important;
-             border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            background-color: var(--card-bg-dark) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
         }
 
         /* Text Overrides for Dark Mode */
@@ -166,9 +169,12 @@
                     background-size: cover !important;
                     background-attachment: fixed !important;
                 @elseif(auth()->user()->background_color)
-                    background-color: {{ auth()->user()->background_color }} !important;
+                    background-color:
+                        {{ auth()->user()->background_color }}
+                        !important;
                 @endif
             }
+
         @endif
 
         /* Smooth transitions */
@@ -177,22 +183,39 @@
         }
 
         /* Scrollbars (Modern Slate) */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { 
-            background: #cbd5e1; 
-            border-radius: 20px; 
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 20px;
             border: 2px solid transparent;
             background-clip: content-box;
         }
-        .dark ::-webkit-scrollbar-thumb { background: #334155; }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
 
         /* Ensure main content is shifted correctly */
-        main, [data-flux-main], flux\:main {
-            padding-top: 1rem !important; /* Mobile padding so it doesn't hide behind mobile header */
+        main,
+        [data-flux-main],
+        flux\:main {
+            padding-top: 1rem !important;
+            /* Mobile padding so it doesn't hide behind mobile header */
         }
+
         @media (min-width: 1024px) {
-            main, [data-flux-main], flux\:main {
+
+            main,
+            [data-flux-main],
+            flux\:main {
                 margin-left: 16rem !important;
                 padding-top: 2rem !important;
             }
@@ -206,11 +229,15 @@
             border: 1px solid #e2e8f0 !important;
             color: #0f172a !important;
         }
-        
+
         /* Vibrant action buttons */
-        .bg-cyan-600\/80 { background-color: var(--accent-blue) !important; }
-        .text-cyan-400 { color: var(--accent-blue) !important; }
-        
+        .bg-cyan-600\/80 {
+            background-color: var(--accent-blue) !important;
+        }
+
+        .text-cyan-400 {
+            color: var(--accent-blue) !important;
+        }
     </style>
     <script>
         function shouldBeCustom() {
