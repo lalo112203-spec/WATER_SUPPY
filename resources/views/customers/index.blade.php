@@ -8,9 +8,9 @@
             animation: fadeIn 0.3s ease-out forwards;
         }
     </style>
-    <div class="px-6 py-4 bg-transparent min-h-[calc(100vh-4rem)] font-sans text-gray-200 relative z-10">
+    <div class="px-4 py-2 bg-transparent min-h-[calc(100vh-4rem)] font-sans text-gray-200 relative z-10">
 
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-6">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-4 gap-4">
             <div class="flex items-center gap-4">
                 <h1 class="text-2xl font-bold flex items-center gap-3 drop-shadow-sm whitespace-nowrap">
                     <div class="p-2 bg-blue-600/10 rounded-xl border border-blue-600/20 shadow-[0_0_15px_rgba(37,99,235,0.1)]">
@@ -24,7 +24,7 @@
 
             <div class="flex-1 flex flex-col md:flex-row items-center justify-end gap-4">
                 <form action="{{ route('customers.index') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                    <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full md:w-80 h-[46px] shadow-inner">
+                    <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full md:w-80 h-12 shadow-inner">
                         <div class="pl-4 pr-1 flex items-center justify-center text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[50px]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -43,8 +43,8 @@
                         @endif
                     </div>
 
-                    <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-cyan-500/50 focus-within:ring-1 focus-within:ring-cyan-500/30 transition-all duration-300 w-full md:w-64 h-[46px] shadow-inner">
-                        <div class="pl-4 pr-1 flex items-center justify-center text-gray-400 group-focus-within:text-cyan-500 transition-colors duration-300 min-w-[50px]">
+                    <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full md:w-64 h-12 shadow-inner">
+                        <div class="pl-4 pr-1 flex items-center justify-center text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[50px]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -71,7 +71,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                         </svg>
-                        Print Monthly Backup
+                        Print Monthly Report
                     </a>
 
                     <a href="{{ route('customers.create') }}"
@@ -85,7 +85,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
             <!-- Stats -->
             <div class="col-span-1 flex flex-col gap-4">
                 <div
@@ -97,14 +97,16 @@
                         <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider mb-2">Total Active
                             Customers</h3>
                         <div
-                            class="text-5xl font-bold text-blue-600 dark:text-blue-400 flex items-center justify-center gap-3 drop-shadow-sm">
+                            class="text-blue-600 dark:text-blue-400 flex items-center justify-center gap-3 drop-shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-500/30" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
-                            {{ $activeCustomers }} <span class="text-sm font-normal text-slate-400">/
-                                {{ $totalCustomers }}</span>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-5xl font-bold">{{ $activeCustomers }}</span>
+                                <span class="text-sm font-normal text-slate-400">/ {{ $totalCustomers }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -124,9 +126,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                         </svg>
-                        Customer Growth (Flow Trend)
+                        Customer Growth Trend
                     </h3>
-                    <div style="position: relative; height: 180px; z-index: 10;">
+                    <div class="p-4 pt-0 flex-1 relative min-h-[300px] z-10">
                         <canvas id="customerChart"></canvas>
                     </div>
                 </div>
@@ -145,15 +147,15 @@
 
         <div
             class="bg-[#121a25]/80 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.6)] overflow-x-auto border border-[#263548] scrollbar-thin scrollbar-thumb-cyan-500/30 scrollbar-track-transparent">
-            <table class="w-full text-left border-collapse min-w-[800px]">
+            <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-[#0f1722] text-[#94a3b8] uppercase text-xs tracking-wider">
-                        <th class="px-6 py-4 font-semibold border-b border-[#263548]">Account Number</th>
-                        <th class="px-6 py-4 font-semibold border-b border-[#263548]">Name</th>
-                        <th class="px-6 py-4 font-semibold border-b border-[#263548]">Type</th>
-                        <th class="px-6 py-4 font-semibold hidden md:table-cell border-b border-[#263548]">Address</th>
-                        <th class="px-6 py-4 font-semibold border-b border-[#263548]">Total Usage</th>
-                        <th class="px-6 py-4 font-semibold text-right border-b border-[#263548]">Manage</th>
+                    <tr class="bg-[#0f1722] text-[#94a3b8] uppercase text-[10px] tracking-wider">
+                        <th class="px-4 py-3 font-semibold border-b border-[#263548]">Acc No.</th>
+                        <th class="px-4 py-3 font-semibold border-b border-[#263548]">Name</th>
+                        <th class="px-4 py-3 font-semibold border-b border-[#263548]">Type</th>
+                        <th class="px-4 py-3 font-semibold hidden lg:table-cell border-b border-[#263548]">Address</th>
+                        <th class="px-4 py-3 font-semibold border-b border-[#263548]">Usage</th>
+                        <th class="px-4 py-3 font-semibold text-right border-b border-[#263548]">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-[#263548]">
@@ -178,24 +180,25 @@
                                 <svg id="chevron-{{ $customer->id }}" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
+                            <td class="px-4 py-3 font-medium text-gray-300">
                                 {{ $customer->customer_id }}
                             </td>
-                            <td class="px-6 py-4">
-                                <div class="font-medium text-gray-200">{{ $customer->name }}</div>
+                            <td class="px-4 py-3">
+                                <div class="text-sm font-medium text-gray-200">{{ $customer->name }}</div>
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-3">
                                 <span
-                                    class="px-3 py-1 rounded-full text-xs font-semibold shadow-sm {{ $customer->type === 'Regular' ? 'bg-cyan-900/40 text-cyan-300 border border-cyan-700/50' : 'bg-orange-900/40 text-orange-300 border border-orange-700/50' }}">
+                                    class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {{ $customer->type === 'Regular' ? 'bg-cyan-900/40 text-cyan-300 border-cyan-700/50' : 'bg-orange-900/40 text-orange-300 border-orange-700/50' }}">
                                     {{ $customer->type }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-400 hidden md:table-cell truncate max-w-[200px]"
+                            <td class="px-4 py-3 text-xs text-gray-400 hidden lg:table-cell"
                                 title="{{ $customer->address }}">{{ $customer->address }}</td>
-                            <td class="px-6 py-4 font-bold text-cyan-400">
-                                {{ number_format($customer->bills->sum('consumption'), 2) }} L
+                            <td class="px-4 py-3 font-bold text-cyan-400 text-sm">
+                                {{ number_format($customer->bills->sum('consumption'), 1) }}L
                             </td>
-                            <td class="px-6 py-4 text-right" onclick="event.stopPropagation()">
-                                <div class="flex justify-end gap-2">
+                            <td class="px-4 py-3 text-right" onclick="event.stopPropagation()">
+                                <div class="flex justify-end gap-1">
                                     {{-- Removed standalone show link as requested --}}
                                     <button type="button" 
                                         onclick="toggleDetails('{{ $customer->id }}'); event.stopPropagation();"
@@ -593,8 +596,8 @@
                         datasets: [{
                             label: 'Total Customers',
                             data: data,
-                            borderColor: '#06b6d4',
-                            backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
                             borderWidth: 3,
                             tension: 0.4,
                             fill: true,

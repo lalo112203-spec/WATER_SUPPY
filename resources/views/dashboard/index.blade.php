@@ -19,7 +19,7 @@
         </div>
 
         <!-- Revenue Stats -->
-        <div class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3">
+        <div class="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-2">
 
             <div
                 class="bg-[#1b2636]/40 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.5)] border border-[#2d4059]/50 p-6 flex items-start justify-between relative overflow-hidden group hover:border-cyan-500/50 transition-all">
@@ -143,7 +143,7 @@
                             <span class="text-gray-500 font-normal text-sm ml-2">Revenue Trend</span>
                         </h2>
                     </div>
-                    <div class="p-6 pt-0 flex-1 relative min-h-[300px] z-10">
+                    <div class="p-6 pt-0 flex-1 relative min-h-[400px] z-10">
                         <canvas id="revenueChart"></canvas>
                     </div>
                 </div>
@@ -159,7 +159,7 @@
                             <span class="text-gray-500 font-normal text-sm ml-2">Usage Flow</span>
                         </h2>
                     </div>
-                    <div class="p-6 pt-0 flex-1 relative min-h-[300px] z-10">
+                    <div class="p-6 pt-0 flex-1 relative min-h-[400px] z-10">
                         <canvas id="usageChart"></canvas>
                     </div>
                 </div>

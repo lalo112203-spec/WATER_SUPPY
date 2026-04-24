@@ -3,7 +3,7 @@
         
         <h1 class="text-3xl font-bold mb-6 text-gray-200">Billing Reports</h1>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
             <div class="bg-[#1b2636]/40 backdrop-blur-md rounded-2xl border border-[#2d4059]/50 p-6 relative overflow-hidden group hover:border-emerald-500/50 transition-all">
                 <div class="relative z-10">
                     <p class="text-[11px] font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Paid Bills</p>
@@ -60,13 +60,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
-                <input type="text" placeholder="Search by Consumer No. or Name" class="w-full pl-10 pr-4 py-2 bg-[#121a25]/60 border border-[#263548] rounded-xl focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all duration-300">
+                <input type="text" placeholder="Search by Consumer No. or Name" class="w-full pl-10 pr-4 py-3 bg-[#121a25]/60 border border-[#263548] rounded-xl focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all duration-300">
             </div>
             
-            <div class="flex items-center gap-4 bg-[#1b2636]/40 p-1 rounded-2xl border border-[#2d4059]/50">
-                <div class="px-4 py-2 text-sm">
+            <div class="flex items-center gap-4 bg-[#1b2636]/40 p-2 rounded-2xl border border-[#2d4059]/50">
+                <div class="px-6 py-1 text-sm">
                     <span class="text-gray-500 uppercase tracking-widest text-[10px] font-bold block">Total Billed</span>
-                    <span class="text-xl font-bold text-white tracking-tight">₱{{ number_format($totalBilled, 2) }}</span>
+                    <span class="text-2xl font-bold text-white tracking-tight">₱{{ number_format($totalBilled, 2) }}</span>
                 </div>
             </div>
         </div>
