@@ -110,6 +110,8 @@ class BillingController extends Controller
             'commercial_base_charge' => SystemSetting::get('commercial_base_charge', 250),
             'regular_usage_rate' => SystemSetting::get('regular_usage_rate', 15),
             'commercial_usage_rate' => SystemSetting::get('commercial_usage_rate', 25),
+            'regular_base_limit' => SystemSetting::get('regular_base_limit', 10),
+            'commercial_base_limit' => SystemSetting::get('commercial_base_limit', 10),
         ];
  
         return view('billing.create', compact('customers', 'thresholds', 'globalAdditionalCharges', 'globalAdditionalChargeTotal', 'settings'));
@@ -227,6 +229,8 @@ class BillingController extends Controller
             'commercial_base_charge' => SystemSetting::get('commercial_base_charge', 250),
             'regular_usage_rate' => SystemSetting::get('regular_usage_rate', 15),
             'commercial_usage_rate' => SystemSetting::get('commercial_usage_rate', 25),
+            'regular_base_limit' => SystemSetting::get('regular_base_limit', 10),
+            'commercial_base_limit' => SystemSetting::get('commercial_base_limit', 10),
         ];
 
         $globalAdditionalChargeTotal = collect($bill->applied_additional_charges ?? [])->sum('amount');

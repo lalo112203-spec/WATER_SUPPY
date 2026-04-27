@@ -32,6 +32,8 @@ class SettingsController extends Controller
             'commercial_green_max' => SystemSetting::get('commercial_green_max', 49),
             'commercial_orange_max' => SystemSetting::get('commercial_orange_max', 50),
             'commercial_red_max' => SystemSetting::get('commercial_red_max', 100),
+            'regular_base_limit' => SystemSetting::get('regular_base_limit', 10),
+            'commercial_base_limit' => SystemSetting::get('commercial_base_limit', 10),
             'global_additional_charges' => json_decode(SystemSetting::get('global_additional_charges', '[]'), true),
         ];
  
@@ -73,6 +75,8 @@ class SettingsController extends Controller
             'alert_email' => 'nullable|email',
             'regular_green_max' => 'nullable|numeric|min:0',
             'commercial_green_max' => 'nullable|numeric|min:0',
+            'regular_base_limit' => 'nullable|numeric|min:0',
+            'commercial_base_limit' => 'nullable|numeric|min:0',
             'additional_charge_names' => 'nullable|array',
             'additional_charge_amounts' => 'nullable|array',
         ]);

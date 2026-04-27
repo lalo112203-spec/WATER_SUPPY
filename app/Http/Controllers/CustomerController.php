@@ -58,8 +58,7 @@ class CustomerController extends Controller
             $monthExpr = "to_char(created_at, 'YYYY-MM')";
         }
  
-        $settings = \App\Models\SystemSetting::where('admin_id', $adminId)
-            ->pluck('value', 'key')
+        $settings = \App\Models\SystemSetting::pluck('value', 'key')
             ->toArray();
  
         $globalAdditionalCharges = $settings['global_additional_charges'] ?? [];
