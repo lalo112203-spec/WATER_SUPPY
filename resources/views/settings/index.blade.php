@@ -27,20 +27,25 @@
                     </div>
                 @endif
                 
-                <h3 class="text-lg font-bold">General Settings</h3>
-                <flux:input name="usage_rate" :label="__('Price of Water (₱ per unit)')" type="number" step="0.01" value="{{ old('usage_rate', $settings['usage_rate'] ?? 50) }}" />
+                <div class="hidden">
+                    <flux:input name="usage_rate" :label="__('Price of Water (₱ per unit)')" type="number" step="0.01" value="{{ old('usage_rate', $settings['regular_usage_rate'] ?? 15) }}" />
+                </div>
 
                 <h3 class="text-lg font-bold mt-8">Regular User Config</h3>
-                <flux:input name="base_charge" :label="__('Base Charge (₱)')" type="number" step="0.01" value="{{ old('base_charge', $settings['base_charge'] ?? 100) }}" />
+                <flux:input name="regular_base_charge" :label="__('Base Charge (₱)')" type="number" step="0.01" value="{{ old('regular_base_charge', $settings['regular_base_charge'] ?? 100) }}" />
+                <flux:input name="regular_usage_rate" :label="__('Usage Rate (₱ per m³)')" type="number" step="0.01" value="{{ old('regular_usage_rate', $settings['regular_usage_rate'] ?? 15) }}" />
                 <flux:input name="regular_green_max" :label="__('Green Alert (m³)')" type="number" value="{{ old('regular_green_max', $settings['regular_green_max'] ?? 10) }}" />
                 <flux:input name="regular_orange_max" :label="__('Orange Alert (m³)')" type="number" value="{{ old('regular_orange_max', $settings['regular_orange_max'] ?? 11) }}" />
                 <flux:input name="regular_red_max" :label="__('Red Alert (m³)')" type="number" value="{{ old('regular_red_max', $settings['regular_red_max'] ?? 20) }}" />
-
+                <flux:input name="regular_base_limit" :label="__('Base Usage Limit (m³ - usage above this is billed)')" type="number" value="{{ old('regular_base_limit', $settings['regular_base_limit'] ?? 10) }}" />
+ 
                 <h3 class="text-lg font-bold mt-8">Commercial User Config</h3>
                 <flux:input name="commercial_base_charge" :label="__('Base Charge (₱)')" type="number" step="0.01" value="{{ old('commercial_base_charge', $settings['commercial_base_charge'] ?? 250) }}" />
+                <flux:input name="commercial_usage_rate" :label="__('Usage Rate (₱ per m³)')" type="number" step="0.01" value="{{ old('commercial_usage_rate', $settings['commercial_usage_rate'] ?? 25) }}" />
                 <flux:input name="commercial_green_max" :label="__('Green Alert (m³)')" type="number" value="{{ old('commercial_green_max', $settings['commercial_green_max'] ?? 49) }}" />
                 <flux:input name="commercial_orange_max" :label="__('Orange Alert (m³)')" type="number" value="{{ old('commercial_orange_max', $settings['commercial_orange_max'] ?? 50) }}" />
                 <flux:input name="commercial_red_max" :label="__('Red Alert (m³)')" type="number" value="{{ old('commercial_red_max', $settings['commercial_red_max'] ?? 100) }}" />
+                <flux:input name="commercial_base_limit" :label="__('Base Usage Limit (m³ - usage above this is billed)')" type="number" value="{{ old('commercial_base_limit', $settings['commercial_base_limit'] ?? 10) }}" />
 
                 <h3 class="text-lg font-bold mt-8 flex items-center gap-2">
                     Global Additional Charges

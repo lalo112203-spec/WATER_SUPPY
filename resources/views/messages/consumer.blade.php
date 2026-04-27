@@ -1,6 +1,5 @@
 <x-layouts::app title="Message & Posting">
-<main class="flex-1 overflow-x-hidden overflow-y-auto bg-transparent min-h-[calc(100vh-4rem)]">
-    <div class="h-full flex flex-col py-8 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto font-sans">
+    <div class="h-full flex flex-col py-8 px-4 sm:px-6 lg:px-8 w-full font-sans">
         
         <!-- Header -->
         <div class="mb-8 px-2">
@@ -92,7 +91,7 @@
             </div>
         </div>
     </div>
-</main>
+    </div>
 <style>
     .custom-scrollbar::-webkit-scrollbar {
         width: 6px;

@@ -221,11 +221,18 @@
             [data-flux-main],
             flux\:main {
                 @if(auth()->check() && auth()->user()->role === 'consumer')
+                    /* Consumer defaults to no margin, sidebar will overlay or shift if we want, but let's allow it to be collapsible */
                     margin-left: 0 !important;
                 @else
                     margin-left: 16rem !important;
                 @endif
                 padding-top: 2rem !important;
+            }
+
+            /* When sidebar is collapsed on desktop, reduce margin */
+            [data-flux-sidebar-collapsed-desktop] ~ flux\:main,
+            [data-flux-sidebar-collapsed-desktop] ~ [data-flux-main] {
+                margin-left: 0 !important;
             }
         }
 
@@ -327,12 +334,12 @@
 </head>
 
 <body class="min-h-screen text-gray-300 antialiased selection:bg-cyan-500/30">
-    @if(auth()->check() && auth()->user()->role !== 'consumer')
-    <flux:sidebar collapsible="mobile"
+    @if(auth()->check())
+    <flux:sidebar collapsible {{ auth()->user()->role === 'consumer' ? 'collapsed' : '' }}
         class="border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
         <flux:sidebar.header>
             <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
-            <flux:sidebar.collapse class="lg:hidden" />
+            <flux:sidebar.collapse />
         </flux:sidebar.header>
 
         <flux:sidebar.nav>
@@ -399,10 +406,10 @@
     </flux:sidebar>
     @endif
 
-    <!-- Mobile User Menu -->
-    @if(auth()->check() && auth()->user()->role !== 'consumer')
-    <flux:header class="lg:hidden">
-        <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
+    <!-- Global Header -->
+    @if(auth()->check())
+    <flux:header class="{{ auth()->user()->role === 'admin' ? 'lg:hidden' : '' }}">
+        <flux:sidebar.toggle icon="bars-2" inset="left" />
 
         <flux:spacer />
 

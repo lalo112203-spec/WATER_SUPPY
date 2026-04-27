@@ -136,6 +136,19 @@
             @endforeach
         };
 
+        const settings = {
+            Regular: { 
+                base: {{ $settings['regular_base_charge'] }}, 
+                rate: {{ $settings['regular_usage_rate'] }},
+                limit: {{ $settings['regular_base_limit'] ?? 10 }}
+            },
+            Commercial: { 
+                base: {{ $settings['commercial_base_charge'] }}, 
+                rate: {{ $settings['commercial_usage_rate'] }},
+                limit: {{ $settings['commercial_base_limit'] ?? 10 }}
+            }
+        };
+
         function calculateCharges() {
             const customerType = '{{ $bill->customer->type }}';
             const presentReadingInput = document.getElementById('usage_units');
@@ -148,17 +161,16 @@
             consumptionDisplay.value = usage.toFixed(2);
             document.getElementById('consumption').value = usage.toFixed(2);
 
-            let baseCharge = 0;
-            let rate = 0;
-            if (customerType === 'Regular') { baseCharge = 100; rate = 15; } 
-            else { baseCharge = 250; rate = 25; }
+            let baseCharge = settings[customerType]?.base || 0;
+            let rate = settings[customerType]?.rate || 0;
+            let baseLimit = settings[customerType]?.limit || 10;
 
-            const billableUsage = Math.max(usage - 10, 0);
+            const billableUsage = Math.max(usage - baseLimit, 0);
             const usageCharge = billableUsage * rate;
 
             baseChargeInput.value = baseCharge.toFixed(2);
             usageChargeInput.value = usageCharge.toFixed(2);
-            calculationText.textContent = `Usage: ${usage.toFixed(2)}m³ | Calculation: (${usage.toFixed(2)} - 10) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
+            calculationText.textContent = `Usage: ${usage.toFixed(2)}m³ | Calculation: (${usage.toFixed(2)} - ${baseLimit}) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
             
             updateTotal();
         }

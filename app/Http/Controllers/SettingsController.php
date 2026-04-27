@@ -20,9 +20,10 @@ class SettingsController extends Controller
         }
  
         $settings = [
-            'base_charge' => SystemSetting::get('base_charge', 500),
+            'regular_base_charge' => SystemSetting::get('regular_base_charge', 100),
             'commercial_base_charge' => SystemSetting::get('commercial_base_charge', 250),
-            'usage_rate' => SystemSetting::get('usage_rate', 50),
+            'regular_usage_rate' => SystemSetting::get('regular_usage_rate', 15),
+            'commercial_usage_rate' => SystemSetting::get('commercial_usage_rate', 25),
             'alert_threshold' => SystemSetting::get('alert_threshold', 1000), 
             'alert_email' => SystemSetting::get('alert_email', ''),
             'regular_green_max' => SystemSetting::get('regular_green_max', 10),
@@ -60,13 +61,14 @@ class SettingsController extends Controller
         ]);
  
         $validated = $request->validate([
-            'base_charge' => 'required|numeric|min:0',
+            'regular_base_charge' => 'required|numeric|min:0',
             'commercial_base_charge' => 'required|numeric|min:0',
             'regular_orange_max' => 'required|numeric|min:0',
             'regular_red_max' => 'required|numeric|min:0',
             'commercial_orange_max' => 'required|numeric|min:0',
             'commercial_red_max' => 'required|numeric|min:0',
-            'usage_rate' => 'nullable|numeric|min:0',
+            'regular_usage_rate' => 'required|numeric|min:0',
+            'commercial_usage_rate' => 'required|numeric|min:0',
             'alert_threshold' => 'nullable|numeric|min:0',
             'alert_email' => 'nullable|email',
             'regular_green_max' => 'nullable|numeric|min:0',

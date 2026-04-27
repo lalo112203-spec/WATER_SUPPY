@@ -70,6 +70,13 @@ class DashboardController extends Controller
             ->groupByRaw($billMonthExpr)
             ->orderByRaw("{$billMonthExpr} asc")
             ->get();
+ 
+        $monthlyPendingRevenue = Bill::where('status', 'Pending')
+            ->whereIn('customer_id', $myCustomerIds)
+            ->selectRaw("{$billMonthExpr} as month, SUM(total_amount) as total")
+            ->groupByRaw($billMonthExpr)
+            ->orderByRaw("{$billMonthExpr} asc")
+            ->get();
 
         // Get usage trend data
         $usageTrend = Bill::whereIn('customer_id', $myCustomerIds)
@@ -100,6 +107,7 @@ class DashboardController extends Controller
             'paidCustomersCount' => $paidCustomersCount,
             'unpaidCustomersCount' => $unpaidCustomersCount,
             'monthlyRevenue' => $monthlyRevenue,
+            'monthlyPendingRevenue' => $monthlyPendingRevenue,
             'usageTrend' => $usageTrend,
             'customerTypes' => $customerTypes,
             'revenueByType' => $revenueByType,

@@ -105,10 +105,14 @@ class BillingController extends Controller
             ],
         ];
  
-        $globalAdditionalCharges = json_decode(SystemSetting::get('global_additional_charges', '[]'), true);
-        $globalAdditionalChargeTotal = collect($globalAdditionalCharges)->sum('amount');
+        $settings = [
+            'regular_base_charge' => SystemSetting::get('regular_base_charge', 100),
+            'commercial_base_charge' => SystemSetting::get('commercial_base_charge', 250),
+            'regular_usage_rate' => SystemSetting::get('regular_usage_rate', 15),
+            'commercial_usage_rate' => SystemSetting::get('commercial_usage_rate', 25),
+        ];
  
-        return view('billing.create', compact('customers', 'thresholds', 'globalAdditionalCharges', 'globalAdditionalChargeTotal'));
+        return view('billing.create', compact('customers', 'thresholds', 'globalAdditionalCharges', 'globalAdditionalChargeTotal', 'settings'));
     }
  
     public function store(Request $request)
@@ -218,9 +222,16 @@ class BillingController extends Controller
             ],
         ];
 
+        $settings = [
+            'regular_base_charge' => SystemSetting::get('regular_base_charge', 100),
+            'commercial_base_charge' => SystemSetting::get('commercial_base_charge', 250),
+            'regular_usage_rate' => SystemSetting::get('regular_usage_rate', 15),
+            'commercial_usage_rate' => SystemSetting::get('commercial_usage_rate', 25),
+        ];
+
         $globalAdditionalChargeTotal = collect($bill->applied_additional_charges ?? [])->sum('amount');
  
-        return view('billing.edit', compact('bill', 'customers', 'thresholds', 'globalAdditionalChargeTotal'));
+        return view('billing.edit', compact('bill', 'customers', 'thresholds', 'globalAdditionalChargeTotal', 'settings'));
     }
  
     public function update(Request $request, Bill $bill)

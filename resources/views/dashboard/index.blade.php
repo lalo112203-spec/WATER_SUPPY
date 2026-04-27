@@ -195,27 +195,35 @@
             if (!revEl) return;
 
             // Destroy previous instances to avoid rendering issues on Livewire navigation
-            if (window.revenueChartInstance) window.revenueChartInstance.destroy();
-            if (window.usageChartInstance) window.usageChartInstance.destroy();
-            if (window.customerChartInstance) window.customerChartInstance.destroy();
-
-            if (typeof Chart === 'undefined') {
-                setTimeout(initializeDashboardCharts, 50);
-                return;
-            }
-
-            // Destroy previous instances to avoid rendering issues on Livewire navigation
-            if (window.revenueChartInstance) window.revenueChartInstance.destroy();
-            if (window.usageChartInstance) window.usageChartInstance.destroy();
-            if (window.customerChartInstance) window.customerChartInstance.destroy();
-            if (window.revenueTypeChartInstance) window.revenueTypeChartInstance.destroy();
+            const instances = [
+                'revenueChartInstance',
+                'usageChartInstance',
+                'customerChartInstance',
+                'revenueTypeChartInstance'
+            ];
+            instances.forEach(inst => {
+                if (window[inst]) {
+                    window[inst].destroy();
+                    window[inst] = null;
+                }
+            });
 
             // Shared Chart.js options
             const flowChartOptions = {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
+                    legend: { 
+                        display: true, 
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            color: '#94a3b8',
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            font: { size: 10, weight: '600' },
+                            padding: 15
+                        }
+                    },
                     tooltip: {
                         mode: 'index',
                         intersect: false,
@@ -226,9 +234,22 @@
                         borderWidth: 1,
                         padding: 12,
                         boxPadding: 6,
-                        usePointStyle: true
-                    }
-                },
+                        usePointStyle: true,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                if (context.parsed.y !== null) {
+                                    if (label.includes('₱')) {
+                                        label += '₱' + context.parsed.y.toLocaleString();
+                                    } else {
+                                        label += context.parsed.y.toLocaleString() + (context.dataset.unit || '');
+                                    }
+                                }
+                                return label;
+                            }
+                        }
+                    },
                 scales: {
                     y: {
                         beginAtZero: true,
@@ -249,38 +270,66 @@
                 const revEl = document.getElementById('revenueChart');
                 if (revEl) {
                     let revLabels = {!! json_encode($monthlyRevenue->pluck('month')) !!};
-                    let revData = {!! json_encode($monthlyRevenue->pluck('total')) !!};
+                    let paidData = {!! json_encode($monthlyRevenue->pluck('total')) !!};
+                    let pendingData = {!! json_encode($monthlyPendingRevenue->pluck('total')) !!};
+
+                    // Ensure labels cover both datasets
+                    const allLabels = [...new Set([...revLabels, ...{!! json_encode($monthlyPendingRevenue->pluck('month')) !!}])].sort();
 
                     const revenueCtx = revEl.getContext('2d');
-                    const revGradient = revenueCtx.createLinearGradient(0, 0, 0, 400);
-                    revGradient.addColorStop(0, 'rgba(6, 182, 212, 0.4)');
-                    revGradient.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+                    const paidGrad = revenueCtx.createLinearGradient(0, 0, 0, 400);
+                    paidGrad.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+                    paidGrad.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+                    const pendGrad = revenueCtx.createLinearGradient(0, 0, 0, 400);
+                    pendGrad.addColorStop(0, 'rgba(245, 158, 11, 0.2)');
+                    pendGrad.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
 
                     window.revenueChartInstance = new Chart(revenueCtx, {
                         type: 'line',
                         data: {
-                            labels: revLabels,
-                            datasets: [{
-                                label: 'Revenue (₱)',
-                                data: revData,
-                                borderColor: '#06b6d4',
-                                backgroundColor: revGradient,
-                                borderWidth: 3,
-                                pointBackgroundColor: '#06b6d4',
-                                pointBorderColor: '#ffffff',
-                                pointBorderWidth: 2,
-                                pointRadius: 4,
-                                pointHoverRadius: 6,
-                                fill: true,
-                                tension: 0.4
-                            }]
+                            labels: allLabels,
+                            datasets: [
+                                {
+                                    label: 'Collected (₱)',
+                                    data: allLabels.map(l => {
+                                        const idx = revLabels.indexOf(l);
+                                        return idx !== -1 ? paidData[idx] : 0;
+                                    }),
+                                    borderColor: '#10b981',
+                                    backgroundColor: paidGrad,
+                                    borderWidth: 3,
+                                    pointBackgroundColor: '#10b981',
+                                    pointBorderColor: '#ffffff',
+                                    pointBorderWidth: 2,
+                                    fill: true,
+                                    tension: 0.4
+                                },
+                                {
+                                    label: 'Pending (₱)',
+                                    data: allLabels.map(l => {
+                                        const pendLabels = {!! json_encode($monthlyPendingRevenue->pluck('month')) !!};
+                                        const idx = pendLabels.indexOf(l);
+                                        return idx !== -1 ? pendingData[idx] : 0;
+                                    }),
+                                    borderColor: '#f59e0b',
+                                    backgroundColor: pendGrad,
+                                    borderWidth: 2,
+                                    borderDash: [5, 5],
+                                    pointBackgroundColor: '#f59e0b',
+                                    pointBorderColor: '#ffffff',
+                                    pointBorderWidth: 1,
+                                    fill: true,
+                                    tension: 0.4
+                                }
+                            ]
                         },
                         options: flowChartOptions
                     });
                 }
             } catch (e) {
                 console.error("Revenue chart error:", e);
-            }
+            };
 
             // 2. USAGE FLOW CHART
             try {

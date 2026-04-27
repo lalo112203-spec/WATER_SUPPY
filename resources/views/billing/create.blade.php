@@ -248,6 +248,20 @@
             @endforeach
         };
 
+        // settings provided by server
+        const settings = {
+            Regular: { 
+                base: {{ $settings['regular_base_charge'] }}, 
+                rate: {{ $settings['regular_usage_rate'] }},
+                limit: {{ $settings['regular_base_limit'] ?? 10 }}
+            },
+            Commercial: { 
+                base: {{ $settings['commercial_base_charge'] }}, 
+                rate: {{ $settings['commercial_usage_rate'] }},
+                limit: {{ $settings['commercial_base_limit'] ?? 10 }}
+            }
+        };
+
         // Store previous reading
         let previousReading = 0;
 
@@ -381,27 +395,20 @@
             // Regular: (usage - 10) * 15 + 100
             // Commercial: (usage - 10) * 25 + 250
             
-            let baseCharge = 0;
-            let rate = 0;
+            let baseCharge = settings[customerType]?.base || 0;
+            let rate = settings[customerType]?.rate || 0;
+            let baseLimit = settings[customerType]?.limit || 10;
 
-            if (customerType === 'Regular') {
-                baseCharge = 100;
-                rate = 15;
-            } else if (customerType === 'Commercial') {
-                baseCharge = 250;
-                rate = 25;
-            }
-
-            // Calculation as per "result - 10 = result x rate = result + base = total"
-            // We use Math.max to avoid negative charges if usage is < 10
-            const billableUsage = Math.max(usage - 10, 0);
+            // Calculation as per "result - limit = result x rate = result + base = total"
+            // We use Math.max to avoid negative charges if usage is < limit
+            const billableUsage = Math.max(usage - baseLimit, 0);
             const usageCharge = billableUsage * rate;
 
             baseChargeInput.value = baseCharge.toFixed(2);
             usageChargeInput.value = usageCharge.toFixed(2);
 
             // Show calculation breakdown
-            calculationText.textContent = `Usage: ${usage.toFixed(2)}m³ | Calculation: (${usage.toFixed(2)} - 10) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
+            calculationText.textContent = `Usage: ${usage.toFixed(2)}m³ | Calculation: (${usage.toFixed(2)} - ${baseLimit}) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
 
             // Determine color class based on total usage
             const waterIncrease = usage;

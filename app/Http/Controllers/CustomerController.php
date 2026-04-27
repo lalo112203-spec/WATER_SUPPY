@@ -57,7 +57,17 @@ class CustomerController extends Controller
         } elseif ($driver === 'pgsql') {
             $monthExpr = "to_char(created_at, 'YYYY-MM')";
         }
-
+ 
+        $settings = \App\Models\SystemSetting::where('admin_id', $adminId)
+            ->pluck('value', 'key')
+            ->toArray();
+ 
+        $globalAdditionalCharges = $settings['global_additional_charges'] ?? [];
+        if (is_string($globalAdditionalCharges)) {
+            $globalAdditionalCharges = json_decode($globalAdditionalCharges, true) ?? [];
+        }
+        $globalAdditionalChargeTotal = collect($globalAdditionalCharges)->sum('amount');
+ 
         // Get cumulative customer growth data for the last 6 months
         $startOfRange = now()->subMonths(5)->startOfMonth();
         $initialCount = (clone $baseQuery)->where('created_at', '<', $startOfRange)->count();
@@ -84,7 +94,9 @@ class CustomerController extends Controller
             'customerGrowth' => $customerGrowth,
             'paidCustomersCount' => $paidCustomersCount,
             'unpaidCustomersCount' => $unpaidCustomersCount,
-            'barangays' => $barangays
+            'barangays' => $barangays,
+            'settings' => $settings,
+            'globalAdditionalChargeTotal' => $globalAdditionalChargeTotal
         ]);
     }
 

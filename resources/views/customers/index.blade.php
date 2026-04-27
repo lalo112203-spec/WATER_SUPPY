@@ -521,6 +521,9 @@
             }, 100);
         }
 
+        const systemSettings = {!! json_encode($settings) !!};
+        const globalAdditionalChargeTotal = {{ $globalAdditionalChargeTotal ?? 0 }};
+
         function calculateQuickCharges() {
             const input = document.getElementById('modal_present_reading');
             const baseInput = document.getElementById('modal_base_charge');
@@ -543,19 +546,34 @@
             
             hiddenConsumption.value = consumption.toFixed(2);
 
-            let baseCharge = quickCustomerType === 'Commercial' ? 250 : 100;
-            let rate = quickCustomerType === 'Commercial' ? 25 : 15;
+            let baseCharge = 0;
+            let rate = 0;
+            let baseLimit = 10;
 
-            const billableUsage = Math.max(consumption - 10, 0);
+            if (quickCustomerType === 'Commercial') {
+                baseCharge = parseFloat(systemSettings.commercial_base_charge) || 250;
+                rate = parseFloat(systemSettings.commercial_usage_rate) || 25;
+                baseLimit = parseFloat(systemSettings.commercial_base_limit) || 10;
+            } else {
+                baseCharge = parseFloat(systemSettings.regular_base_charge) || 100;
+                rate = parseFloat(systemSettings.regular_usage_rate) || 15;
+                baseLimit = parseFloat(systemSettings.regular_base_limit) || 10;
+            }
+
+            const billableUsage = Math.max(consumption - baseLimit, 0);
             const usageCharge = billableUsage * rate;
-            const total = baseCharge + usageCharge;
+            const total = baseCharge + usageCharge + globalAdditionalChargeTotal;
 
             baseInput.value = baseCharge.toFixed(2);
             usageInput.value = usageCharge.toFixed(2);
             
             updateQuickTotal();
 
-            breakdown.textContent = `Consumption: ${consumption.toFixed(2)}m³ | (${consumption.toFixed(2)} - 10) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
+            let breakdownText = `Consumption: ${consumption.toFixed(2)}m³ | (${consumption.toFixed(2)} - ${baseLimit}) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
+            if (globalAdditionalChargeTotal > 0) {
+                breakdownText += ` + ₱${globalAdditionalChargeTotal.toFixed(2)} (Additional Charges)`;
+            }
+            breakdown.textContent = breakdownText;
             
             // Color coding breakdown based on total consumption
             breakdown.className = 'text-xs mt-1 transition-colors duration-300';
@@ -568,7 +586,7 @@
         function updateQuickTotal() {
             const base = parseFloat(document.getElementById('modal_base_charge').value) || 0;
             const usage = parseFloat(document.getElementById('modal_usage_charge').value) || 0;
-            const total = base + usage;
+            const total = base + usage + globalAdditionalChargeTotal;
             document.getElementById('modal_total_display').textContent = total.toLocaleString(undefined, { minimumFractionDigits: 2 });
         }
 
