@@ -15,6 +15,9 @@ new #[Title('Appearance settings')] class extends Component {
     public $text_stroke_width;
     public $font_family;
     public $background_color;
+    public $appearance;
+    public $background_url;
+    public $messenger_background_url;
 
     public function mount() {
         $this->text_color = auth()->user()->text_color ?? '';
@@ -22,6 +25,9 @@ new #[Title('Appearance settings')] class extends Component {
         $this->text_stroke_width = auth()->user()->text_stroke_width ?? '';
         $this->font_family = auth()->user()->font_family ?? '';
         $this->background_color = auth()->user()->background_color ?? '';
+        $this->appearance = auth()->user()->appearance ?? 'light';
+        $this->background_url = auth()->user()->background_url ?? '';
+        $this->messenger_background_url = auth()->user()->messenger_background_url ?? '';
     }
 
     public function updatedBackgroundImage() {
@@ -115,6 +121,9 @@ new #[Title('Appearance settings')] class extends Component {
         $user->text_stroke_width = $this->text_stroke_width;
         $user->font_family = $this->font_family;
         $user->background_color = $this->background_color;
+        $user->appearance = $this->appearance;
+        $user->background_url = $this->background_url;
+        $user->messenger_background_url = $this->messenger_background_url;
         $user->save();
 
         session()->flash('status', 'Appearance updated successfully.');
@@ -127,7 +136,9 @@ new #[Title('Appearance settings')] class extends Component {
             Storage::disk('public')->delete($user->background_image);
         }
         $user->background_image = null;
+        $user->background_url = null;
         $user->save();
+        $this->background_url = '';
         session()->flash('status', 'Background removed successfully.');
         $this->redirectIntended(route('appearance.edit'));
     }
@@ -138,7 +149,9 @@ new #[Title('Appearance settings')] class extends Component {
             Storage::disk('public')->delete($user->messenger_background);
         }
         $user->messenger_background = null;
+        $user->messenger_background_url = null;
         $user->save();
+        $this->messenger_background_url = '';
         session()->flash('status', 'Messenger background removed successfully.');
         $this->redirectIntended(route('appearance.edit'));
     }
@@ -149,8 +162,8 @@ new #[Title('Appearance settings')] class extends Component {
 
     <flux:heading class="sr-only">{{ __('Appearance settings') }}</flux:heading>
 
-    <x-pages::settings.layout :heading="__('Appearance')" :subheading="__('Update the appearance settings for your account')">
-        <flux:radio.group x-data variant="segmented" x-model="$flux.appearance">
+    <x-pages::settings.layout :heading="__('Appearance')">
+        <flux:radio.group x-data variant="segmented" wire:model.live="appearance" x-init="$watch('$flux.appearance', value => $wire.set('appearance', value))">
             <flux:radio value="light" icon="sun">{{ __('Light') }}</flux:radio>
             <flux:radio value="dark" icon="moon">{{ __('Dark') }}</flux:radio>
             <flux:radio value="custom" icon="paint-brush">{{ __('Custom') }}</flux:radio>
@@ -165,45 +178,62 @@ new #[Title('Appearance settings')] class extends Component {
 
             <div class="space-y-2">
                 <flux:heading>{{ __('Custom Background Image') }}</flux:heading>
-                <flux:subheading>{{ __('Upload a custom background picture for your account dashboard.') }}</flux:subheading>
                 
-                @if(auth()->user()->background_image)
+                @if(auth()->user()->background_image || auth()->user()->background_url)
                     <div class="my-4">
-                        <img src="{{ asset('storage/' . auth()->user()->background_image) }}" class="h-32 rounded shadow-sm border border-gray-200">
+                        <img src="{{ auth()->user()->background_url ?: asset('storage/' . auth()->user()->background_image) }}" class="h-32 rounded shadow-sm border border-gray-200">
                         <button type="button" wire:click="removeBackground" class="mt-2 text-sm text-red-600 hover:text-red-800 transition-colors">{{ __('Remove Background') }}</button>
                     </div>
                 @endif
-                <input type="file" wire:model="background_image" class="block w-full text-sm text-slate-500
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-blue-50 file:text-blue-700
-                    hover:file:bg-blue-100" accept="image/*" />
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">{{ __('Upload File') }}</label>
+                        <input type="file" wire:model="background_image" class="block w-full text-sm text-slate-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100" accept="image/*" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">{{ __('Or Paste URL') }}</label>
+                        <flux:input wire:model.blur="background_url" placeholder="https://example.com/image.jpg" />
+                    </div>
+                </div>
                 @error('background_image') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
             </div>
 
             <div class="space-y-2 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
                 <flux:heading>{{ __('Messenger Background Image') }}</flux:heading>
-                <flux:subheading>{{ __('Upload a custom background picture for your messenger.') }}</flux:subheading>
                 
-                @if(auth()->user()->messenger_background)
+                @if(auth()->user()->messenger_background || auth()->user()->messenger_background_url)
                     <div class="my-4">
-                        <img src="{{ asset('storage/' . auth()->user()->messenger_background) }}" class="h-32 rounded shadow-sm border border-gray-200">
+                        <img src="{{ auth()->user()->messenger_background_url ?: asset('storage/' . auth()->user()->messenger_background) }}" class="h-32 rounded shadow-sm border border-gray-200">
                         <button type="button" wire:click="removeMessengerBackground" class="mt-2 text-sm text-red-600 hover:text-red-800 transition-colors">{{ __('Remove Messenger Background') }}</button>
                     </div>
                 @endif
-                <input type="file" wire:model="messenger_background" class="block w-full text-sm text-slate-500
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-blue-50 file:text-blue-700
-                    hover:file:bg-blue-100" accept="image/*" />
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">{{ __('Upload File') }}</label>
+                        <input type="file" wire:model="messenger_background" class="block w-full text-sm text-slate-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100" accept="image/*" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">{{ __('Or Paste URL') }}</label>
+                        <flux:input wire:model.blur="messenger_background_url" placeholder="https://example.com/chat-bg.jpg" />
+                    </div>
+                </div>
                 @error('messenger_background') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
             </div>
 
             <div class="space-y-2 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
                 <flux:heading>{{ __('Custom Background Color') }}</flux:heading>
-                <flux:subheading>{{ __('Choose a default solid background color (overrides animations if set).') }}</flux:subheading>
                 <div class="flex items-center gap-4">
                     <input type="color" wire:model.blur="background_color" class="h-10 w-20 cursor-pointer rounded border border-gray-300">
                     @if($background_color)
@@ -215,7 +245,6 @@ new #[Title('Appearance settings')] class extends Component {
 
             <div class="space-y-2 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
                 <flux:heading>{{ __('Custom Text Color') }}</flux:heading>
-                <flux:subheading>{{ __('Choose a default text color for your dashboard (leave empty for default).') }}</flux:subheading>
                 <div class="flex items-center gap-4">
                     <input type="color" wire:model.blur="text_color" class="h-10 w-20 cursor-pointer rounded border border-gray-300">
                     @if($text_color)
@@ -228,7 +257,6 @@ new #[Title('Appearance settings')] class extends Component {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
                 <div class="space-y-2">
                     <flux:heading>{{ __('Text Stroke Color') }}</flux:heading>
-                    <flux:subheading>{{ __('Add a stroke (outline) color to your text.') }}</flux:subheading>
                     <div class="flex items-center gap-4">
                         <input type="color" wire:model.blur="text_stroke_color" class="h-10 w-20 cursor-pointer rounded border border-gray-300">
                         @if($text_stroke_color)
@@ -239,7 +267,6 @@ new #[Title('Appearance settings')] class extends Component {
 
                 <div class="space-y-2">
                     <flux:heading>{{ __('Text Stroke Width') }}</flux:heading>
-                    <flux:subheading>{{ __('Set the thickness of the text outline.') }}</flux:subheading>
                     <flux:select wire:model.blur="text_stroke_width" placeholder="Select width...">
                         <flux:select.option value="">None</flux:select.option>
                         <flux:select.option value="0.5px">0.5px</flux:select.option>
@@ -253,7 +280,6 @@ new #[Title('Appearance settings')] class extends Component {
 
             <div class="space-y-2 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
                 <flux:heading>{{ __('Font Family') }}</flux:heading>
-                <flux:subheading>{{ __('Choose your preferred font for the application.') }}</flux:subheading>
                 <flux:select wire:model.blur="font_family" placeholder="Select font...">
                     <flux:select.option value="">Default (Inter)</flux:select.option>
                     <flux:select.option value="Arial, sans-serif">Arial</flux:select.option>

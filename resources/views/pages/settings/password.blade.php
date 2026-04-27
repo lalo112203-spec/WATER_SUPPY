@@ -75,7 +75,7 @@ new #[Title('Password settings')] class extends Component {
 
     <flux:heading class="sr-only">{{ __('Password settings') }}</flux:heading>
 
-    <x-pages::settings.layout :heading="__('Update password')" :subheading="__('Ensure your account is using a long, random password to stay secure')">
+    <x-pages::settings.layout :heading="__('Update password')">
         <form method="POST" wire:submit="updatePassword" class="mt-6 space-y-6">
             <div class="relative">
                 <flux:input
@@ -136,9 +136,6 @@ new #[Title('Password settings')] class extends Component {
                     placeholder="Enter 8-digit code to change password"
                     maxlength="8"
                 />
-                <p class="mt-2 text-[11px] text-yellow-500/70 italic">
-                    Changing your password requires a valid registration code. You can obtain this at the **D.W.S.S. Office** by providing a valid ID to confirm your identity.
-                </p>
             </div>
             @endif
 

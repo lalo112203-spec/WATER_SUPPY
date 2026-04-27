@@ -5,7 +5,7 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form method="POST" action="{{ route('register') }}" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route('register') }}" class="flex flex-col gap-6" x-data="{ account_number: '{{ old('account_number') }}' }">
             @csrf
             <!-- Name -->
             <flux:input
@@ -23,7 +23,7 @@
             <flux:input
                 name="account_number"
                 :label="__('Account Number')"
-                :value="old('account_number')"
+                x-model="account_number"
                 type="text"
                 required
                 placeholder="Enter your account number"
@@ -56,16 +56,8 @@
                 </div>
             </div>
 
-            <!-- Username -->
-            <flux:input
-                name="email"
-                :label="__('Username')"
-                :value="old('email')"
-                type="text"
-                required
-                autocomplete="username"
-                placeholder="Choose a username"
-            />
+            {{-- Email/Username hidden as requested. Auto-populates from account_number. --}}
+            <input type="hidden" name="email" :value="account_number" />
 
             <!-- Password -->
             <flux:input

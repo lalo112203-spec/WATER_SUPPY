@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
 
-        if (app()->environment('production')) {
+        if (!app()->isLocal()) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
     }

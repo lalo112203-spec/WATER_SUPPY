@@ -43,10 +43,11 @@
         <table class="w-full text-sm">
             <thead>
                 <tr class="bg-gray-50">
-                    <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700">Account ID</th>
+                    <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700">Account Number</th>
                     <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700">Customer Name</th>
                     <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700">Type</th>
                     <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700">Barangay</th>
+                    <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700 text-center">Present Reading (m³)</th>
                     <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700">Status</th>
                     <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700">Registry Date</th>
                 </tr>
@@ -62,6 +63,9 @@
                             </span>
                         </td>
                         <td class="px-3 py-3 border border-gray-200">{{ $customer->barangay }}</td>
+                        <td class="px-3 py-3 border border-gray-200 text-center font-bold text-blue-600">
+                            {{ number_format($customer->meter_reading ?? 0, 1) }}
+                        </td>
                         <td class="px-3 py-3 border border-gray-200 text-center">
                              <span class="font-bold text-[11px] {{ $customer->status === 'active' ? 'text-emerald-600' : 'text-rose-600' }}">
                                 {{ strtoupper($customer->status) }}
@@ -71,7 +75,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-3 py-10 text-center text-gray-400 italic">No customer records found for this period.</td>
+                        <td colspan="7" class="px-3 py-10 text-center text-gray-400 italic">No customer records found for this period.</td>
                     </tr>
                 @endforelse
             </tbody>

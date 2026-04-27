@@ -55,7 +55,6 @@ new #[Title('Two-factor authentication')] class extends Component {
 
     <x-pages::settings.layout
         :heading="__('Two-factor authentication')"
-        :subheading="__('Manage your two-factor authentication settings')"
     >
         <div class="flex flex-col w-full mx-auto space-y-6 text-sm" wire:cloak>
             @if ($twoFactorEnabled)
@@ -64,9 +63,6 @@ new #[Title('Two-factor authentication')] class extends Component {
                         <flux:badge color="green">{{ __('Enabled') }}</flux:badge>
                     </div>
 
-                    <flux:text>
-                        {{ __('With two-factor authentication enabled, you will be prompted for a secure, random pin during login, which you can retrieve from the TOTP-supported application on your phone.') }}
-                    </flux:text>
 
                     <livewire:pages::settings.two-factor.recovery-codes :$requiresConfirmation />
 
@@ -87,9 +83,6 @@ new #[Title('Two-factor authentication')] class extends Component {
                         <flux:badge color="red">{{ __('Disabled') }}</flux:badge>
                     </div>
 
-                    <flux:text variant="subtle">
-                        {{ __('When you enable two-factor authentication, you will be prompted for a secure pin during login. This pin can be retrieved from a TOTP-supported application on your phone.') }}
-                    </flux:text>
 
                     <flux:modal.trigger name="two-factor-setup-modal">
                         <flux:button

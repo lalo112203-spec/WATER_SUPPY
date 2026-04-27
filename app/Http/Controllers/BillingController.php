@@ -10,23 +10,43 @@ use Illuminate\Http\Request;
  
 class BillingController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $adminId = auth()->id();
+        $search = $request->input('search');
         $myCustomerIds = Customer::where('admin_id', $adminId)->pluck('id')->toArray();
- 
-        $pendingBills = Bill::with(['customer' => function ($query) { $query->withTrashed(); }])
+
+        $pendingQuery = Bill::with(['customer' => function ($query) { $query->withTrashed(); }])
             ->whereIn('customer_id', $myCustomerIds)
-            ->where('status', '!=', 'Paid')
-            ->orderBy('billing_date', 'desc')
-            ->paginate(10, ['*'], 'pending_page');
- 
-        $paidBills = Bill::with(['customer' => function ($query) { $query->withTrashed(); }])
+            ->where('status', '!=', 'Paid');
+
+        $paidQuery = Bill::with(['customer' => function ($query) { $query->withTrashed(); }])
             ->whereIn('customer_id', $myCustomerIds)
-            ->where('status', 'Paid')
-            ->orderBy('paid_date', 'desc')
-            ->paginate(10, ['*'], 'paid_page');
- 
+            ->where('status', 'Paid');
+
+        if ($search) {
+            $pendingQuery->where(function ($q) use ($search) {
+                $q->whereHas('customer', function ($cq) use ($search) {
+                    $cq->where('name', 'like', "%{$search}%")
+                       ->orWhere('customer_id', 'like', "%{$search}%");
+                });
+            });
+            $paidQuery->where(function ($q) use ($search) {
+                $q->whereHas('customer', function ($cq) use ($search) {
+                    $cq->where('name', 'like', "%{$search}%")
+                       ->orWhere('customer_id', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $pendingBills = $pendingQuery->orderBy('billing_date', 'desc')
+            ->paginate(10, ['*'], 'pending_page')
+            ->withQueryString();
+
+        $paidBills = $paidQuery->orderBy('paid_date', 'desc')
+            ->paginate(10, ['*'], 'paid_page')
+            ->withQueryString();
+
         $paidCount = Bill::where('status', 'Paid')
             ->whereIn('customer_id', $myCustomerIds)
             ->count();

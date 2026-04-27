@@ -162,9 +162,13 @@
         }
 
         /* Custom Theme Overrides (Keeping Logic Intact) */
-        @if(auth()->check() && (auth()->user()->background_image || auth()->user()->background_color))
+        @if(auth()->check() && (auth()->user()->background_image || auth()->user()->background_url || auth()->user()->background_color))
             html.custom-theme body {
-                @if(auth()->user()->background_image)
+                @if(auth()->user()->background_url)
+                    background-image: url("{{ auth()->user()->background_url }}") !important;
+                    background-size: cover !important;
+                    background-attachment: fixed !important;
+                @elseif(auth()->user()->background_image)
                     background-image: url("{{ asset('storage/' . auth()->user()->background_image) }}") !important;
                     background-size: cover !important;
                     background-attachment: fixed !important;
@@ -216,7 +220,11 @@
             main,
             [data-flux-main],
             flux\:main {
-                margin-left: 16rem !important;
+                @if(auth()->check() && auth()->user()->role === 'consumer')
+                    margin-left: 0 !important;
+                @else
+                    margin-left: 16rem !important;
+                @endif
                 padding-top: 2rem !important;
             }
         }
@@ -242,6 +250,14 @@
     <script>
         function shouldBeCustom() {
             let localApp = window.localStorage.getItem('flux.appearance');
+            let dbApp = '{{ auth()->user()->appearance ?? "light" }}';
+            
+            // Sync logic: If local storage is empty, use DB. If DB is set and different, prioritize DB for first load.
+            if (!localApp) {
+                window.localStorage.setItem('flux.appearance', dbApp);
+                localApp = dbApp;
+            }
+
             // Auto-upgrade legacy 'system' states from previous session bug
             if (localApp === 'system') {
                 window.localStorage.setItem('flux.appearance', 'custom');
@@ -311,6 +327,7 @@
 </head>
 
 <body class="min-h-screen text-gray-300 antialiased selection:bg-cyan-500/30">
+    @if(auth()->check() && auth()->user()->role !== 'consumer')
     <flux:sidebar collapsible="mobile"
         class="border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
         <flux:sidebar.header>
@@ -380,8 +397,10 @@
 
         <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
     </flux:sidebar>
+    @endif
 
     <!-- Mobile User Menu -->
+    @if(auth()->check() && auth()->user()->role !== 'consumer')
     <flux:header class="lg:hidden">
         <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
@@ -406,7 +425,11 @@
                             @endif
                             <div class="grid flex-1 text-start text-sm leading-tight">
                                 <flux:heading class="truncate">{{ auth()->user()->name }}</flux:heading>
-                                <flux:text class="truncate">{{ auth()->user()->email }}</flux:text>
+                                @if(auth()->user()->customer)
+                                    <flux:text class="truncate">Account Number: {{ auth()->user()->customer->customer_id }}</flux:text>
+                                @else
+                                    <flux:text class="truncate text-xs text-gray-500 capitalize">{{ auth()->user()->role }}</flux:text>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -432,6 +455,7 @@
             </flux:menu>
         </flux:dropdown>
     </flux:header>
+    @endif
 
     {{ $slot }}
 

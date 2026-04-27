@@ -113,7 +113,7 @@
                     <p class="text-[13px] font-medium text-gray-400 uppercase tracking-widest mb-1">Total Usage</p>
                     <h3 class="text-3xl font-extrabold text-white tracking-tight">
                         {{ number_format($totalConsumption, 2) }} <span
-                            class="text-xl text-cyan-300 font-medium">L</span></h3>
+                            class="text-xl text-cyan-300 font-medium">m³</span></h3>
                 </div>
                 <div
                     class="h-12 w-12 rounded-xl bg-cyan-900/30 text-cyan-400 border border-cyan-800/50 flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(6,182,212,0.3)] group-hover:scale-110 transition-transform">
@@ -299,7 +299,7 @@
                         data: {
                             labels: usageLabels,
                             datasets: [{
-                                label: 'Usage (L)',
+                                label: 'Usage (m³)',
                                 data: usageData,
                                 borderColor: '#6366f1',
                                 backgroundColor: useGradient,

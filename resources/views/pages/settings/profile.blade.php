@@ -123,7 +123,7 @@ new #[Title('Profile settings')] class extends Component {
 
     <flux:heading class="sr-only">{{ __('Profile settings') }}</flux:heading>
 
-    <x-pages::settings.layout :heading="__('Profile')" :subheading="__('Update your name and email address')">
+    <x-pages::settings.layout :heading="__('Profile')">
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
             <div class="mb-6 flex items-center gap-8 p-6 bg-white/5 rounded-3xl border border-white/10">
                 <div class="relative group flex-shrink-0">
@@ -140,7 +140,6 @@ new #[Title('Profile settings')] class extends Component {
                 </div>
                 <div class="flex-1">
                     <flux:heading size="lg">{{ __('Profile Picture') }}</flux:heading>
-                    <flux:subheading>{{ __('Upload a new avatar to personalize your account.') }}</flux:subheading>
                     <input type="file" wire:model="profile_photo" class="mt-2 block w-full text-sm text-slate-400
                         file:mr-4 file:py-2 file:px-4
                         file:rounded-xl file:border-0
@@ -163,34 +162,12 @@ new #[Title('Profile settings')] class extends Component {
                             placeholder="Enter 8-digit code to change Name"
                             maxlength="8"
                         />
-                        <p class="mt-2 text-[11px] text-yellow-500/70 italic">
-                            Changing your account name requires a valid registration code. You can obtain this at the **D.W.S.S. Office** by providing a valid ID to confirm your identity.
-                        </p>
                     </div>
                 </template>
             </div>
 
-            <div>
-                <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />
-
-                @if ($this->hasUnverifiedEmail)
-                    <div>
-                        <flux:text class="mt-4">
-                            {{ __('Your email address is unverified.') }}
-
-                            <flux:link class="text-sm cursor-pointer" wire:click.prevent="resendVerificationNotification">
-                                {{ __('Click here to re-send the verification email.') }}
-                            </flux:link>
-                        </flux:text>
-
-                        @if (session('status') === 'verification-link-sent')
-                            <flux:text class="mt-2 font-medium !dark:text-green-400 !text-green-600">
-                                {{ __('A new verification link has been sent to your email address.') }}
-                            </flux:text>
-                        @endif
-                    </div>
-                @endif
-            </div>
+            {{-- Email hidden as requested --}}
+            <input type="hidden" wire:model="email" />
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">

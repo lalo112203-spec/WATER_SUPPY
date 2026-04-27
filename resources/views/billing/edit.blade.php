@@ -55,7 +55,7 @@
                         </div>
 
                         <div class="bg-[#1e293b]/40 border border-amber-500/20 p-5 rounded-2xl relative">
-                             <label for="usage_units" class="block text-sm font-medium text-gray-300 mb-2 ml-1">Total Usage (L) *</label>
+                             <label for="usage_units" class="block text-sm font-medium text-gray-300 mb-2 ml-1">Total Usage (m³) *</label>
                             <input type="number" step="0.01" id="usage_units" name="usage_units" required
                                 value="{{ old('usage_units', $bill->usage_units) }}" oninput="calculateCharges()" 
                                 class="w-full bg-[#0f1722]/60 border border-[#2d4059] text-gray-100 text-lg font-bold rounded-xl py-3 px-4 outline-none transition-all duration-300">
@@ -68,7 +68,7 @@
                         <div class="space-y-6 bg-[#0f1722]/40 p-6 rounded-2xl border border-[#263548]">
                              <div class="grid grid-cols-1 gap-5">
                                 <div>
-                                    <label for="calculated_usage_display" class="block text-xs font-medium text-gray-500 mb-1 ml-1">Calculated Consumption (L)</label>
+                                    <label for="calculated_usage_display" class="block text-xs font-medium text-gray-500 mb-1 ml-1">Calculated Consumption (m³)</label>
                                     <input type="text" id="calculated_usage_display" readonly value="{{ $bill->consumption }}"
                                         class="w-full bg-[#1b2636]/40 border border-[#2d4059] text-gray-300 rounded-xl py-2 px-4 font-mono outline-none">
                                     <input type="hidden" name="consumption" id="consumption" value="{{ $bill->consumption }}">
@@ -158,7 +158,7 @@
 
             baseChargeInput.value = baseCharge.toFixed(2);
             usageChargeInput.value = usageCharge.toFixed(2);
-            calculationText.textContent = `Usage: ${usage.toFixed(2)}L | Calculation: (${usage.toFixed(2)} - 10) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
+            calculationText.textContent = `Usage: ${usage.toFixed(2)}m³ | Calculation: (${usage.toFixed(2)} - 10) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
             
             updateTotal();
         }

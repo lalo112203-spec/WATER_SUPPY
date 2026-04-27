@@ -1,23 +1,35 @@
 <x-layouts::app title="Message & Posting">
     <div class="h-screen max-h-screen pt-4 pb-4 px-4 sm:px-6 lg:px-8 w-full flex flex-col font-sans bg-transparent">
         <!-- Header Section -->
-        <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between mt-2">
+        <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between mt-2 gap-4">
             <div>
                 <h1 class="text-3xl font-bold tracking-tight text-gray-100 font-sans">Message & Announcements</h1>
                 <p class="mt-1 text-sm text-gray-400 font-medium tracking-wide">Stay connected with your consumers and broadcast global updates.</p>
             </div>
-            @if(session('success'))
-                <div class="mt-4 md:mt-0 flex items-center bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-lg shadow-sm animate-fade-in-down">
-                    <svg class="h-5 w-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span class="text-sm font-semibold">{{ session('success') }}</span>
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="mt-4 md:mt-0 flex items-center bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg shadow-sm animate-fade-in-down">
-                    <svg class="h-5 w-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span class="text-sm font-semibold">{{ session('error') }}</span>
-                </div>
-            @endif
+            
+            <div class="flex items-center gap-3">
+                @if(auth()->user()->role === 'consumer')
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-blue-600/10 border border-blue-500/20 text-blue-500 hover:bg-blue-600 hover:text-white transition-all font-bold text-sm shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        Dashboard
+                    </a>
+                    
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all font-bold text-sm shadow-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                            Logout
+                        </button>
+                    </form>
+                @endif
+                
+                @if(session('success'))
+                    <div class="flex items-center bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-lg shadow-sm animate-fade-in-down">
+                        <svg class="h-5 w-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span class="text-sm font-semibold">{{ session('success') }}</span>
+                    </div>
+                @endif
+            </div>
         </div>
 
         <!-- Main Chat App Canvas -->
@@ -71,7 +83,7 @@
                                         <div class="flex justify-between items-baseline mb-0.5">
                                             <p class="text-[15px] truncate tracking-tight {{ $u->unread_count > 0 ? 'text-gray-100 font-bold' : 'text-gray-200 font-semibold' }}">{{ $u->name }}</p>
                                         </div>
-                                        <p class="text-xs truncate {{ $u->unread_count > 0 ? 'text-gray-200 font-semibold' : 'text-gray-400 font-medium' }}">Account No: {{ $u->customer?->customer_id ?? $u->id }}</p>
+                                        <p class="text-xs truncate {{ $u->unread_count > 0 ? 'text-gray-200 font-semibold' : 'text-gray-400 font-medium' }}">Account Number: {{ $u->customer?->customer_id ?? $u->id }}</p>
                                     </div>
                                     @if($u->unread_count > 0)
                                         <div class="flex-shrink-0">
@@ -112,8 +124,8 @@
                 </div>
                 
                 <!-- Chat Messages Scroll Area -->
-                <div class="flex-1 overflow-y-auto px-4 py-6 scroll-smooth relative" id="messages_container" style="display: none; @if(auth()->user()->messenger_background) background-image: url('{{ asset('storage/' . auth()->user()->messenger_background) }}'); background-size: cover; background-position: center; @endif">
-                    @if(auth()->user()->messenger_background)
+                <div class="flex-1 overflow-y-auto px-4 py-6 scroll-smooth relative" id="messages_container" style="display: none; @if(auth()->user()->messenger_background || auth()->user()->messenger_background_url) background-image: url('{{ auth()->user()->messenger_background_url ?: asset('storage/' . auth()->user()->messenger_background) }}'); background-size: cover; background-position: center; @endif">
+                    @if(auth()->user()->messenger_background || auth()->user()->messenger_background_url)
                         <!-- Dark overlay to ensure text remains readable over custom background -->
                         <div class="absolute inset-0 bg-black/40 pointer-events-none z-0"></div>
                     @endif

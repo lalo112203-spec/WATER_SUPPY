@@ -14,18 +14,37 @@
                 </h1>
             </div>
 
-            <form action="{{ route('registration-codes.store') }}" method="POST">
-                @csrf
-                <button type="submit"
-                    class="bg-cyan-600/80 hover:bg-cyan-500 border border-cyan-400/50 text-white px-4 py-2 rounded-xl font-medium shadow-[0_0_15px_rgba(6,182,212,0.3)] flex items-center gap-2 transition duration-300 backdrop-blur-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    Generate New Code
-                </button>
-            </form>
+            <div class="flex flex-col md:flex-row items-center gap-4">
+                <form action="{{ route('registration-codes.index') }}" method="GET" class="relative group w-full md:w-64">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 group-focus-within:text-cyan-400 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search code or user..." 
+                        class="w-full pl-9 pr-10 py-2 bg-[#1b2636]/60 border border-[#2d4059]/50 rounded-xl focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all duration-300 text-sm text-gray-200">
+                    @if(request('search'))
+                        <a href="{{ route('registration-codes.index') }}" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-rose-400 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </a>
+                    @endif
+                </form>
+
+                <form action="{{ route('registration-codes.store') }}" method="POST" class="w-full md:w-auto">
+                    @csrf
+                    <button type="submit"
+                        class="bg-cyan-600/80 hover:bg-cyan-500 border border-cyan-400/50 text-white px-4 py-2 rounded-xl font-medium shadow-[0_0_15px_rgba(6,182,212,0.3)] flex items-center justify-center gap-2 transition duration-300 backdrop-blur-sm w-full md:w-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Generate New Code
+                    </button>
+                </form>
+            </div>
         </div>
 
         @if (session('status'))
@@ -67,7 +86,7 @@
                                 @if($code->user)
                                     <div class="flex items-center gap-2">
                                         <div class="font-medium">{{ $code->user->name }}</div>
-                                        <span class="text-xs text-gray-500">ID: {{ $code->user->id }}</span>
+                                        <span class="text-xs text-gray-500">Account Number: {{ $code->user->customer_id ?? $code->user->id }}</span>
                                     </div>
                                 @else
                                     <span class="text-gray-500 italic">Not used yet</span>
@@ -114,4 +133,17 @@
             {{ $codes->links() }}
         </div>
     </div>
+    <script>
+        // Debounced search auto-submit
+        let searchTimeout;
+        const searchInput = document.querySelector('input[name="search"]');
+        if (searchInput && searchInput.form && searchInput.form.action.includes('registration-codes')) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    this.form.submit();
+                }, 800);
+            });
+        }
+    </script>
 </x-layouts::app>

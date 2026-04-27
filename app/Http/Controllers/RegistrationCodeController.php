@@ -7,12 +7,26 @@ use Illuminate\Http\Request;
 
 class RegistrationCodeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $codes = RegistrationCode::with('user')
-            ->orderBy('is_used', 'asc')
+        $search = $request->input('search');
+        $query = RegistrationCode::with('user');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('code', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($uq) use ($search) {
+                      $uq->where('name', 'like', "%{$search}%")
+                         ->orWhere('customer_id', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $codes = $query->orderBy('is_used', 'asc')
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
+
         return view('registration-codes.index', compact('codes'));
     }
 

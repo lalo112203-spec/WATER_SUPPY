@@ -3,13 +3,35 @@
     <div class="h-full flex flex-col py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto font-sans">
         
         <!-- Header -->
-        <div class="mb-8 px-2">
-            <h1 class="text-[28px] font-bold text-gray-100 tracking-tight flex items-center justify-between">
-                <div>
-                    Welcome back, <span class="text-blue-600">{{ auth()->user()->name }}</span>
-                </div>
-            </h1>
-            <p class="mt-2 text-[15px] text-gray-400 font-medium">View your billing history and latest announcements.</p>
+        <div class="mb-8 px-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-[28px] font-bold text-gray-100 tracking-tight flex items-center">
+                    Welcome back, <span class="text-blue-600 ml-2">{{ auth()->user()->name }}</span>
+                </h1>
+                <p class="mt-2 text-[15px] text-gray-400 font-medium">View your billing history and latest announcements.</p>
+            </div>
+            
+            <div class="flex items-center gap-3 self-end md:self-auto">
+                <a href="{{ route('messages.index') }}" class="p-2.5 rounded-2xl bg-[#121a25]/80 backdrop-blur-md border border-[#263548] text-gray-400 hover:text-blue-500 hover:border-blue-500/50 transition-all shadow-sm group" title="Messages">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                </a>
+                
+                <a href="{{ route('profile.edit') }}" class="p-2.5 rounded-2xl bg-[#121a25]/80 backdrop-blur-md border border-[#263548] text-gray-400 hover:text-blue-500 hover:border-blue-500/50 transition-all shadow-sm group" title="Settings">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </a>
+
+                <button onclick="toggleFullscreen()" class="p-2.5 rounded-2xl bg-[#121a25]/80 backdrop-blur-md border border-[#263548] text-gray-400 hover:text-blue-500 hover:border-blue-500/50 transition-all shadow-sm group" title="Toggle Fullscreen">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"></path></svg>
+                </button>
+
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all font-bold text-sm shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        Logout
+                    </button>
+                </form>
+            </div>
         </div>
 
         @if(session('success'))
@@ -80,7 +102,7 @@
                                 @foreach($customer->bills as $bill)
                                     <tr class="hover:bg-blue-50/30 transition-colors">
                                         <td class="px-2 sm:px-6 py-5 whitespace-nowrap text-[13px] sm:text-[15px] font-semibold text-gray-200 tracking-tight">{{ \Carbon\Carbon::parse($bill->billing_date)->format('M d, Y') }}</td>
-                                        <td class="px-2 sm:px-6 py-5 whitespace-nowrap text-[13px] sm:text-[15px] font-medium text-gray-400">{{ $bill->usage_units }} <span class="text-xs">L</span></td>
+                                        <td class="px-2 sm:px-6 py-5 whitespace-nowrap text-[13px] sm:text-[15px] font-medium text-gray-400">{{ $bill->usage_units }} <span class="text-xs">m³</span></td>
                                         <td class="px-2 sm:px-6 py-5 whitespace-nowrap text-[13px] sm:text-[15px] font-bold text-gray-100">₱{{ number_format($bill->total_amount, 2) }}</td>
                                         <td class="px-2 sm:px-6 py-5 whitespace-nowrap">
                                             @if(strtolower($bill->status) === 'paid')
@@ -142,6 +164,34 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+    
+    /* Fullscreen specific tweaks */
+    :fullscreen main {
+        padding: 2rem !important;
+        background-color: #020617 !important;
+    }
 </style>
+
+<script>
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    // Auto-fullscreen attempt on user interaction if they just logged in
+    @if(session('success') && str_contains(session('success'), 'logged in'))
+    document.addEventListener('click', function autoFS() {
+        toggleFullscreen();
+        document.removeEventListener('click', autoFS);
+    }, { once: true });
+    @endif
+</script>
 </x-layouts::app>
 

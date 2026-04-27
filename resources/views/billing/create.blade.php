@@ -98,7 +98,7 @@
                                 </div>
                             </div>
 
-                            <label for="usage_units" class="block text-sm font-medium text-gray-300 mb-2 ml-1">Total Usage (L) *</label>
+                            <label for="usage_units" class="block text-sm font-medium text-gray-300 mb-2 ml-1">Total Usage (m³) *</label>
                             <input type="number" step="0.01" id="usage_units" name="usage_units" required
                                 value="{{ old('usage_units') }}" oninput="calculateCharges()" placeholder="e.g. 100.00"
                                 class="w-full bg-[#0f1722]/60 border border-[#2d4059] focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 text-gray-100 text-lg font-bold rounded-xl py-3 px-4 shadow-inner outline-none transition-all duration-300 placeholder:text-gray-600">
@@ -124,7 +124,7 @@
                             <div class="grid grid-cols-1 gap-5">
                                 <div>
                                     <label for="calculated_usage_display"
-                                        class="block text-xs font-medium text-gray-500 mb-1 ml-1">Calculated Consumption (L)</label>
+                                        class="block text-xs font-medium text-gray-500 mb-1 ml-1">Calculated Consumption (m³)</label>
                                     <div class="relative">
                                         <input type="text" id="calculated_usage_display" readonly value="0.00"
                                             class="w-full bg-[#1b2636]/40 border border-[#2d4059] text-gray-300 rounded-xl py-2 px-4 font-mono outline-none transition-all">
@@ -284,8 +284,8 @@
                                     <thead>
                                         <tr class="bg-[#0f1722]/60 text-[#94a3b8] uppercase text-xs tracking-wider">
                                             <th class="px-6 py-4 font-semibold border-b border-[#263548]">Billing Date</th>
-                                            <th class="px-6 py-4 font-semibold text-right border-b border-[#263548]">Reading (L)</th>
-                                            <th class="px-6 py-4 font-semibold text-right border-b border-[#263548]">Usage (L)</th>
+                                            <th class="px-6 py-4 font-semibold text-right border-b border-[#263548]">Reading (m³)</th>
+                                            <th class="px-6 py-4 font-semibold text-right border-b border-[#263548]">Usage (m³)</th>
                                             <th class="px-6 py-4 font-semibold text-right border-b border-[#263548]">Bill (₱)</th>
                                             <th class="px-6 py-4 font-semibold text-center border-b border-[#263548]">Status</th>
                                         </tr>
@@ -401,7 +401,7 @@
             usageChargeInput.value = usageCharge.toFixed(2);
 
             // Show calculation breakdown
-            calculationText.textContent = `Usage: ${usage.toFixed(2)}L | Calculation: (${usage.toFixed(2)} - 10) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
+            calculationText.textContent = `Usage: ${usage.toFixed(2)}m³ | Calculation: (${usage.toFixed(2)} - 10) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
 
             // Determine color class based on total usage
             const waterIncrease = usage;

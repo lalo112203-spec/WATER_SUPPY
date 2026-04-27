@@ -107,7 +107,7 @@
                 <div class="grid grid-cols-3 gap-4 py-6 border-b border-[#263548] print:border-zinc-200">
                     <div class="text-center border-x border-[#263548] print:border-zinc-200 col-span-3">
                         <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1 print:text-zinc-500">Total Consumption</p>
-                        <p class="font-bold text-blue-400 text-xl print:text-black">{{ number_format($bill->consumption, 2) }} L</p>
+                        <p class="font-bold text-blue-400 text-xl print:text-black">{{ number_format($bill->consumption, 2) }} m³</p>
                     </div>
                     <!-- Single highlighted consumption row -->
                 </div>
@@ -117,7 +117,7 @@
                     
                     <div class="space-y-4">
                         <div class="flex justify-between items-center">
-                            <p class="text-gray-400 print:text-zinc-700">Usage Charge ({{ $bill->consumption }} L)</p>
+                            <p class="text-gray-400 print:text-zinc-700">Usage Charge ({{ $bill->consumption }} m³)</p>
                             <p class="text-gray-200 font-medium print:text-black">₱{{ number_format($bill->usage_charge, 2) }}</p>
                         </div>
                         <div class="flex justify-between items-center">

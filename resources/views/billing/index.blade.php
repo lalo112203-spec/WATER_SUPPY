@@ -54,14 +54,22 @@
         </div>
 
         <div class="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div class="relative w-full max-w-lg">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
+            <form action="{{ route('billing.index') }}" method="GET" class="relative w-full max-w-lg group">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 group-focus-within:text-blue-500 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
-                <input type="text" placeholder="Search by Consumer No. or Name" class="w-full pl-10 pr-4 py-3 bg-[#121a25]/60 border border-[#263548] rounded-xl focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all duration-300">
-            </div>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by Account Number or Name" 
+                    class="w-full pl-10 pr-12 py-3 bg-[#121a25]/60 border border-[#263548] rounded-xl focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all duration-300 text-gray-200">
+                @if(request('search'))
+                    <a href="{{ route('billing.index') }}" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-rose-400 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </a>
+                @endif
+            </form>
             
             <div class="flex items-center gap-4 bg-[#1b2636]/40 p-2 rounded-2xl border border-[#2d4059]/50">
                 <div class="px-6 py-1 text-sm">
@@ -78,7 +86,7 @@
                 <thead>
                     <tr class="bg-blue-600/90 text-white">
                         <th class="px-4 py-3 font-medium">Period</th>
-                        <th class="px-4 py-3 font-medium">No.</th>
+                        <th class="px-4 py-3 font-medium">Account Number</th>
                         <th class="px-4 py-3 font-medium">Customer</th>
                         <th class="px-4 py-3 font-medium">Usage</th>
                         <th class="px-4 py-3 font-medium">Bill</th>
@@ -89,7 +97,7 @@
                     @forelse($pendingBills as $bill)
                     <tr class="hover:bg-blue-50/50 transition-colors">
                         <td class="px-4 py-3">{{ $bill->billing_date->format('F Y') }}</td>
-                        <td class="px-4 py-3">{{ $bill->customer?->customer_number ?? $bill->customer?->id ?? 'N/A' }}</td>
+                        <td class="px-4 py-3">{{ $bill->customer?->customer_id ?? 'N/A' }}</td>
                         <td class="px-4 py-3">{{ $bill->customer?->name ?? 'Deleted Customer' }}</td>
                         @php
                             $cType = $bill->customer?->type ?? 'Regular';
@@ -100,7 +108,7 @@
                         @endphp
                         <td class="px-4 py-3">
                             <span class="px-2 py-1 rounded text-xs font-medium text-white shadow-sm {{ $bgClass }}">
-                                {{ $usage }} L
+                                {{ $usage }} m³
                             </span>
                         </td>
                         <td class="px-4 py-3 font-semibold text-gray-300">₱{{ number_format($bill->total_amount, 0) }}</td>
@@ -161,7 +169,7 @@
                 <thead>
                     <tr class="bg-blue-600/90 text-white">
                         <th class="px-4 py-3 font-medium">Period</th>
-                        <th class="px-4 py-3 font-medium">No.</th>
+                        <th class="px-4 py-3 font-medium">Account Number</th>
                         <th class="px-4 py-3 font-medium">Customer</th>
                         <th class="px-4 py-3 font-medium">Usage</th>
                         <th class="px-4 py-3 font-medium">Bill</th>
@@ -172,7 +180,7 @@
                     @forelse($paidBills as $bill)
                     <tr class="hover:bg-blue-50/50 transition-colors">
                         <td class="px-4 py-3">{{ $bill->billing_date->format('F Y') }}</td>
-                        <td class="px-4 py-3">{{ $bill->customer?->customer_number ?? $bill->customer?->id ?? 'N/A' }}</td>
+                        <td class="px-4 py-3">{{ $bill->customer?->customer_id ?? 'N/A' }}</td>
                         <td class="px-4 py-3">{{ $bill->customer?->name ?? 'Deleted Customer' }}</td>
                         @php
                             $cType = $bill->customer?->type ?? 'Regular';
@@ -183,7 +191,7 @@
                         @endphp
                         <td class="px-4 py-3">
                             <span class="px-2 py-1 rounded text-xs font-medium text-white shadow-sm {{ $bgClass }}">
-                                {{ $usage }} L
+                                {{ $usage }} m³
                             </span>
                         </td>
                         <td class="px-4 py-3 font-semibold text-gray-300">₱{{ number_format($bill->total_amount, 0) }}</td>
@@ -223,5 +231,18 @@
             {{ $paidBills->links() }}
         </div>
     </div>
+    <script>
+        // Debounced search auto-submit
+        let searchTimeout;
+        const searchInput = document.querySelector('input[name="search"]');
+        if (searchInput && searchInput.form && searchInput.form.action.includes('billing')) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    this.form.submit();
+                }, 800);
+            });
+        }
+    </script>
 </x-layouts::app>
 
