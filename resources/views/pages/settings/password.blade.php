@@ -20,10 +20,13 @@ new #[Title('Password settings')] class extends Component {
     public function updatePassword(): void
     {
         try {
-            $validated = $this->validate([
+            $rules = [
                 'current_password' => $this->currentPasswordRules(),
                 'password' => $this->passwordRules(),
-                'registration_code' => [
+            ];
+
+            if (auth()->user()->role !== 'admin') {
+                $rules['registration_code'] = [
                     'required',
                     'string',
                     'size:8',
@@ -35,8 +38,10 @@ new #[Title('Password settings')] class extends Component {
                             $fail('The registration code is invalid or has already been used.');
                         }
                     },
-                ],
-            ]);
+                ];
+            }
+
+            $validated = $this->validate($rules);
         } catch (ValidationException $e) {
             $this->reset('current_password', 'password', 'password_confirmation', 'registration_code');
 
@@ -48,13 +53,15 @@ new #[Title('Password settings')] class extends Component {
             'password' => $validated['password'],
         ]);
 
-        // Mark code as used
-        $code = \App\Models\RegistrationCode::where('code', $validated['registration_code'])->first();
-        if ($code) {
-            $code->update([
-                'is_used' => true,
-                'used_by' => $user->id,
-            ]);
+        // Mark code as used if applicable
+        if (auth()->user()->role !== 'admin') {
+            $code = \App\Models\RegistrationCode::where('code', $validated['registration_code'])->first();
+            if ($code) {
+                $code->update([
+                    'is_used' => true,
+                    'used_by' => $user->id,
+                ]);
+            }
         }
 
         $this->reset('current_password', 'password', 'password_confirmation', 'registration_code');
@@ -119,6 +126,7 @@ new #[Title('Password settings')] class extends Component {
                 </button>
             </div>
 
+            @if(auth()->user()->role !== 'admin')
             <div class="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl">
                 <flux:input 
                     wire:model="registration_code" 
@@ -132,6 +140,7 @@ new #[Title('Password settings')] class extends Component {
                     Changing your password requires a valid registration code. You can obtain this at the **D.W.S.S. Office** by providing a valid ID to confirm your identity.
                 </p>
             </div>
+            @endif
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">

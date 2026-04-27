@@ -39,8 +39,8 @@
                 placeholder="Enter your address"
             />
 
-            <!-- Registration Code (Only appears if override is needed) -->
-            <div x-data="{ showCode: {{ $errors->has('registration_code') ? 'true' : 'false' }} }">
+            <!-- Registration Code (Only appears if override is needed or duplicate detected) -->
+            <div x-data="{ showCode: {{ $errors->has('registration_code') || $errors->has('account_number') ? 'true' : 'false' }} }">
                 <div x-show="showCode" x-transition class="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl mb-4">
                     <flux:input
                         name="registration_code"
