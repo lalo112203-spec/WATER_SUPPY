@@ -42,6 +42,14 @@ class AppServiceProvider extends ServiceProvider
                 \Illuminate\Support\Facades\URL::forceScheme('https');
             }
         }
+
+        // Ensure database file exists on Railway
+        if (isset($_ENV['RAILWAY_ENVIRONMENT'])) {
+            $dbPath = storage_path('database.sqlite');
+            if (!file_exists($dbPath)) {
+                touch($dbPath);
+            }
+        }
     }
 
     /**
@@ -55,14 +63,6 @@ class AppServiceProvider extends ServiceProvider
             app()->isProduction(),
         );
 
-        Password::defaults(fn (): ?Password => app()->isProduction()
-            ? Password::min(12)
-                ->mixedCase()
-                ->letters()
-                ->numbers()
-                ->symbols()
-                ->uncompromised()
-            : null,
-        );
+        Password::defaults(fn (): Password => Password::min(8));
     }
 }
