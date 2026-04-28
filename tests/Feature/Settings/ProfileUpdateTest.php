@@ -21,12 +21,14 @@ class ProfileUpdateTest extends TestCase
     public function test_profile_information_can_be_updated(): void
     {
         $user = User::factory()->create();
+        $code = \App\Models\RegistrationCode::create(['code' => '12345678', 'is_used' => false]);
 
         $this->actingAs($user);
 
         $response = Livewire::test('pages::settings.profile')
             ->set('name', 'Test User')
             ->set('email', 'test@example.com')
+            ->set('registration_code', '12345678')
             ->call('updateProfileInformation');
 
         $response->assertHasNoErrors();
@@ -36,6 +38,7 @@ class ProfileUpdateTest extends TestCase
         $this->assertEquals('Test User', $user->name);
         $this->assertEquals('test@example.com', $user->email);
         $this->assertNull($user->email_verified_at);
+        $this->assertTrue($code->fresh()->is_used);
     }
 
     public function test_email_verification_status_is_unchanged_when_email_address_is_unchanged(): void
@@ -45,7 +48,7 @@ class ProfileUpdateTest extends TestCase
         $this->actingAs($user);
 
         $response = Livewire::test('pages::settings.profile')
-            ->set('name', 'Test User')
+            ->set('name', $user->name) // Don't change name to avoid needing a code
             ->set('email', $user->email)
             ->call('updateProfileInformation');
 

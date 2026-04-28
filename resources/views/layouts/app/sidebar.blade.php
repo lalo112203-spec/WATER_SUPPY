@@ -220,19 +220,14 @@
             main,
             [data-flux-main],
             flux\:main {
-                @if(auth()->check() && auth()->user()->role === 'consumer')
-                    /* Consumer defaults to no margin, sidebar will overlay or shift if we want, but let's allow it to be collapsible */
-                    margin-left: 0 !important;
-                @else
-                    margin-left: 16rem !important;
-                @endif
+                margin-left: 16rem !important;
                 padding-top: 2rem !important;
             }
 
             /* When sidebar is collapsed on desktop, reduce margin */
             [data-flux-sidebar-collapsed-desktop] ~ flux\:main,
             [data-flux-sidebar-collapsed-desktop] ~ [data-flux-main] {
-                margin-left: 0 !important;
+                margin-left: 4rem !important;
             }
         }
 

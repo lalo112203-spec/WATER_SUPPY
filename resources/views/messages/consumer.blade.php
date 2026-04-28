@@ -1,5 +1,5 @@
 <x-layouts::app title="Message & Posting">
-    <div class="h-full flex flex-col py-8 px-4 sm:px-6 lg:px-8 w-full font-sans">
+    <div class="flex flex-col py-8 px-4 sm:px-6 lg:px-8 w-full font-sans min-h-[calc(100vh-4rem)]">
         
         <!-- Header -->
         <div class="mb-8 px-2">
@@ -24,7 +24,7 @@
             </div>
         @endif
 
-        <div class="flex-1 mb-8 mx-2 h-full">
+        <div class="flex-1 mb-8 mx-2">
             <!-- Modern Messaging Interface -->
             <div class="bg-[#121a25]/80 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-3xl flex flex-col overflow-hidden border border-[#263548] h-[700px] relative mt-2">
                 <!-- Chat Header -->
@@ -90,7 +90,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 <style>
     .custom-scrollbar::-webkit-scrollbar {

@@ -22,7 +22,7 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->post(route('login.store'), [
+        $response = $this->withoutMiddleware()->post(route('login.store'), [
             'email' => $user->email,
             'password' => 'password',
         ]);
@@ -38,7 +38,7 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->post(route('login.store'), [
+        $response = $this->withoutMiddleware()->post(route('login.store'), [
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
@@ -61,7 +61,7 @@ class AuthenticationTest extends TestCase
 
         $user = User::factory()->withTwoFactor()->create();
 
-        $response = $this->post(route('login.store'), [
+        $response = $this->withoutMiddleware()->post(route('login.store'), [
             'email' => $user->email,
             'password' => 'password',
         ]);
@@ -74,7 +74,7 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post(route('logout'));
+        $response = $this->withoutMiddleware()->actingAs($user)->post(route('logout'));
 
         $response->assertRedirect(route('home'));
 

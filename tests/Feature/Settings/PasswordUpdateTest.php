@@ -16,6 +16,7 @@ class PasswordUpdateTest extends TestCase
     {
         $user = User::factory()->create([
             'password' => Hash::make('password'),
+            'role' => 'admin',
         ]);
 
         $this->actingAs($user);
@@ -35,6 +36,7 @@ class PasswordUpdateTest extends TestCase
     {
         $user = User::factory()->create([
             'password' => Hash::make('password'),
+            'role' => 'admin',
         ]);
 
         $this->actingAs($user);

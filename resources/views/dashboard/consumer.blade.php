@@ -1,5 +1,5 @@
 <x-layouts::app title="Dashboard">
-    <div class="h-full flex flex-col py-8 px-4 sm:px-6 lg:px-8 w-full font-sans">
+    <div class="flex flex-col py-8 px-4 sm:px-6 lg:px-8 w-full font-sans min-h-[calc(100vh-4rem)]">
         
         <!-- Header -->
         <div class="mb-8 px-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -121,7 +121,6 @@
             </div>
 
         </div>
-    </div>
     </div>
 <style>
     .custom-scrollbar::-webkit-scrollbar {
