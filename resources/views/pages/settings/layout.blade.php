@@ -2,16 +2,16 @@
     <div class="me-10 w-full pb-4 md:w-[220px]">
         <flux:navlist aria-label="{{ __('Settings') }}">
             @if(auth()->user()->role === 'consumer')
-                <flux:navlist.item icon="home" :href="route('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                <flux:navlist.item icon="home" class="!text-gray-200 hover:!text-white" :href="route('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
             @endif
-            <flux:navlist.item :href="route('profile.edit')" wire:navigate>{{ __('Profile') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('user-password.edit')" wire:navigate>{{ __('Password') }}</flux:navlist.item>
+            <flux:navlist.item class="!text-gray-200 hover:!text-white" :href="route('profile.edit')" wire:navigate>{{ __('Profile') }}</flux:navlist.item>
+            <flux:navlist.item class="!text-gray-200 hover:!text-white" :href="route('user-password.edit')" wire:navigate>{{ __('Password') }}</flux:navlist.item>
             @if (Laravel\Fortify\Features::canManageTwoFactorAuthentication())
-                <flux:navlist.item :href="route('two-factor.show')" wire:navigate>{{ __('Two-factor auth') }}</flux:navlist.item>
+                <flux:navlist.item class="!text-gray-200 hover:!text-white" :href="route('two-factor.show')" wire:navigate>{{ __('Two-factor auth') }}</flux:navlist.item>
             @endif
-            <flux:navlist.item :href="route('appearance.edit')" wire:navigate>{{ __('Appearance') }}</flux:navlist.item>
+            <flux:navlist.item class="!text-gray-200 hover:!text-white" :href="route('appearance.edit')" wire:navigate>{{ __('Appearance') }}</flux:navlist.item>
             @if(auth()->user()->role === 'admin')
-                <flux:navlist.item :href="route('settings.index')" wire:navigate>{{ __('System') }}</flux:navlist.item>
+                <flux:navlist.item class="!text-gray-200 hover:!text-white" :href="route('settings.index')" wire:navigate>{{ __('System') }}</flux:navlist.item>
             @endif
             
             @if(auth()->user()->role === 'consumer')
@@ -31,9 +31,19 @@
     <flux:separator class="md:hidden" />
 
     <div class="flex-1 self-stretch max-md:pt-6">
-        <flux:heading>{{ $heading ?? '' }}</flux:heading>
+        <flux:heading class="!text-white">{{ $heading ?? '' }}</flux:heading>
 
         <div class="mt-5 w-full max-w-lg">
+            <style>
+                /* Force all text on settings pages to be white with proper spacing */
+                [data-flux-label], [data-flux-heading], label, h3 {
+                    color: white !important;
+                }
+                [data-flux-label], label {
+                    margin-bottom: 0.35rem !important;
+                    display: inline-block;
+                }
+            </style>
             {{ $slot }}
         </div>
     </div>

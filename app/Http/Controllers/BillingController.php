@@ -171,9 +171,18 @@ class BillingController extends Controller
             'status' => 'Paid',
             'paid_date' => now(),
         ]);
+        
+        // Notify the consumer device/account
+        if ($bill->customer && $bill->customer->user) {
+            \App\Models\Message::create([
+                'sender_id' => auth()->id(),
+                'receiver_id' => $bill->customer->user->id,
+                'message' => 'Your bill from ' . $bill->billing_date->format('M d, Y') . ' for the amount of ' . number_format($bill->total_amount, 2) . ' has been successfully marked as paid. Thank you!',
+            ]);
+        }
  
         return redirect()->route('billing.index')
-            ->with('success', 'Bill marked as paid');
+            ->with('success', 'Bill marked as paid and notification sent.');
     }
  
     public function destroy(Bill $bill)
@@ -202,7 +211,7 @@ class BillingController extends Controller
     {
         $readings = Bill::where('customer_id', $customer->id)
             ->orderBy('billing_date', 'desc')
-            ->get(['billing_date', 'usage_units', 'total_amount', 'status']);
+            ->get(['billing_date', 'usage_units', 'consumption', 'total_amount', 'status']);
  
         return response()->json([
             'readings' => $readings,

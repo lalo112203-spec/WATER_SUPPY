@@ -125,7 +125,7 @@ new #[Title('Profile settings')] class extends Component {
 
     <x-pages::settings.layout :heading="__('Profile')">
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
-            <div class="mb-6 flex items-center gap-8 p-6 bg-white/5 rounded-3xl border border-white/10">
+            <div class="mb-6 flex items-center gap-8 p-6 bg-white/10/5 rounded-3xl border border-white/10">
                 <div class="relative group flex-shrink-0">
                     @if (Auth::user()->profile_photo)
                         <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" class="h-16 w-16 rounded-2xl object-cover border-2 border-cyan-500 shadow-xl shadow-cyan-500/20 transition-transform group-hover:scale-105">

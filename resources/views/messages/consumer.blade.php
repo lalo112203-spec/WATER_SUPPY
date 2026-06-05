@@ -8,7 +8,7 @@
                     Message Support
                 </div>
             </h1>
-            <p class="mt-2 text-[15px] text-gray-400 font-medium">Send a message to the admin support team.</p>
+            <p class="mt-2 text-[15px] text-gray-200 font-medium">Send a message to the admin support team.</p>
         </div>
 
         @if(session('success'))
@@ -54,7 +54,7 @@
                                         <p class="text-[15px] leading-relaxed break-words font-medium">{{ $msg->message }}</p>
                                     </div>
                                     <div class="flex items-center mt-1.5 px-2 space-x-1">
-                                        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{{ $msg->created_at->format('H:i') }}</p>
+                                        <p class="text-[11px] font-bold text-gray-200 uppercase tracking-widest">{{ $msg->created_at->format('H:i') }}</p>
                                         @if($msg->sender_id === auth()->id())
                                             <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                         @endif

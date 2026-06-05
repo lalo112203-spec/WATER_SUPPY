@@ -12,6 +12,9 @@ class DashboardController extends Controller
     public function index(): View|\Illuminate\Http\RedirectResponse
     {
         $user = auth()->user();
+        if ($user->role === 'reader') {
+            return redirect()->route('reader.dashboard');
+        }
         if ($user->role === 'consumer') {
             $posts = \App\Models\Post::with('admin')->orderBy('created_at', 'desc')->get();
             $customer = \App\Models\Customer::with([

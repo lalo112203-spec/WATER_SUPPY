@@ -26,7 +26,7 @@
             @endif
             <div class="grid flex-1 text-start text-sm leading-tight">
                 <flux:heading size="lg" class="truncate font-extrabold text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.3)]">{{ auth()->user()->name }}</flux:heading>
-                <flux:text class="truncate text-gray-400 font-medium">{{ auth()->user()->email }}</flux:text>
+                <flux:text class="truncate text-gray-200 font-medium">{{ auth()->user()->email }}</flux:text>
             </div>
         </div>
         <flux:menu.separator />

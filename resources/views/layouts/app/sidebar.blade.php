@@ -48,137 +48,171 @@
         flux\:sidebar *,
         [data-flux-sidebar] * {
             background-color: transparent !important;
-            color: #cbd5e1 !important;
-            /* Muted slate for non-active */
+        }
+
+        /* Unstoppable Specificity to Force Sidebar Text to White */
+        /* Unstoppable Specificity to Force Sidebar Text to White (Beating Custom Theme's :not selectors) */
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item],
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item] div,
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item] span,
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item] p,
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item] svg,
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile],
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile] div,
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile] span,
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile] p,
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile] svg,
+        html body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item] div,
+        html body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item] span,
+        html body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile] div,
+        html body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile] span {
+            color: #ffffff !important;
         }
 
         /* Active Sidebar Item - Pill Style */
-        flux\:sidebar [data-flux-sidebar-item][data-current],
         [data-flux-sidebar] [data-flux-sidebar-item][data-current] {
             background-color: var(--accent-blue) !important;
-            color: #ffffff !important;
             border-radius: 9999px !important;
             margin: 0 16px !important;
+            width: calc(100% - 32px) !important;
+            box-sizing: border-box !important;
             box-shadow: 0 4px 12px rgba(0, 38, 255, 0.3) !important;
         }
 
-        flux\:sidebar [data-flux-sidebar-item][data-current] *,
+        /* Active Text Force White */
+        [data-flux-sidebar] [data-flux-sidebar-item][data-current],
+        [data-flux-sidebar] [data-flux-sidebar-item][data-current] span,
+        [data-flux-sidebar] [data-flux-sidebar-item][data-current] svg,
+        [data-flux-sidebar] [data-flux-sidebar-item][data-current] div,
         [data-flux-sidebar] [data-flux-sidebar-item][data-current] * {
             color: #ffffff !important;
         }
 
-        flux\:sidebar [data-flux-sidebar-item]:hover:not([data-current]),
+        /* Hover Effect for Inactive Items */
         [data-flux-sidebar] [data-flux-sidebar-item]:hover:not([data-current]) {
             background-color: rgba(255, 255, 255, 0.05) !important;
-            color: #ffffff !important;
             border-radius: 9999px !important;
             margin: 0 16px !important;
+            width: calc(100% - 32px) !important;
+            box-sizing: border-box !important;
         }
+        
 
-        /* Default Light Mode Appearance (Clean & Comfortable) */
-        html:not(.dark):not(.custom-theme) body {
-            background-color: var(--main-bg-light) !important;
-            color: var(--text-main-light) !important;
-        }
 
-        /* Map hardcoded dark themes to beautiful light cards in Default Mode */
-        html:not(.dark):not(.custom-theme) main [class*="bg-[#121a25]"],
-        html:not(.dark):not(.custom-theme) main [class*="bg-[#1b2636]"],
-        html:not(.dark):not(.custom-theme) main [class*="bg-[#0f1722]"],
-        html:not(.dark):not(.custom-theme) main [class*="bg-[#091522]"],
-        html:not(.dark):not(.custom-theme) main [class*="bg-[#0b121c]"],
-        html:not(.dark):not(.custom-theme) [data-flux-main] [class*="bg-[#121a25]"],
-        html:not(.dark):not(.custom-theme) [data-flux-main] [class*="bg-[#1b2636]"] {
-            background-color: var(--card-bg-light) !important;
-            border: 1px solid rgba(0, 0, 0, 0.05) !important;
-            border-radius: 16px !important;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02) !important;
-            color: var(--text-main-light) !important;
-        }
-
-        html:not(.dark):not(.custom-theme) h1,
-        html:not(.dark):not(.custom-theme) h2,
-        html:not(.dark):not(.custom-theme) h3 {
-            color: #1e293b !important;
-        }
-
-        /* Text Overrides for Light Mode */
-        html:not(.dark):not(.custom-theme) main .text-gray-100,
-        html:not(.dark):not(.custom-theme) main .text-gray-200,
-        html:not(.dark):not(.custom-theme) main .text-gray-300,
-        html:not(.dark):not(.custom-theme) main .text-white {
-            color: var(--text-main-light) !important;
-        }
-
-        html:not(.dark):not(.custom-theme) main .text-gray-400,
-        html:not(.dark):not(.custom-theme) main .text-gray-500 {
-            color: #475569 !important;
-        }
-
-        /* Default Dark Mode Appearance (Deep Slate & Eye-Comfortable) */
-        html.dark:not(.custom-theme) body {
+        /* Default System Background (Wavy Blue) applied only to main content */
+        html body {
             background-color: var(--main-bg-dark) !important;
-            color: var(--text-main-dark) !important;
+            color: var(--text-main-dark);
         }
 
-        html.dark:not(.custom-theme) main [class*="bg-[#121a25]"],
-        html.dark:not(.custom-theme) main [class*="bg-[#1b2636]"],
-        html.dark:not(.custom-theme) [data-flux-main] [class*="bg-[#121a25]"],
-        html.dark:not(.custom-theme) [data-flux-main] [class*="bg-[#1b2636]"] {
-            background-color: var(--card-bg-dark) !important;
-            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        /* Force the background on all system pages (dashboard, billing, etc.) */
+        main,
+        [data-flux-main],
+        flux\:main {
+            @if(auth()->check() && auth()->user()->background_url)
+                background-image: url("{{ auth()->user()->background_url }}") !important;
+            @elseif(auth()->check() && auth()->user()->background_image)
+                background-image: url("{{ asset('storage/' . auth()->user()->background_image) }}") !important;
+            @else
+                background-image: url("{{ asset('images/system_bg.png') }}") !important;
+            @endif
+            background-size: cover !important;
+            background-attachment: fixed !important;
+            background-position: center !important;
+            min-height: 100vh;
         }
 
-        /* Text Overrides for Dark Mode */
-        html.dark:not(.custom-theme) main .text-gray-800,
-        html.dark:not(.custom-theme) main .text-gray-900,
-        html.dark:not(.custom-theme) main .text-black {
-            color: #f8fafc !important;
-        }
-
-        html.dark:not(.custom-theme) main .text-gray-400,
-        html.dark:not(.custom-theme) main .text-gray-500 {
-            color: #94a3b8 !important;
-        }
-
-        /* Enforce readable cards in Custom Theme mode */
-        html.custom-theme main [class*="bg-[#121a25]"],
-        html.custom-theme main [class*="bg-[#1b2636]"],
-        html.custom-theme main [class*="bg-[#0f1722]"],
-        html.custom-theme main [class*="bg-[#0b121c]"],
-        html.custom-theme [data-flux-main] [class*="bg-[#121a25]"],
-        html.custom-theme [data-flux-main] [class*="bg-[#1b2636]"] {
-            background-color: rgba(15, 23, 42, 0.75) !important;
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            border-radius: 16px !important;
-            color: #f8fafc !important;
-        }
-
-        html.custom-theme main .text-gray-800,
-        html.custom-theme main .text-gray-900,
-        html.custom-theme main .text-black {
-            color: #f8fafc !important;
-        }
-
-        /* Custom Theme Overrides (Keeping Logic Intact) */
-        @if(auth()->check() && (auth()->user()->background_image || auth()->user()->background_url || auth()->user()->background_color))
+        /* Custom Theme Overrides (Fully implemented for internet-wide support) */
+        @if(auth()->check() && (auth()->user()->background_image || auth()->user()->background_url || auth()->user()->background_color || auth()->user()->font_family))
             html.custom-theme body {
                 @if(auth()->user()->background_url)
                     background-image: url("{{ auth()->user()->background_url }}") !important;
                     background-size: cover !important;
                     background-attachment: fixed !important;
+                    background-position: center !important;
                 @elseif(auth()->user()->background_image)
                     background-image: url("{{ asset('storage/' . auth()->user()->background_image) }}") !important;
                     background-size: cover !important;
                     background-attachment: fixed !important;
+                    background-position: center !important;
                 @elseif(auth()->user()->background_color)
-                    background-color:
-                        {{ auth()->user()->background_color }}
-                        !important;
+                    background-color: {{ auth()->user()->background_color }} !important;
+                @endif
+
+                @if(auth()->user()->font_family)
+                    font-family: {{ auth()->user()->font_family }} !important;
                 @endif
             }
+            
+            /* Enforce white text across the main content area (allows specific colored badges to keep their colors) */
+            html.custom-theme main {
+                color: white;
+            }
 
+            /* Override Tailwind gray text classes to white in main content */
+            html.custom-theme main .text-gray-100,
+            html.custom-theme main .text-gray-200,
+            html.custom-theme main .text-gray-300,
+            html.custom-theme main .text-gray-400,
+            html.custom-theme main .text-gray-500,
+            html.custom-theme main .text-gray-600,
+            html.custom-theme main .text-gray-700 {
+                color: white !important;
+            }
+
+            /* Import external fonts used in the appearance settings */
+            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Oswald:wght@400;500;600;700&family=Roboto:wght@400;500;700;900&display=swap');
+
+
+
+            /* Apply custom text styles to all major elements in custom theme */
+            @if(auth()->user()->text_stroke_color)
+                html.custom-theme h1:not(form *), 
+                html.custom-theme h2:not(form *), 
+                html.custom-theme h3:not(form *), 
+                html.custom-theme p:not(form *), 
+                html.custom-theme span:not(form *), 
+                html.custom-theme div:not([data-flux-sidebar]):not([data-flux-navbar]):not(form *) {
+                    @if(auth()->user()->text_stroke_color && auth()->user()->text_stroke_width)
+                        -webkit-text-stroke: {{ auth()->user()->text_stroke_width }} {{ auth()->user()->text_stroke_color }} !important;
+                        paint-order: stroke fill !important;
+                    @endif
+                }
+                
+                /* Protect form elements from inheriting the stroke */
+                html.custom-theme input,
+                html.custom-theme select,
+                html.custom-theme textarea,
+                html.custom-theme label,
+                html.custom-theme button {
+                    -webkit-text-stroke: 0 !important;
+                }
+            @endif
+
+            /* Ensure font family and colors are applied everywhere in custom theme */
+            @if(auth()->user()->font_family)
+                html.custom-theme *, 
+                html.custom-theme input, 
+                html.custom-theme button, 
+                html.custom-theme select, 
+                html.custom-theme textarea {
+                    font-family: {{ auth()->user()->font_family }}, 'Inter', sans-serif !important;
+                }
+            @endif
+
+
+            
+            @if(auth()->user()->text_size)
+                html.custom-theme *:not(form):not(form *) {
+                    font-size: {{ auth()->user()->text_size }} !important;
+                }
+            @endif
+            
+            @if(auth()->user()->font_weight)
+                html.custom-theme *:not(form):not(form *):not(i):not(svg):not(path) {
+                    font-weight: {{ auth()->user()->font_weight }} !important;
+                }
+            @endif
         @endif
 
         /* Smooth transitions */
@@ -252,7 +286,7 @@
     <script>
         function shouldBeCustom() {
             let localApp = window.localStorage.getItem('flux.appearance');
-            let dbApp = '{{ auth()->user()->appearance ?? "light" }}';
+            let dbApp = '{{ auth()->user()->appearance ?? "dark" }}';
             
             // Sync logic: If local storage is empty, use DB. If DB is set and different, prioritize DB for first load.
             if (!localApp) {
@@ -260,8 +294,8 @@
                 localApp = dbApp;
             }
 
-            // Auto-upgrade legacy 'system' states from previous session bug
-            if (localApp === 'system') {
+            // Force all legacy states to custom since we removed the mode selector
+            if (localApp !== 'custom') {
                 window.localStorage.setItem('flux.appearance', 'custom');
                 localApp = 'custom';
             }
@@ -331,7 +365,7 @@
 <body class="min-h-screen text-gray-300 antialiased selection:bg-cyan-500/30">
     @if(auth()->check())
     <flux:sidebar collapsible {{ auth()->user()->role === 'consumer' ? 'collapsed' : '' }}
-        class="border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
+        class="dark border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
         <flux:sidebar.header>
             <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
             <flux:sidebar.collapse />
@@ -341,28 +375,28 @@
             <flux:sidebar.group class="grid">
                 <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                     wire:navigate>
-                    {{ __('Dashboard') }}
+                    <span>{{ __('Dashboard') }}</span>
                 </flux:sidebar.item>
 
                 @if(auth()->user()->role === 'admin')
                     <flux:sidebar.item icon="users" :href="route('customers.index')"
                         :current="request()->routeIs('customers.*')" wire:navigate>
-                        {{ __('Customers') }}
+                        <span>{{ __('Customers') }}</span>
                     </flux:sidebar.item>
 
                     <flux:sidebar.item icon="list-bullet" :href="route('billing.index')"
                         :current="request()->routeIs('billing.*')" wire:navigate>
-                        {{ __('Billing Reports') }}
+                        <span>{{ __('Billing Reports') }}</span>
                     </flux:sidebar.item>
 
                     <flux:sidebar.item icon="adjustments-horizontal" :href="route('settings.index')"
                         :current="request()->routeIs('settings.*')" wire:navigate>
-                        {{ __('Settings') }}
+                        <span>{{ __('Settings') }}</span>
                     </flux:sidebar.item>
 
                     <flux:sidebar.item icon="key" :href="route('registration-codes.index')"
                         :current="request()->routeIs('registration-codes.*')" wire:navigate>
-                        {{ __('Registration Codes') }}
+                        <span>{{ __('Registration Codes') }}</span>
                     </flux:sidebar.item>
                 @endif
 
@@ -387,7 +421,7 @@
                 @if(auth()->user()->role === 'admin')
                     <flux:sidebar.item icon="trash" :href="route('recovery.index')"
                         :current="request()->routeIs('recovery.*')" wire:navigate>
-                        {{ __('Recovery / Trash') }}
+                        <span>{{ __('Recovery / Trash') }}</span>
                     </flux:sidebar.item>
 
                 @endif

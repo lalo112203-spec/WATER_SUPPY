@@ -12,6 +12,17 @@
             <form method="POST" action="{{ route('settings.update') }}" class="my-6 w-full space-y-6">
                 @csrf
                 
+                <style>
+                    /* Force all flux labels on this page to be white */
+                    [data-flux-label], label, h3 {
+                        color: white !important;
+                    }
+                    [data-flux-label], label {
+                        margin-bottom: 0.35rem !important;
+                        display: inline-block;
+                    }
+                </style>
+                
                 @if (session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
                         {{ session('success') }}
@@ -49,7 +60,7 @@
 
                 <h3 class="text-lg font-bold mt-8 flex items-center gap-2">
                     Global Additional Charges
-                    <span class="text-[10px] bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-full uppercase tracking-widest font-black">Applied to all new bills</span>
+                    <span class="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full uppercase tracking-widest font-black shadow-sm">Applied to all new bills</span>
                 </h3>
                 
                 <div id="additional-charges-container" class="space-y-4 mt-4">
@@ -70,13 +81,13 @@
                             </button>
                         </div>
                     @empty
-                        <div class="empty-state text-center py-6 bg-[#1b2636]/10 rounded-2xl border border-dashed border-[#2d4059]/50 text-gray-500 text-sm italic">
+                        <div class="empty-state text-center py-6 bg-[#0f172a]/80 backdrop-blur-sm rounded-2xl border border-dashed border-gray-400 text-white font-medium text-sm italic shadow-sm">
                             No additional charges configured. Click below to add one.
                         </div>
                     @endforelse
                 </div>
                 
-                <button type="button" onclick="addAdditionalChargeRow()" class="mt-4 px-4 py-2 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 rounded-xl text-xs flex items-center gap-2 font-bold uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 border border-blue-500/20">
+                <button type="button" onclick="addAdditionalChargeRow()" class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs flex items-center gap-2 font-bold uppercase tracking-widest transition-all shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>

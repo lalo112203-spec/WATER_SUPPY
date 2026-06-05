@@ -6,10 +6,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
             <div class="bg-[#1b2636]/40 backdrop-blur-md rounded-2xl border border-[#2d4059]/50 p-6 relative overflow-hidden group hover:border-emerald-500/50 transition-all">
                 <div class="relative z-10">
-                    <p class="text-[11px] font-bold text-emerald-500/70 uppercase tracking-widest mb-1">Paid Bills</p>
-                    <h3 class="text-3xl font-black text-white tracking-tight">{{ $paidCount }}</h3>
+                    <p class="text-[11px] font-bold text-emerald-300 uppercase tracking-widest mb-1 drop-shadow-sm">Paid Bills</p>
+                    <h3 class="text-3xl font-black text-white tracking-tight drop-shadow-md">{{ $paidCount }}</h3>
                 </div>
-                <div class="absolute -right-3 -bottom-3 text-emerald-500/10 transform -rotate-12 group-hover:rotate-0 transition-transform duration-500">
+                <div class="absolute -right-3 -bottom-3 text-emerald-400/20 transform -rotate-12 group-hover:rotate-0 transition-transform duration-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -18,10 +18,10 @@
 
             <div class="bg-[#1b2636]/40 backdrop-blur-md rounded-2xl border border-[#2d4059]/50 p-6 relative overflow-hidden group hover:border-rose-500/50 transition-all">
                 <div class="relative z-10">
-                    <p class="text-[11px] font-bold text-rose-500/70 uppercase tracking-widest mb-1">Pending Bills</p>
-                    <h3 class="text-3xl font-black text-white tracking-tight">{{ $pendingCount }}</h3>
+                    <p class="text-[11px] font-bold text-rose-300 uppercase tracking-widest mb-1 drop-shadow-sm">Pending Bills</p>
+                    <h3 class="text-3xl font-black text-white tracking-tight drop-shadow-md">{{ $pendingCount }}</h3>
                 </div>
-                <div class="absolute -right-3 -bottom-3 text-rose-500/10 transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
+                <div class="absolute -right-3 -bottom-3 text-rose-400/20 transform rotate-12 group-hover:rotate-0 transition-transform duration-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -30,10 +30,10 @@
 
             <div class="bg-[#1b2636]/40 backdrop-blur-md rounded-2xl border border-[#2d4059]/50 p-6 relative overflow-hidden group hover:border-emerald-400/50 transition-all">
                 <div class="relative z-10">
-                    <p class="text-[11px] font-bold text-emerald-400/70 uppercase tracking-widest mb-1">Paid Customers</p>
-                    <h3 class="text-3xl font-black text-white tracking-tight">{{ $paidCustomersCount }}</h3>
+                    <p class="text-[11px] font-bold text-emerald-300 uppercase tracking-widest mb-1 drop-shadow-sm">Paid Customers</p>
+                    <h3 class="text-3xl font-black text-white tracking-tight drop-shadow-md">{{ $paidCustomersCount }}</h3>
                 </div>
-                <div class="absolute -right-3 -bottom-3 text-emerald-400/10 transform rotate-6 group-hover:rotate-0 transition-transform duration-500">
+                <div class="absolute -right-3 -bottom-3 text-emerald-400/20 transform rotate-6 group-hover:rotate-0 transition-transform duration-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
@@ -42,10 +42,10 @@
 
             <div class="bg-[#1b2636]/40 backdrop-blur-md rounded-2xl border border-[#2d4059]/50 p-6 relative overflow-hidden group hover:border-orange-500/50 transition-all">
                 <div class="relative z-10">
-                    <p class="text-[11px] font-bold text-orange-500/70 uppercase tracking-widest mb-1">Unpaid Customers</p>
-                    <h3 class="text-3xl font-black text-white tracking-tight">{{ $unpaidCustomersCount }}</h3>
+                    <p class="text-[11px] font-bold text-orange-300 uppercase tracking-widest mb-1 drop-shadow-sm">Unpaid Customers</p>
+                    <h3 class="text-3xl font-black text-white tracking-tight drop-shadow-md">{{ $unpaidCustomersCount }}</h3>
                 </div>
-                <div class="absolute -right-3 -bottom-3 text-orange-500/10 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500">
+                <div class="absolute -right-3 -bottom-3 text-orange-400/20 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
@@ -55,7 +55,7 @@
 
         <div class="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
             <form action="{{ route('billing.index') }}" method="GET" class="relative w-full max-w-lg group">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 group-focus-within:text-blue-500 transition-colors">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-200 group-focus-within:text-blue-500 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
@@ -63,7 +63,7 @@
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by Account Number or Name" 
                     class="w-full pl-10 pr-12 py-3 bg-[#121a25]/60 border border-[#263548] rounded-xl focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all duration-300 text-gray-200">
                 @if(request('search'))
-                    <a href="{{ route('billing.index') }}" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-rose-400 transition-colors">
+                    <a href="{{ route('billing.index') }}" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-200 hover:text-rose-400 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -73,8 +73,8 @@
             
             <div class="flex items-center gap-4 bg-[#1b2636]/40 p-2 rounded-2xl border border-[#2d4059]/50">
                 <div class="px-6 py-1 text-sm">
-                    <span class="text-gray-500 uppercase tracking-widest text-[10px] font-bold block">Total Billed</span>
-                    <span class="text-2xl font-bold text-white tracking-tight">₱{{ number_format($totalBilled, 2) }}</span>
+                    <span class="text-gray-200 uppercase tracking-widest text-[10px] font-bold block">Total Billed</span>
+                    <span class="text-2xl font-bold text-white tracking-tight">₱{{ number_format($totalBilled, 0) }}</span>
                 </div>
             </div>
         </div>
@@ -97,8 +97,8 @@
                     @forelse($pendingBills as $bill)
                     <tr class="hover:bg-blue-50/50 transition-colors">
                         <td class="px-4 py-3">{{ $bill->billing_date->format('F Y') }}</td>
-                        <td class="px-4 py-3">{{ $bill->customer?->customer_id ?? 'N/A' }}</td>
-                        <td class="px-4 py-3">{{ $bill->customer?->name ?? 'Deleted Customer' }}</td>
+                        <td class="px-4 py-3">{{ str_replace('CUST', '', $bill->customer?->customer_id ?? 'N/A') }}</td>
+                        <td class="px-4 py-3">{{ str_replace('Dummy Customer ', '', $bill->customer?->name ?? 'Deleted Customer') }}</td>
                         @php
                             $cType = $bill->customer?->type ?? 'Regular';
                             $greenMax = $thresholds[$cType]['green_max'] ?? 10;
@@ -122,16 +122,6 @@
                                     </button>
                                 </form>
 
-                                <a href="{{ route('billing.show', $bill) }}" class="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200" title="View Bill">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
-                                </a>
-
-                                <a href="{{ route('billing.edit', $bill) }}" class="p-1.5 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors border border-amber-200" title="Edit Bill">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                </a>
-
                                 <a href="{{ route('billing.receipt', $bill) }}" class="p-1.5 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors border border-amber-200" title="Print Bill">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -152,7 +142,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-6 text-center text-gray-400 italic">No pending bills</td>
+                        <td colspan="6" class="px-4 py-6 text-center text-gray-200 italic">No pending bills</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -180,8 +170,8 @@
                     @forelse($paidBills as $bill)
                     <tr class="hover:bg-blue-50/50 transition-colors">
                         <td class="px-4 py-3">{{ $bill->billing_date->format('F Y') }}</td>
-                        <td class="px-4 py-3">{{ $bill->customer?->customer_id ?? 'N/A' }}</td>
-                        <td class="px-4 py-3">{{ $bill->customer?->name ?? 'Deleted Customer' }}</td>
+                        <td class="px-4 py-3">{{ str_replace('CUST', '', $bill->customer?->customer_id ?? 'N/A') }}</td>
+                        <td class="px-4 py-3">{{ str_replace('Dummy Customer ', '', $bill->customer?->name ?? 'Deleted Customer') }}</td>
                         @php
                             $cType = $bill->customer?->type ?? 'Regular';
                             $greenMax = $thresholds[$cType]['green_max'] ?? 10;
@@ -196,10 +186,6 @@
                         </td>
                         <td class="px-4 py-3 font-semibold text-gray-300">₱{{ number_format($bill->total_amount, 0) }}</td>
                         <td class="px-4 py-3">
-                            <div class="flex items-center gap-2">
-                                <a href="{{ route('billing.show', $bill) }}" class="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200" title="View Bill">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
-                                </a>
 
                                 <a href="{{ route('billing.receipt', $bill) }}" class="p-1.5 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors border border-emerald-200" title="Print Receipt">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -221,7 +207,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-6 text-center text-gray-400 italic">No payment history</td>
+                        <td colspan="6" class="px-4 py-6 text-center text-gray-200 italic">No payment history</td>
                     </tr>
                     @endforelse
                 </tbody>

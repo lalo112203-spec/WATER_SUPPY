@@ -13,7 +13,7 @@
                 Generate Customer Bill
             </h1>
             <a href="{{ route('billing.index') }}"
-                class="text-gray-400 hover:text-white flex items-center gap-2 transition-colors duration-300">
+                class="text-gray-200 hover:text-white flex items-center gap-2 transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -37,7 +37,7 @@
                     <!-- Left Column -->
                     <div class="space-y-6">
                         <div>
-                            <label for="customer_id" class="block text-sm font-medium text-gray-400 mb-2 ml-1">Select
+                            <label for="customer_id" class="block text-sm font-medium text-gray-200 mb-2 ml-1">Select
                                 Customer</label>
                             <div class="relative group">
                                 <select id="customer_id" name="customer_id" required
@@ -51,7 +51,7 @@
                                     @endforeach
                                 </select>
                                 <div
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 group-hover:text-emerald-400 transition-colors">
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-200 group-hover:text-emerald-400 transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -66,7 +66,7 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label for="billing_date"
-                                    class="block text-sm font-medium text-gray-400 mb-2 ml-1">Billing Date</label>
+                                    class="block text-sm font-medium text-gray-200 mb-2 ml-1">Billing Date</label>
                                 <input type="date" id="billing_date" name="billing_date" required
                                     value="{{ old('billing_date', now()->format('Y-m-d')) }}"
                                     class="w-full bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059] focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 text-gray-200 text-sm rounded-xl py-3 px-4 outline-none transition-all duration-300">
@@ -74,7 +74,7 @@
                                 @enderror
                             </div>
                             <div>
-                                <label for="due_date" class="block text-sm font-medium text-gray-400 mb-2 ml-1">Due
+                                <label for="due_date" class="block text-sm font-medium text-gray-200 mb-2 ml-1">Due
                                     Date</label>
                                 <input type="date" id="due_date" name="due_date" required
                                     value="{{ old('due_date', now()->addDays(30)->format('Y-m-d')) }}"
@@ -94,11 +94,11 @@
                                     </svg>
                                 </div>
                                 <div class="flex-1 text-center py-2">
-                                    <p class="text-[11px] text-gray-400 font-bold uppercase tracking-widest">Billing Logic: Direct Usage Entry</p>
+                                    <p class="text-[11px] text-gray-200 font-bold uppercase tracking-widest">Billing Logic: Automatic Calculation from Reading</p>
                                 </div>
                             </div>
 
-                            <label for="usage_units" class="block text-sm font-medium text-gray-300 mb-2 ml-1">Total Usage (m³) *</label>
+                            <label for="usage_units" class="block text-sm font-medium text-gray-300 mb-2 ml-1">New Reading (m³) *</label>
                             <input type="number" step="0.01" id="usage_units" name="usage_units" required
                                 value="{{ old('usage_units') }}" oninput="calculateCharges()" placeholder="e.g. 100.00"
                                 class="w-full bg-[#0f1722]/60 border border-[#2d4059] focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 text-gray-100 text-lg font-bold rounded-xl py-3 px-4 shadow-inner outline-none transition-all duration-300 placeholder:text-gray-600">
@@ -112,7 +112,7 @@
                     <div class="flex flex-col justify-between">
                         <div class="space-y-6 bg-[#0f1722]/40 p-6 rounded-2xl border border-[#263548]">
                             <h3
-                                class="text-sm font-semibold text-gray-400 uppercase tracking-widest flex items-center gap-2 mb-4 border-b border-[#263548] pb-2">
+                                class="text-sm font-semibold text-gray-200 uppercase tracking-widest flex items-center gap-2 mb-4 border-b border-[#263548] pb-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -124,7 +124,7 @@
                             <div class="grid grid-cols-1 gap-5">
                                 <div>
                                     <label for="calculated_usage_display"
-                                        class="block text-xs font-medium text-gray-500 mb-1 ml-1">Calculated Consumption (m³)</label>
+                                        class="block text-xs font-medium text-gray-200 mb-1 ml-1">Calculated Consumption (m³)</label>
                                     <div class="relative">
                                         <input type="text" id="calculated_usage_display" readonly value="0.00"
                                             class="w-full bg-[#1b2636]/40 border border-[#2d4059] text-gray-300 rounded-xl py-2 px-4 font-mono outline-none transition-all">
@@ -134,9 +134,9 @@
 
                                 <div>
                                     <label for="base_charge"
-                                        class="block text-xs font-medium text-gray-500 mb-1 ml-1">Base Charge</label>
+                                        class="block text-xs font-medium text-gray-200 mb-1 ml-1">Base Charge</label>
                                     <div class="relative">
-                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₱</span>
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-200">₱</span>
                                         <input type="number" step="0.01" id="base_charge" name="base_charge" required
                                             value="{{ old('base_charge', 0) }}" oninput="updateTotal()"
                                             class="w-full bg-[#1b2636]/40 border border-[#2d4059] focus:border-emerald-500/50 text-gray-300 rounded-xl py-2 pl-7 pr-4 outline-none transition-all">
@@ -145,9 +145,9 @@
 
                                 <div>
                                     <label for="usage_charge"
-                                        class="block text-xs font-medium text-gray-500 mb-1 ml-1">Usage Charge</label>
+                                        class="block text-xs font-medium text-gray-200 mb-1 ml-1">Usage Charge</label>
                                     <div class="relative">
-                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₱</span>
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-200">₱</span>
                                         <input type="number" step="0.01" id="usage_charge" name="usage_charge" required
                                             value="{{ old('usage_charge', 0) }}" oninput="updateTotal()"
                                             class="w-full bg-[#1b2636]/40 border border-[#2d4059] focus:border-emerald-500/50 text-gray-300 rounded-xl py-2 pl-7 pr-4 outline-none transition-all">
@@ -159,11 +159,11 @@
                                 <div class="pt-4 mt-4 border-t border-[#263548]">
                                     @if($globalAdditionalChargeTotal > 0)
                                     <div class="mb-4 space-y-1">
-                                        <p class="text-[10px] text-gray-500 uppercase font-black">Additional Charges:</p>
+                                        <p class="text-[10px] text-gray-200 uppercase font-black">Additional Charges:</p>
                                         @foreach($globalAdditionalCharges as $gd)
                                             <div class="flex justify-between text-[11px] text-blue-400 italic">
                                                 <span>{{ $gd['name'] }}</span>
-                                                <span>+ ₱{{ number_format($gd['amount'], 2) }}</span>
+                                                <span>+ ₱{{ number_format($gd['amount'], 0) }}</span>
                                             </div>
                                         @endforeach
                                     </div>
@@ -183,7 +183,7 @@
                         </div>
 
                         <div class="flex gap-4 mt-8">
-                            <button type="submit"
+                            <button type="submit" id="generate_bill_btn"
                                 class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-[0_4px_15px_rgba(5,150,105,0.4)] transition-all duration-300 flex items-center justify-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
@@ -193,7 +193,7 @@
                                 Create Bill
                             </button>
                             <a href="{{ route('billing.index') }}"
-                                class="px-6 bg-[#1b2636]/60 hover:bg-[#2d4059]/60 text-gray-400 hover:text-white rounded-2xl flex items-center justify-center transition-all duration-300 border border-[#2d4059]">
+                                class="px-6 bg-[#1b2636]/60 hover:bg-[#2d4059]/60 text-gray-200 hover:text-white rounded-2xl flex items-center justify-center transition-all duration-300 border border-[#2d4059]">
                                 Cancel
                             </a>
                         </div>
@@ -206,7 +206,7 @@
         <div
             class="bg-[#121a25]/80 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.6)] border border-[#263548] p-6 relative overflow-hidden transition-all duration-500">
             <h2 class="text-lg font-semibold mb-6 flex items-center gap-2 text-gray-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24"
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-200" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -214,7 +214,7 @@
                 Consumption & Billing History
             </h2>
 
-            <div id="customer-history" class="text-center py-12 text-gray-500 transition-all duration-300">
+            <div id="customer-history" class="text-center py-12 text-gray-200 transition-all duration-300">
                 <div class="flex flex-col items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-[#263548] mb-4 opacity-50" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
@@ -274,6 +274,7 @@
                 historyDiv.innerHTML = '<div class="text-center py-6 text-zinc-500">Select a customer to view reading history</div>';
                 previousReading = 0;
                 prevReadingDisplay.textContent = '0.00';
+                document.getElementById('usage_units').min = 0;
                 calculateCharges();
                 return;
             }
@@ -290,6 +291,7 @@
                     }
                     
                     prevReadingDisplay.textContent = previousReading.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                    document.getElementById('usage_units').min = previousReading;
 
                     if (data.readings && data.readings.length > 0) {
                         let html = `
@@ -308,17 +310,15 @@
                         `;
 
                         data.readings.forEach((reading, index) => {
-                            // Calculate usage as difference from PREVIOUS bill in time.
-                            // Since readings are DESC by date, the previous chronological reading is at index + 1
-                            // The user wants 'Reading = Usage' for all historical data as well
-                            readingUsage = reading.usage_units;
+                            // Use the stored consumption value
+                            let readingUsage = reading.consumption || 0;
                             
                             const statusColor = reading.status === 'Paid' ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700/50' : 'bg-orange-900/40 text-orange-300 border-orange-700/50';
 
                             // Apply color coding to usage column based on thresholds
                             const customerType = data.customer?.type || 'Regular';
                             const t = thresholds[customerType] || { green_max: 12, orange_max: 14 };
-                            let usageColor = 'text-gray-400';
+                            let usageColor = 'text-gray-200';
 
                             if (readingUsage > 0 && readingUsage <= t.green_max) {
                                 usageColor = 'text-emerald-400 font-bold';
@@ -348,7 +348,7 @@
                     } else {
                         historyDiv.innerHTML = `
                             <div class="flex flex-col items-center py-6">
-                                <p class="text-gray-400 font-medium">No reading history yet</p>
+                                <p class="text-gray-200 font-medium">No reading history yet</p>
                                 <p class="text-xs text-gray-600">Using initial reading: ${previousReading.toFixed(2)}</p>
                             </div>
                         `;
@@ -360,6 +360,7 @@
                     historyDiv.innerHTML = '<div class="text-center py-12 text-rose-500 font-medium">Failed to load customer history</div>';
                     previousReading = customersData[customerId]?.initial_reading || 0;
                     prevReadingDisplay.textContent = previousReading.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                    document.getElementById('usage_units').min = previousReading;
                     calculateCharges();
                 });
         }
@@ -384,9 +385,31 @@
             const selectedOption = customerSelect.options[customerSelect.selectedIndex];
             const customerType = selectedOption.getAttribute('data-type');
 
-            // The user wants the Present Reading to be reflected directly as the Total Usage
+            // The user wants the usage to be exactly equal to the reading
             const presentReading = parseFloat(presentReadingInput.value) || 0;
-            const usage = presentReading;
+            
+            if (presentReading < previousReading) {
+                calculationText.textContent = `Invalid: Reading cannot be lower than previous (${previousReading})`;
+                calculationText.className = 'text-xs mt-1 text-rose-500 font-bold';
+                const submitBtn = document.getElementById('generate_bill_btn');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+                baseChargeInput.value = 0;
+                usageChargeInput.value = 0;
+                consumptionDisplay.value = '0.00';
+                updateTotal();
+                return;
+            }
+            
+            const submitBtn = document.getElementById('generate_bill_btn');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+            
+            const usage = presentReading - previousReading;
             
             consumptionDisplay.value = usage.toFixed(2);
             document.getElementById('consumption').value = usage.toFixed(2);

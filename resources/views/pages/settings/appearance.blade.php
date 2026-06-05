@@ -10,9 +10,10 @@ new #[Title('Appearance settings')] class extends Component {
 
     public $background_image;
     public $messenger_background;
-    public $text_color;
+    public $text_size;
     public $text_stroke_color;
     public $text_stroke_width;
+    public $font_weight;
     public $font_family;
     public $background_color;
     public $appearance;
@@ -20,9 +21,11 @@ new #[Title('Appearance settings')] class extends Component {
     public $messenger_background_url;
 
     public function mount() {
-        $this->text_color = auth()->user()->text_color ?? '';
         $this->text_stroke_color = auth()->user()->text_stroke_color ?? '';
         $this->text_stroke_width = auth()->user()->text_stroke_width ?? '';
+        $this->background_color = auth()->user()->background_color ?? '';
+        $this->text_size = auth()->user()->text_size ?? '';
+        $this->font_weight = auth()->user()->font_weight ?? '';
         $this->font_family = auth()->user()->font_family ?? '';
         $this->background_color = auth()->user()->background_color ?? '';
         $this->appearance = auth()->user()->appearance ?? 'light';
@@ -56,11 +59,29 @@ new #[Title('Appearance settings')] class extends Component {
         $this->redirectIntended(route('appearance.edit'));
     }
 
-    public function updatedTextColor() {
+
+
+    public function updatedTextSize() {
         $user = auth()->user();
-        $user->text_color = $this->text_color;
+        $user->text_size = $this->text_size;
         $user->save();
-        session()->flash('status', 'Text color updated successfully.');
+        session()->flash('status', 'Text size updated successfully.');
+        $this->redirectIntended(route('appearance.edit'));
+    }
+
+    public function updatedAppearance() {
+        $user = auth()->user();
+        $user->appearance = $this->appearance;
+        $user->save();
+        session()->flash('status', 'Appearance mode updated successfully.');
+        $this->redirectIntended(route('appearance.edit'));
+    }
+
+    public function updatedBackgroundColor() {
+        $user = auth()->user();
+        $user->background_color = $this->background_color;
+        $user->save();
+        session()->flash('status', 'Background color updated successfully.');
         $this->redirectIntended(route('appearance.edit'));
     }
 
@@ -80,6 +101,14 @@ new #[Title('Appearance settings')] class extends Component {
         $this->redirectIntended(route('appearance.edit'));
     }
 
+    public function updatedFontWeight() {
+        $user = auth()->user();
+        $user->font_weight = $this->font_weight;
+        $user->save();
+        session()->flash('status', 'Font weight updated successfully.');
+        $this->redirectIntended(route('appearance.edit'));
+    }
+
     public function updatedFontFamily() {
         $user = auth()->user();
         $user->font_family = $this->font_family;
@@ -88,13 +117,7 @@ new #[Title('Appearance settings')] class extends Component {
         $this->redirectIntended(route('appearance.edit'));
     }
 
-    public function updatedBackgroundColor() {
-        $user = auth()->user();
-        $user->background_color = $this->background_color;
-        $user->save();
-        session()->flash('status', 'Background color updated successfully.');
-        $this->redirectIntended(route('appearance.edit'));
-    }
+
 
     public function updateAppearance() {
         // Fallback for the manual submit button if they still use it
@@ -115,10 +138,10 @@ new #[Title('Appearance settings')] class extends Component {
             $path2 = $this->messenger_background->store('messenger_backgrounds', 'public');
             $user->messenger_background = $path2;
         }
-        
-        $user->text_color = $this->text_color;
         $user->text_stroke_color = $this->text_stroke_color;
         $user->text_stroke_width = $this->text_stroke_width;
+        $user->text_size = $this->text_size;
+        $user->font_weight = $this->font_weight;
         $user->font_family = $this->font_family;
         $user->background_color = $this->background_color;
         $user->appearance = $this->appearance;
@@ -163,13 +186,19 @@ new #[Title('Appearance settings')] class extends Component {
     <flux:heading class="sr-only">{{ __('Appearance settings') }}</flux:heading>
 
     <x-pages::settings.layout :heading="__('Appearance')">
-        <flux:radio.group x-data variant="segmented" wire:model.live="appearance" x-init="$watch('$flux.appearance', value => $wire.set('appearance', value))">
-            <flux:radio value="light" icon="sun">{{ __('Light') }}</flux:radio>
-            <flux:radio value="dark" icon="moon">{{ __('Dark') }}</flux:radio>
-            <flux:radio value="custom" icon="paint-brush">{{ __('Custom') }}</flux:radio>
-        </flux:radio.group>
+
 
         <form wire:submit="updateAppearance" class="mt-8 space-y-6">
+            <style>
+                /* Force all text on this page to be white for visibility */
+                [data-flux-label], [data-flux-heading], label, h3 {
+                    color: white !important;
+                }
+                [data-flux-label], label {
+                    margin-bottom: 0.35rem !important;
+                    display: inline-block;
+                }
+            </style>
             @if (session('status'))
                 <div class="p-4 mb-4 text-sm text-green-400 rounded-lg bg-green-500/10 border border-green-500/20" role="alert">
                     {{ session('status') }}
@@ -177,7 +206,7 @@ new #[Title('Appearance settings')] class extends Component {
             @endif
 
             <div class="space-y-2">
-                <flux:heading>{{ __('Custom Background Image') }}</flux:heading>
+                <flux:heading class="!text-white mb-2">{{ __('Custom Background Image') }}</flux:heading>
                 
                 @if(auth()->user()->background_image || auth()->user()->background_url)
                     <div class="my-4">
@@ -188,7 +217,7 @@ new #[Title('Appearance settings')] class extends Component {
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">{{ __('Upload File') }}</label>
+                        <label class="block text-xs font-bold text-gray-200 mb-1 uppercase tracking-wider">{{ __('Upload File') }}</label>
                         <input type="file" wire:model="background_image" class="block w-full text-sm text-slate-500
                             file:mr-4 file:py-2 file:px-4
                             file:rounded-full file:border-0
@@ -197,7 +226,7 @@ new #[Title('Appearance settings')] class extends Component {
                             hover:file:bg-blue-100" accept="image/*" />
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">{{ __('Or Paste URL') }}</label>
+                        <label class="block text-xs font-bold text-gray-200 mb-1 uppercase tracking-wider">{{ __('Or Paste URL') }}</label>
                         <flux:input wire:model.blur="background_url" placeholder="https://example.com/image.jpg" />
                     </div>
                 </div>
@@ -205,7 +234,7 @@ new #[Title('Appearance settings')] class extends Component {
             </div>
 
             <div class="space-y-2 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
-                <flux:heading>{{ __('Messenger Background Image') }}</flux:heading>
+                <flux:heading class="!text-white mb-2">{{ __('Messenger Background Image') }}</flux:heading>
                 
                 @if(auth()->user()->messenger_background || auth()->user()->messenger_background_url)
                     <div class="my-4">
@@ -216,7 +245,7 @@ new #[Title('Appearance settings')] class extends Component {
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">{{ __('Upload File') }}</label>
+                        <label class="block text-xs font-bold text-gray-200 mb-1 uppercase tracking-wider">{{ __('Upload File') }}</label>
                         <input type="file" wire:model="messenger_background" class="block w-full text-sm text-slate-500
                             file:mr-4 file:py-2 file:px-4
                             file:rounded-full file:border-0
@@ -225,7 +254,7 @@ new #[Title('Appearance settings')] class extends Component {
                             hover:file:bg-blue-100" accept="image/*" />
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">{{ __('Or Paste URL') }}</label>
+                        <label class="block text-xs font-bold text-gray-200 mb-1 uppercase tracking-wider">{{ __('Or Paste URL') }}</label>
                         <flux:input wire:model.blur="messenger_background_url" placeholder="https://example.com/chat-bg.jpg" />
                     </div>
                 </div>
@@ -233,40 +262,29 @@ new #[Title('Appearance settings')] class extends Component {
             </div>
 
             <div class="space-y-2 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
-                <flux:heading>{{ __('Custom Background Color') }}</flux:heading>
+                <flux:heading class="!text-white mb-2">{{ __('Custom Background Color') }}</flux:heading>
                 <div class="flex items-center gap-4">
                     <input type="color" wire:model.blur="background_color" class="h-10 w-20 cursor-pointer rounded border border-gray-300">
                     @if($background_color)
-                        <button type="button" wire:click="$set('background_color', '')" class="text-sm text-gray-500">{{ __('Reset to default') }}</button>
+                        <button type="button" wire:click="$set('background_color', '')" class="text-sm text-gray-200">{{ __('Reset to default') }}</button>
                     @endif
                 </div>
                 @error('background_color') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
             </div>
 
-            <div class="space-y-2 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
-                <flux:heading>{{ __('Custom Text Color') }}</flux:heading>
-                <div class="flex items-center gap-4">
-                    <input type="color" wire:model.blur="text_color" class="h-10 w-20 cursor-pointer rounded border border-gray-300">
-                    @if($text_color)
-                        <button type="button" wire:click="$set('text_color', '')" class="text-sm text-gray-500">{{ __('Reset to default') }}</button>
-                    @endif
-                </div>
-                @error('text_color') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
-            </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
                 <div class="space-y-2">
-                    <flux:heading>{{ __('Text Stroke Color') }}</flux:heading>
+                    <flux:heading class="!text-white mb-2">{{ __('Text Stroke Color') }}</flux:heading>
                     <div class="flex items-center gap-4">
                         <input type="color" wire:model.blur="text_stroke_color" class="h-10 w-20 cursor-pointer rounded border border-gray-300">
                         @if($text_stroke_color)
-                            <button type="button" wire:click="$set('text_stroke_color', '')" class="text-sm text-gray-500">{{ __('Reset') }}</button>
+                            <button type="button" wire:click="$set('text_stroke_color', '')" class="text-sm text-gray-200">{{ __('Reset') }}</button>
                         @endif
                     </div>
                 </div>
 
                 <div class="space-y-2">
-                    <flux:heading>{{ __('Text Stroke Width') }}</flux:heading>
+                    <flux:heading class="!text-white mb-2">{{ __('Text Stroke Width') }}</flux:heading>
                     <flux:select wire:model.blur="text_stroke_width" placeholder="Select width...">
                         <flux:select.option value="">None</flux:select.option>
                         <flux:select.option value="0.5px">0.5px</flux:select.option>
@@ -278,22 +296,50 @@ new #[Title('Appearance settings')] class extends Component {
                 </div>
             </div>
 
-            <div class="space-y-2 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
-                <flux:heading>{{ __('Font Family') }}</flux:heading>
-                <flux:select wire:model.blur="font_family" placeholder="Select font...">
-                    <flux:select.option value="">Default (Inter)</flux:select.option>
-                    <flux:select.option value="Arial, sans-serif">Arial</flux:select.option>
-                    <flux:select.option value="'Times New Roman', serif">Times New Roman</flux:select.option>
-                    <flux:select.option value="'Courier New', monospace">Courier New</flux:select.option>
-                    <flux:select.option value="Georgia, serif">Georgia</flux:select.option>
-                    <flux:select.option value="Verdana, sans-serif">Verdana</flux:select.option>
-                    <flux:select.option value="'Comic Sans MS', cursive">Comic Sans MS</flux:select.option>
-                    <flux:select.option value="'Oswald', sans-serif">Oswald</flux:select.option>
-                    <flux:select.option value="'Roboto', sans-serif">Roboto</flux:select.option>
-                    <flux:select.option value="'Montserrat', sans-serif">Montserrat</flux:select.option>
-                </flux:select>
-                @error('font_family') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+                <div class="space-y-2">
+                    <flux:heading class="!text-white mb-2">{{ __('Font Family') }}</flux:heading>
+                    <flux:select wire:model.blur="font_family" placeholder="Select font...">
+                        <flux:select.option value="">Default (Inter)</flux:select.option>
+                        <flux:select.option value="Arial, sans-serif">Arial</flux:select.option>
+                        <flux:select.option value="'Times New Roman', serif">Times New Roman</flux:select.option>
+                        <flux:select.option value="'Courier New', monospace">Courier New</flux:select.option>
+                        <flux:select.option value="Georgia, serif">Georgia</flux:select.option>
+                        <flux:select.option value="Verdana, sans-serif">Verdana</flux:select.option>
+                        <flux:select.option value="'Comic Sans MS', cursive">Comic Sans MS</flux:select.option>
+                        <flux:select.option value="'Oswald', sans-serif">Oswald</flux:select.option>
+                        <flux:select.option value="'Roboto', sans-serif">Roboto</flux:select.option>
+                        <flux:select.option value="'Montserrat', sans-serif">Montserrat</flux:select.option>
+                    </flux:select>
+                </div>
+
+                <div class="space-y-2">
+                    <flux:heading class="!text-white mb-2">{{ __('Text Size') }}</flux:heading>
+                    <flux:select wire:model.blur="text_size" placeholder="Select size...">
+                        <flux:select.option value="">Default</flux:select.option>
+                        <flux:select.option value="12px">Small</flux:select.option>
+                        <flux:select.option value="18px">Large</flux:select.option>
+                        <flux:select.option value="22px">Extra Large</flux:select.option>
+                        <flux:select.option value="26px">2XL</flux:select.option>
+                    </flux:select>
+                </div>
             </div>
+            
+            <div class="space-y-2 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+                <flux:heading class="!text-white mb-2">{{ __('Font Weight (Boldness)') }}</flux:heading>
+                <flux:select wire:model.blur="font_weight" placeholder="Select weight...">
+                    <flux:select.option value="">Default</flux:select.option>
+                    <flux:select.option value="500">Medium</flux:select.option>
+                    <flux:select.option value="600">Semi Bold</flux:select.option>
+                    <flux:select.option value="700">Bold</flux:select.option>
+                    <flux:select.option value="800">Extra Bold</flux:select.option>
+                    <flux:select.option value="900">Black</flux:select.option>
+                </flux:select>
+            </div>
+            
+            @error('font_family') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+            @error('text_size') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
+            @error('font_weight') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
 
             <div class="pt-4">
                 <flux:button type="submit" variant="primary">{{ __('Save Appearance') }}</flux:button>

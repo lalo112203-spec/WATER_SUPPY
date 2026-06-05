@@ -49,18 +49,18 @@
             <div class="space-y-4">
                 <div class="flex justify-between">
                     <flux:text>Water Consumption ({{ $bill->consumption ?? 0 }} m³)</flux:text>
-                    <flux:text class="font-semibold">₱{{ number_format($bill->usage_charge, 2) }}</flux:text>
+                    <flux:text class="font-semibold">₱{{ number_format($bill->usage_charge, 0) }}</flux:text>
                 </div>
                 <div class="flex justify-between">
                     <flux:text>Base Charge</flux:text>
-                    <flux:text class="font-semibold">₱{{ number_format($bill->base_charge, 2) }}</flux:text>
+                    <flux:text class="font-semibold">₱{{ number_format($bill->base_charge, 0) }}</flux:text>
                 </div>
 
                 @if(!empty($bill->applied_additional_charges))
                     @foreach($bill->applied_additional_charges as $charge)
                         <div class="flex justify-between text-blue-600 dark:text-blue-400">
                             <flux:text>Additional Charge: {{ $charge['name'] }}</flux:text>
-                            <flux:text class="font-semibold">+ ₱{{ number_format($charge['amount'], 2) }}</flux:text>
+                            <flux:text class="font-semibold">+ ₱{{ number_format($charge['amount'], 0) }}</flux:text>
                         </div>
                     @endforeach
                 @endif
@@ -68,13 +68,13 @@
                 @if($bill->additional_charge_amount > 0)
                     <div class="flex justify-between text-blue-600 dark:text-blue-400">
                         <flux:text>Additional Charge: {{ $bill->additional_charge_note ?? 'Manual' }}</flux:text>
-                        <flux:text class="font-semibold">+ ₱{{ number_format($bill->additional_charge_amount, 2) }}</flux:text>
+                        <flux:text class="font-semibold">+ ₱{{ number_format($bill->additional_charge_amount, 0) }}</flux:text>
                     </div>
                 @endif
                 
                 <div class="border-t border-zinc-200 dark:border-zinc-700 pt-4 flex justify-between">
                     <flux:heading size="sm">Total Amount</flux:heading>
-                    <flux:heading size="sm" class="text-green-600">₱{{ number_format($bill->total_amount, 2) }}</flux:heading>
+                    <flux:heading size="sm" class="text-green-600">₱{{ number_format($bill->total_amount, 0) }}</flux:heading>
                 </div>
             </div>
         </flux:card>

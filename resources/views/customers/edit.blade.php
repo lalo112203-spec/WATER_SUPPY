@@ -51,6 +51,35 @@
                         @enderror
                     </flux:field>
 
+                    <flux:field>
+                        <flux:label for="phone_number">Phone Number</flux:label>
+                        <flux:input
+                            id="phone_number"
+                            name="phone_number"
+                            type="text"
+                            placeholder="e.g. 09123456789"
+                            value="{{ old('phone_number', $customer->phone_number) }}"
+                        />
+                        @error('phone_number')
+                            <flux:error>{{ $message }}</flux:error>
+                        @enderror
+                    </flux:field>
+
+
+                    <flux:field>
+                        <flux:label for="street">Street Name (Optional)</flux:label>
+                        <flux:input
+                            id="street"
+                            name="street"
+                            type="text"
+                            value="{{ old('street', $customer->street) }}"
+                            class="uppercase"
+                            oninput="updateAddressPreview()"
+                        />
+                        @error('street')
+                            <flux:error>{{ $message }}</flux:error>
+                        @enderror
+                    </flux:field>
 
                     <flux:field>
                         <flux:label for="barangay">Barangay</flux:label>
@@ -70,8 +99,8 @@
                                     <option value="{{ $brgy }}">
                                 @endforeach
                             </datalist>
-                            <div class="px-3 py-1.5 bg-[#1a2432]/30 border border-[#263548] rounded text-sm text-gray-500 font-mono">
-                                <span id="brgy_text" class="text-cyan-400 font-bold">{{ $customer->barangay ?? '...' }}</span> DOLORES EASTERN SAMAR
+                            <div class="px-3 py-1.5 bg-[#1a2432]/30 border border-[#263548] rounded text-sm text-gray-200 font-mono">
+                                <span id="street_text" class="text-cyan-400 font-bold">{{ $customer->street ? strtoupper($customer->street) . ', ' : '' }}</span><span id="brgy_text" class="text-cyan-400 font-bold">{{ $customer->barangay ?? '...' }}</span> DOLORES EASTERN SAMAR
                             </div>
                         </div>
                         @error('barangay')
@@ -80,10 +109,16 @@
 
                         <script>
                             function updateAddressPreview() {
+                                const street = document.getElementById('street');
                                 const brgy = document.getElementById('barangay');
+                                const streetText = document.getElementById('street_text');
                                 const brgyText = document.getElementById('brgy_text');
-                                brgyText.textContent = brgy.value || '...';
-                                brgyText.className = brgy.value ? 'text-cyan-400 font-bold' : 'text-gray-500';
+                                
+                                let streetVal = street.value.trim().toUpperCase();
+                                streetText.textContent = streetVal ? streetVal + ', ' : '';
+                                
+                                brgyText.textContent = brgy.value ? brgy.value.toUpperCase() + ' ' : '... ';
+                                brgyText.className = brgy.value ? 'text-cyan-400 font-bold' : 'text-gray-200';
                             }
                         </script>
                     </flux:field>

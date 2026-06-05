@@ -11,7 +11,7 @@
                 </div>
 
                 <h1 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">System Locked</h1>
-                <p class="text-gray-400 text-sm mb-8 leading-relaxed">
+                <p class="text-gray-200 text-sm mb-8 leading-relaxed">
                     You are entering a sensitive configuration area. To proceed, please verify your identity with your administrator password.
                 </p>
 
@@ -38,7 +38,7 @@
                 </form>
 
                 <div class="mt-10 pt-6 border-t border-[#263548] w-full">
-                    <a href="{{ route('dashboard') }}" class="text-xs text-gray-500 hover:text-white transition-colors">
+                    <a href="{{ route('dashboard') }}" class="text-xs text-gray-200 hover:text-white transition-colors">
                         &larr; Return to Dashboard
                     </a>
                 </div>

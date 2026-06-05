@@ -12,6 +12,13 @@ class RegistrationCode extends Model
         'used_by',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'is_used' => 'boolean',
+        ];
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'used_by');

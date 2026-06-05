@@ -4,7 +4,7 @@
         <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between mt-2 gap-4">
             <div>
                 <h1 class="text-3xl font-bold tracking-tight text-gray-100 font-sans">Message & Announcements</h1>
-                <p class="mt-1 text-sm text-gray-400 font-medium tracking-wide">Stay connected with your consumers and broadcast global updates.</p>
+                <p class="mt-1 text-sm text-gray-200 font-medium tracking-wide">Stay connected with your consumers and broadcast global updates.</p>
             </div>
             
             <div class="flex items-center gap-3">
@@ -26,7 +26,7 @@
                 <div class="p-5 border-b border-[#263548] bg-[#121a25]/80 backdrop-blur-md shadow-sm z-10">
                     <div class="relative">
                         <input type="text" id="search_users" placeholder="Search conversations..." class="w-full pl-10 pr-4 py-2.5 bg-[#0f1722] border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 shadow-inner text-gray-200 transition-all font-medium">
-                        <svg class="w-5 h-5 absolute left-3.5 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <svg class="w-5 h-5 absolute left-3.5 top-2.5 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
                 </div>
 
@@ -53,7 +53,7 @@
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-4 w-full">
                                     <div class="relative flex-shrink-0">
-                                        <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 border border-[#263548] flex items-center justify-center text-gray-400 font-bold text-lg shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+                                        <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 border border-[#263548] flex items-center justify-center text-gray-200 font-bold text-lg shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
                                             @if($u->profile_photo)
                                                 <img src="{{ asset('storage/' . $u->profile_photo) }}" class="h-full w-full object-cover">
                                             @else
@@ -68,7 +68,7 @@
                                         <div class="flex justify-between items-baseline mb-0.5">
                                             <p class="text-[15px] truncate tracking-tight {{ $u->unread_count > 0 ? 'text-gray-100 font-bold' : 'text-gray-200 font-semibold' }}">{{ $u->name }}</p>
                                         </div>
-                                        <p class="text-xs truncate {{ $u->unread_count > 0 ? 'text-gray-200 font-semibold' : 'text-gray-400 font-medium' }}">Account Number: {{ $u->customer?->customer_id ?? $u->id }}</p>
+                                        <p class="text-xs truncate {{ $u->unread_count > 0 ? 'text-gray-200 font-semibold' : 'text-gray-200 font-medium' }}">Account Number: {{ $u->customer?->customer_id ?? $u->id }}</p>
                                     </div>
                                     @if($u->unread_count > 0)
                                         <div class="flex-shrink-0">
@@ -81,7 +81,7 @@
                     @empty
                         <div class="flex flex-col items-center justify-center h-32 px-4 text-center">
                             <svg class="w-10 h-10 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                            <p class="text-sm text-gray-400 font-medium">No consumers found</p>
+                            <p class="text-sm text-gray-200 font-medium">No consumers found</p>
                         </div>
                     @endforelse
                 </ul>
@@ -92,7 +92,7 @@
                 <!-- Top Navbar for Active Chat -->
                 <div class="h-[76px] px-6 border-b border-[#263548] bg-[#121a25]/80 backdrop-blur-md shadow-sm flex items-center justify-between flex-shrink-0 z-10 w-full">
                     <div class="flex items-center space-x-4">
-                        <button type="button" class="md:hidden text-gray-400 hover:text-gray-400 transition-colors p-2 -ml-2 rounded-lg hover:bg-[#0f1722]" onclick="showUsersList()">
+                        <button type="button" class="md:hidden text-gray-200 hover:text-gray-200 transition-colors p-2 -ml-2 rounded-lg hover:bg-[#0f1722]" onclick="showUsersList()">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                         </button>
                         <div id="chat_header_avatar_container" class="relative group">
@@ -103,13 +103,13 @@
                         </div>
                         <div>
                             <h2 class="text-[17px] font-bold text-gray-100 tracking-tight" id="chat_with">Global Announcements</h2>
-                            <p class="text-[13px] text-gray-400 font-medium mt-0.5" id="chat_with_sub">Broadcast new updates to all users</p>
+                            <p class="text-[13px] text-gray-200 font-medium mt-0.5" id="chat_with_sub">Broadcast new updates to all users</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Chat Messages Scroll Area -->
-                <div class="flex-1 overflow-y-auto px-4 py-6 scroll-smooth relative" id="messages_container" style="display: none; @if(auth()->user()->messenger_background || auth()->user()->messenger_background_url) background-image: url('{{ auth()->user()->messenger_background_url ?: asset('storage/' . auth()->user()->messenger_background) }}'); background-size: cover; background-position: center; @endif">
+                <div class="flex-1 overflow-y-auto px-4 py-6 scroll-smooth relative" id="messages_container" style="display: none; @if(auth()->user()->messenger_background || auth()->user()->messenger_background_url) background-image: url('{{ auth()->user()->messenger_background_url ?: asset('storage/' . auth()->user()->messenger_background) }}'); background-size: cover; background-position: center; background-attachment: local; @endif">
                     @if(auth()->user()->messenger_background || auth()->user()->messenger_background_url)
                         <!-- Dark overlay to ensure text remains readable over custom background -->
                         <div class="absolute inset-0 bg-black/40 pointer-events-none z-0"></div>
@@ -123,7 +123,7 @@
                                  style="display: none;">
                                 @if($msg->sender_id !== auth()->id())
                                 <div class="flex-shrink-0 mr-3 mt-auto mb-1">
-                                    <div class="h-8 w-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-400 text-xs font-bold border border-white shadow-sm overflow-hidden">
+                                    <div class="h-8 w-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-200 text-xs font-bold border border-white shadow-sm overflow-hidden">
                                         @if($msg->sender && $msg->sender->profile_photo)
                                             <img src="{{ asset('storage/' . $msg->sender->profile_photo) }}" class="h-full w-full object-cover">
                                         @else
@@ -138,12 +138,12 @@
                                         <p class="text-[15px] leading-relaxed break-words font-medium">{{ $msg->message }}</p>
                                     </div>
                                     <div class="flex items-center mt-1.5 px-1 space-x-1.5">
-                                        <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{{ $msg->created_at->format('M d, H:i') }}</p>
+                                        <p class="text-[11px] font-semibold text-gray-200 uppercase tracking-wider">{{ $msg->created_at->format('M d, H:i') }}</p>
                                         @if($msg->sender_id === auth()->id())
                                             @if($msg->read_at)
                                                 <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                             @else
-                                                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                <svg class="w-3.5 h-3.5 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                             @endif
                                         @endif
                                     </div>
@@ -202,7 +202,7 @@
 
                         <!-- Posts Feed -->
                         <div class="pl-2">
-                            <h3 class="text-sm font-bold text-gray-400 tracking-widest uppercase mb-6 flex items-center">
+                            <h3 class="text-sm font-bold text-gray-200 tracking-widest uppercase mb-6 flex items-center">
                                 <span class="mr-3">Previous Broadcasts</span>
                                 <div class="h-px bg-gray-200 flex-1"></div>
                             </h3>
@@ -215,21 +215,21 @@
                                             @if($post->title)
                                                 <h4 class="text-[17px] font-bold text-gray-100 tracking-tight">{{ $post->title }}</h4>
                                             @else
-                                                <h4 class="text-[17px] font-bold text-gray-400 italic">No Title</h4>
+                                                <h4 class="text-[17px] font-bold text-gray-200 italic">No Title</h4>
                                             @endif
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 tracking-wide">
                                                 {{ $post->created_at->diffForHumans() }}
                                             </span>
                                         </div>
                                         <p class="text-[15px] text-gray-300 leading-relaxed font-medium bg-[#0f1722] rounded-xl p-4">{{ $post->content }}</p>
-                                        <p class="text-[11px] font-bold text-gray-400 tracking-wider uppercase mt-4">{{ $post->created_at->format('M d, Y • h:i A') }}</p>
+                                        <p class="text-[11px] font-bold text-gray-200 tracking-wider uppercase mt-4">{{ $post->created_at->format('M d, Y • h:i A') }}</p>
                                     </div>
                                 @empty
                                     <div class="bg-[#121a25]/80 backdrop-blur-md rounded-2xl p-10 shadow-sm border border-[#263548] text-center border-dashed">
                                         <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#0f1722] mb-3">
-                                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                            <svg class="w-6 h-6 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                                         </div>
-                                        <p class="text-[15px] text-gray-400 font-medium">No announcements published yet.</p>
+                                        <p class="text-[15px] text-gray-200 font-medium">No announcements published yet.</p>
                                     </div>
                                 @endforelse
                             </div>
@@ -261,7 +261,7 @@
             <h3 class="text-xl font-bold text-white mb-4">Edit Message</h3>
             <textarea id="edit_text" class="w-full bg-[#0f1722] border border-[#263548] rounded-2xl p-4 text-white resize-none focus:ring-2 focus:ring-blue-500 outline-none" rows="3"></textarea>
             <div class="mt-6 flex justify-end gap-3">
-                <button onclick="closeEditModal()" class="px-6 py-2.5 rounded-xl font-bold text-gray-400 hover:bg-white/5 transition-all">Cancel</button>
+                <button onclick="closeEditModal()" class="px-6 py-2.5 rounded-xl font-bold text-gray-200 hover:bg-white/10/5 transition-all">Cancel</button>
                 <button onclick="saveEdit()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20">Save Changes</button>
             </div>
         </div>

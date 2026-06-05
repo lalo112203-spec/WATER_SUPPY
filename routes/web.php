@@ -14,6 +14,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Reader
+    Route::get('reader/dashboard', [\App\Http\Controllers\ReaderController::class, 'index'])->name('reader.dashboard');
+    Route::post('reader/reading', [\App\Http\Controllers\ReaderController::class, 'storeReading'])->name('reader.storeReading');
+
     // Customers
     Route::get('customers/report', [CustomerController::class, 'report'])->name('customers.report');
     Route::resource('customers', CustomerController::class)->except(['show']);

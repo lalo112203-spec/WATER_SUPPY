@@ -15,11 +15,22 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::create([
-            'name' => 'admin1',
-            'email' => 'admin@water.system', // Need an email for standard login unless changed
-            'password' => bcrypt('09092200129'),
-            'role' => 'admin',
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@water.system'], // Search by email
+            [
+                'name' => 'admin1',
+                'password' => bcrypt('09092200129'),
+                'role' => 'admin',
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'reader'],
+            [
+                'name' => 'Meter Reader',
+                'password' => bcrypt('09092200129'),
+                'role' => 'reader',
+            ]
+        );
     }
 }

@@ -7,7 +7,7 @@
                 <h1 class="text-[28px] font-bold text-gray-100 tracking-tight flex items-center">
                     Welcome back, <span class="text-blue-600 ml-2">{{ auth()->user()->name }}</span>
                 </h1>
-                <p class="mt-2 text-[15px] text-gray-400 font-medium">View your billing history and latest announcements.</p>
+                <p class="mt-2 text-[15px] text-gray-200 font-medium">View your billing history and latest announcements.</p>
             </div>
         </div>
 
@@ -42,7 +42,7 @@
                                 <h3 class="font-extrabold text-gray-100 text-lg mb-2 tracking-tight">{{ $post->title }}</h3>
                             @endif
                             <p class="text-gray-300 text-[15px] leading-relaxed mb-4">{{ $post->content }}</p>
-                            <div class="flex items-center text-gray-400 text-[12px] font-bold uppercase tracking-wider space-x-2">
+                            <div class="flex items-center text-gray-200 text-[12px] font-bold uppercase tracking-wider space-x-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 <span>{{ $post->created_at->format('M d, Y • h:i A') }}</span>
                             </div>
@@ -67,11 +67,11 @@
                     <table class="w-full text-left border-collapse min-w-full">
                         <thead class="bg-[#0f1722]/80 text-[11px] sm:text-[12px]">
                             <tr>
-                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-400 uppercase tracking-widest border-b border-[#263548]">Date</th>
-                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-400 uppercase tracking-widest border-b border-[#263548]">Usage</th>
-                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-400 uppercase tracking-widest border-b border-[#263548]">Total</th>
-                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-400 uppercase tracking-widest border-b border-[#263548]">Status</th>
-                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-400 uppercase tracking-widest border-b border-[#263548] text-right">Action</th>
+                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Date</th>
+                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Usage</th>
+                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Total</th>
+                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Status</th>
+                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548] text-right">Action</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50">
@@ -79,8 +79,8 @@
                                 @foreach($customer->bills as $bill)
                                     <tr class="hover:bg-blue-50/30 transition-colors">
                                         <td class="px-2 sm:px-6 py-5 whitespace-nowrap text-[13px] sm:text-[15px] font-semibold text-gray-200 tracking-tight">{{ \Carbon\Carbon::parse($bill->billing_date)->format('M d, Y') }}</td>
-                                        <td class="px-2 sm:px-6 py-5 whitespace-nowrap text-[13px] sm:text-[15px] font-medium text-gray-400">{{ $bill->usage_units }} <span class="text-xs">m³</span></td>
-                                        <td class="px-2 sm:px-6 py-5 whitespace-nowrap text-[13px] sm:text-[15px] font-bold text-gray-100">₱{{ number_format($bill->total_amount, 2) }}</td>
+                                        <td class="px-2 sm:px-6 py-5 whitespace-nowrap text-[13px] sm:text-[15px] font-medium text-gray-200">{{ $bill->usage_units }} <span class="text-xs">m³</span></td>
+                                        <td class="px-2 sm:px-6 py-5 whitespace-nowrap text-[13px] sm:text-[15px] font-bold text-gray-100">₱{{ number_format($bill->total_amount, 0) }}</td>
                                         <td class="px-2 sm:px-6 py-5 whitespace-nowrap">
                                             @if(strtolower($bill->status) === 'paid')
                                                 <span class="px-2 sm:px-3 py-1 inline-flex text-[10px] sm:text-xs font-bold rounded-full bg-green-100 text-green-700 shadow-sm border border-green-200 uppercase tracking-wide">Paid</span>
@@ -109,9 +109,9 @@
                                 <tr>
                                     <td colspan="5" class="px-6 py-12 text-center">
                                         <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#0f1722] mb-3 border border-[#263548]">
-                                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                            <svg class="w-6 h-6 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                         </div>
-                                        <p class="text-[15px] font-medium text-gray-400">No billing records found.</p>
+                                        <p class="text-[15px] font-medium text-gray-200">No billing records found.</p>
                                     </td>
                                 </tr>
                             @endif

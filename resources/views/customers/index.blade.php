@@ -25,7 +25,7 @@
             <div class="flex-1 flex flex-col md:flex-row items-center justify-end gap-4">
                 <form action="{{ route('customers.index') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full md:w-auto">
                     <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full md:w-80 h-12 shadow-inner">
-                        <div class="pl-4 pr-1 flex items-center justify-center text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[50px]">
+                        <div class="pl-4 pr-1 flex items-center justify-center text-gray-200 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[50px]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
@@ -35,7 +35,7 @@
                         <button type="submit" class="hidden"></button>
                         @if (request('search'))
                             <div class="px-4 flex items-center justify-center">
-                                <a href="{{ route('customers.index', request()->except('search')) }}" class="text-gray-500 hover:text-rose-400 transition-colors duration-300">
+                                <a href="{{ route('customers.index', request()->except('search')) }}" class="text-gray-200 hover:text-rose-400 transition-colors duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full md:w-64 h-12 shadow-inner">
-                        <div class="pl-4 pr-1 flex items-center justify-center text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[50px]">
+                        <div class="pl-4 pr-1 flex items-center justify-center text-gray-200 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[50px]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -58,7 +58,7 @@
                                 <option value="{{ $brgy }}" {{ request('barangay') == $brgy ? 'selected' : '' }} class="bg-[#0f1722]">{{ $brgy }}</option>
                             @endforeach
                         </select>
-                        <div class="px-4 flex items-center justify-center text-gray-400 pointer-events-none">
+                        <div class="px-4 flex items-center justify-center text-gray-200 pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -68,8 +68,8 @@
 
                 <div class="flex items-center gap-3">
                     <a href="{{ route('customers.report') }}" target="_blank"
-                        class="bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-500 border border-emerald-500/30 px-5 py-3 rounded-2xl font-bold shadow-sm flex items-center gap-2 transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap group">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500/30 px-5 py-3 rounded-2xl font-bold shadow-sm flex items-center gap-2 transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                         </svg>
                         Print Monthly Report
@@ -95,7 +95,7 @@
                         class="absolute -right-4 -bottom-4 bg-gradient-to-br from-cyan-600/20 to-blue-900/20 h-32 w-32 rounded-full blur-2xl">
                     </div>
                     <div class="relative z-10">
-                        <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider mb-2">Total Active
+                        <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wider mb-2 drop-shadow-sm">Total Active
                             Customers</h3>
                         <div
                             class="text-blue-600 dark:text-blue-400 flex items-center justify-center gap-3 drop-shadow-sm">
@@ -105,8 +105,8 @@
                                     d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
                             <div class="flex items-baseline gap-1">
-                                <span class="text-5xl font-bold">{{ $activeCustomers }}</span>
-                                <span class="text-sm font-normal text-slate-400">/ {{ $totalCustomers }}</span>
+                                <span class="text-5xl font-bold text-white drop-shadow-md">{{ $activeCustomers }}</span>
+                                <span class="text-sm font-normal text-gray-300">/ {{ $totalCustomers }}</span>
                             </div>
                         </div>
                     </div>
@@ -121,8 +121,8 @@
                         class="absolute top-0 right-0 w-64 h-64 bg-cyan-600/10 rounded-full blur-3xl point-events-none">
                     </div>
                     <h3
-                        class="text-slate-700 dark:text-slate-200 font-semibold text-base mb-4 border-b border-slate-200 dark:border-slate-800 pb-2 flex items-center gap-2 relative z-10">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none"
+                        class="text-gray-100 font-semibold text-base mb-4 border-b border-white/10 pb-2 flex items-center gap-2 relative z-10 drop-shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
@@ -138,7 +138,7 @@
 
         <!-- Desktop Customers Table -->
         <h2 class="text-lg font-semibold flex items-center gap-2 text-gray-200 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24"
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-200" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -178,13 +178,13 @@
                             class="hover:bg-[#1b2636]/60 transition duration-300 cursor-pointer group border-l-2 border-transparent"
                             onclick="toggleDetails('{{ $customer->id }}')">
                             <td class="px-6 py-4 font-medium text-gray-300 flex items-center gap-3">
-                                <svg id="chevron-{{ $customer->id }}" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg id="chevron-{{ $customer->id }}" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-200 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                                 {{ $customer->customer_id }}
                             </td>
-                            <td class="px-6 py-4">
-                                <div class="text-sm font-medium text-gray-200">{{ $customer->name }}</div>
+                            <td class="px-6 py-4 max-w-[160px]">
+                                <div class="text-sm font-medium text-gray-200 truncate" title="{{ $customer->name }}">{{ $customer->name }}</div>
                             </td>
                             <td class="px-6 py-4">
                                 <span
@@ -192,10 +192,10 @@
                                     {{ $customer->type }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-xs text-gray-400 hidden lg:table-cell"
-                                title="{{ $customer->address }}">{{ $customer->address }}</td>
+                            <td class="px-6 py-4 text-xs text-gray-200 hidden lg:table-cell max-w-[200px]"
+                                title="{{ $customer->address }}"><div class="truncate">{{ $customer->address }}</div></td>
                             <td class="px-6 py-4 font-bold text-cyan-400 text-sm">
-                                {{ number_format($customer->bills->sum('consumption'), 1) }}m³
+                                {{ number_format($customer->meter_reading ?? 0, 0) }}m³
                             </td>
                             <td class="px-6 py-4 text-right" onclick="event.stopPropagation()">
                                 <div class="flex justify-end gap-1">
@@ -252,8 +252,8 @@
                                             </span>
                                         </div>
                                         <div class="flex flex-col gap-1">
-                                            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Customer Type</span>
-                                            <span class="text-sm text-gray-300 font-medium">{{ $customer->type }}</span>
+                                            <span class="text-[10px] uppercase tracking-widest text-white font-bold">Customer Type</span>
+                                            <span class="text-sm text-white font-medium">{{ $customer->type }}</span>
                                         </div>
                                     </div>
 
@@ -261,11 +261,11 @@
                                     <div class="space-y-4">
                                         <div class="flex flex-col gap-1">
                                             <span class="text-[10px] uppercase tracking-widest text-emerald-500/70 font-bold">Current Reading</span>
-                                            <span class="text-lg text-emerald-400 font-black font-mono">{{ number_format($customer->meter_reading ?? 0, 2) }} m³</span>
+                                            <span class="text-lg text-emerald-400 font-black font-mono">{{ number_format($customer->meter_reading ?? 0, 0) }} m³</span>
                                         </div>
                                         <div class="flex flex-col gap-1">
-                                            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Total Lifetime Usage</span>
-                                            <span class="text-sm text-gray-300 font-medium">{{ number_format($customer->bills->sum('consumption'), 2) }} m³</span>
+                                            <span class="text-[10px] uppercase tracking-widest text-white font-bold">Total Lifetime Usage</span>
+                                            <span class="text-sm text-white font-medium">{{ number_format($customer->bills->sum('consumption'), 0) }} m³</span>
                                         </div>
                                     </div>
 
@@ -282,7 +282,7 @@
                                                 <span class="text-sm text-gray-200 font-bold font-mono">{{ $customer->customer_id }}</span>
                                             </div>
                                             <div class="flex flex-col gap-1 mt-2">
-                                                <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Account Password</span>
+                                                <span class="text-[10px] uppercase tracking-widest text-white font-bold">Account Password</span>
                                                 <span class="text-sm text-rose-300 font-mono tracking-wider">{{ $customer->user->plain_password ?? '********' }}</span>
                                             </div>
                                         @else
@@ -301,17 +301,17 @@
                                     <!-- System Meta -->
                                     <div class="space-y-4">
                                         <div class="flex flex-col gap-1">
-                                            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Full Address</span>
-                                            <span class="text-sm text-gray-400 leading-relaxed">{{ $customer->address }}</span>
+                                            <span class="text-[10px] uppercase tracking-widest text-gray-200 font-bold">Full Address</span>
+                                            <span class="text-sm text-gray-200 leading-relaxed">{{ $customer->address }}</span>
                                         </div>
                                         <div class="flex flex-col gap-1">
-                                            <span class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Registration Date</span>
-                                            <span class="text-sm text-gray-400">{{ $customer->created_at->format('F d, Y') }} <span class="text-[10px] text-gray-600 block">{{ $customer->created_at->diffForHumans() }}</span></span>
+                                            <span class="text-[10px] uppercase tracking-widest text-gray-200 font-bold">Registration Date</span>
+                                            <span class="text-sm text-gray-200">{{ $customer->created_at->format('F d, Y') }} <span class="text-[10px] text-gray-600 block">{{ $customer->created_at->diffForHumans() }}</span></span>
                                         </div>
                                     </div>
 
                                     <div class="col-span-1 md:col-span-4 pt-6 border-t border-[#263548]/30 mt-4">
-                                        <h4 class="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-4">Reading & Bill History</h4>
+                                        <h4 class="text-[10px] uppercase tracking-widest text-gray-200 font-bold mb-4">Reading & Bill History</h4>
                                         <div class="overflow-x-auto rounded-xl border border-[#2d4059]/30 bg-[#0f1722]/40">
                                             <table class="w-full text-left border-collapse">
                                                 <thead>
@@ -328,14 +328,14 @@
                                                     @forelse($customer->bills->sortByDesc('billing_date') as $bill)
                                                         <tr class="text-xs text-gray-300 hover:bg-[#1b2636]/20">
                                                             <td class="px-4 py-2 font-medium">{{ $bill->billing_date->format('F Y') }}</td>
-                                                            <td class="px-4 py-2 font-mono">{{ number_format($bill->usage_units, 2) }} m³</td>
+                                                            <td class="px-4 py-2 font-mono">{{ number_format($bill->usage_units, 0) }} m³</td>
                                                             <td class="px-4 py-2 text-center">
                                                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold 
                                                                     {{ $bill->consumption <= ($customer->type === 'Commercial' ? 49 : 10) ? 'bg-emerald-500/20 text-emerald-400' : ($bill->consumption <= ($customer->type === 'Commercial' ? 50 : 14) ? 'bg-orange-500/20 text-orange-400' : 'bg-rose-500/20 text-rose-400') }}">
-                                                                    {{ number_format($bill->consumption, 2) }} m³
+                                                                    {{ number_format($bill->consumption, 0) }} m³
                                                                 </span>
                                                             </td>
-                                                            <td class="px-4 py-2 font-bold text-cyan-400">₱{{ number_format($bill->total_amount, 2) }}</td>
+                                                            <td class="px-4 py-2 font-bold text-cyan-400">₱{{ number_format($bill->total_amount, 0) }}</td>
                                                             <td class="px-4 py-2">
                                                                 <span class="capitalize {{ $bill->status === 'paid' ? 'text-emerald-400' : 'text-rose-400' }}">{{ $bill->status }}</span>
                                                             </td>
@@ -359,7 +359,7 @@
                                                         </tr>
                                                     @empty
                                                         <tr>
-                                                            <td colspan="6" class="px-4 py-4 text-center text-gray-500 italic text-[10px]">No billing history available.</td>
+                                                            <td colspan="6" class="px-4 py-4 text-center text-gray-200 italic text-[10px]">No billing history available.</td>
                                                         </tr>
                                                     @endforelse
                                                 </tbody>
@@ -375,7 +375,7 @@
                                                 </a>
                                             @endif
                                         </div>
-                                        <button type="button" onclick="toggleDetails('{{ $customer->id }}')" class="text-gray-500 hover:text-gray-300 transition text-[10px] uppercase tracking-widest font-bold px-4 py-2">
+                                        <button type="button" onclick="toggleDetails('{{ $customer->id }}')" class="text-gray-200 hover:text-gray-300 transition text-[10px] uppercase tracking-widest font-bold px-4 py-2">
                                             Close Details
                                         </button>
                                     </div>
@@ -384,7 +384,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-[#263548] mb-3"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -393,13 +393,13 @@
                                 @if(request('search'))
                                     <p class="text-lg font-medium text-gray-300">No results found for "{{ request('search') }}"
                                     </p>
-                                    <p class="text-sm mt-1 text-gray-500">Try adjusting your search terms or ID.</p>
+                                    <p class="text-sm mt-1 text-gray-200">Try adjusting your search terms or ID.</p>
                                     <a href="{{ route('customers.index') }}"
                                         class="inline-block mt-4 text-cyan-400 hover:text-cyan-300 transition text-sm font-medium">Clear
                                         search</a>
                                 @else
                                     <p class="text-lg font-medium text-gray-300">No customers found</p>
-                                    <p class="text-sm mt-1 text-gray-500">Start by registering your first user to the water
+                                    <p class="text-sm mt-1 text-gray-200">Start by registering your first user to the water
                                         system.</p>
                                     <a href="{{ route('customers.create') }}"
                                         class="inline-block mt-4 bg-cyan-600/80 border border-cyan-400/50 text-white px-5 py-2 rounded-xl text-sm hover:bg-cyan-500 transition shadow-[0_0_15px_rgba(6,182,212,0.3)] backdrop-blur-sm">Register
@@ -419,10 +419,10 @@
     </div>
 
     <!-- Quick Bill Modal -->
-    <flux:modal name="quick-bill-modal" class="md:w-[500px]">
-        <div class="p-4">
-            <flux:heading size="lg" class="mb-2">Quick Add Reading</flux:heading>
-            <flux:subheading id="modal-customer-name" class="mb-6">Customer Name</flux:subheading>
+    <flux:modal name="quick-bill-modal" class="md:w-[500px] !bg-[#121a25] !border !border-[#2d4059] !text-gray-200">
+        <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl">
+            <flux:heading size="lg" class="mb-2 !text-white">Quick Add Reading</flux:heading>
+            <flux:subheading id="modal-customer-name" class="mb-6 !text-gray-400">Customer Name</flux:subheading>
 
             <form action="{{ route('billing.store') }}" method="POST" id="quick-bill-form">
                 @csrf
@@ -434,15 +434,15 @@
                 <div class="space-y-6">
                     <div class="bg-[#1b2636]/40 p-4 rounded-xl border border-[#2d4059]/50">
                         <div class="flex justify-between items-center mb-4">
-                            <span class="text-sm font-medium text-gray-400">Previous Reading:</span>
+                            <span class="text-sm font-medium text-gray-200">Previous Reading:</span>
                             <span id="modal_prev_reading" class="font-mono font-bold text-gray-200 text-lg">0.00</span>
                         </div>
                         
                         <div class="space-y-2">
                             <label for="modal_present_reading" class="block text-sm font-medium text-gray-300">Present Reading (m³)</label>
-                            <input type="number" step="0.01" id="modal_present_reading" name="usage_units" required
+                            <input type="number" step="1" id="modal_present_reading" name="usage_units" required
                                 oninput="calculateQuickCharges()" placeholder="Enter reading..."
-                                class="w-full bg-[#0f1722]/60 border border-[#2d4059] focus:border-emerald-500/50 text-emerald-400 placeholder-teal-800 text-2xl font-black rounded-xl py-3 px-4 outline-none transition-all duration-300">
+                                class="w-full bg-[#0f1722]/80 border border-[#2d4059] focus:border-emerald-500/50 text-emerald-400 placeholder-gray-500 text-2xl font-black rounded-xl py-3 px-4 outline-none transition-all duration-300 shadow-inner">
                         </div>
 
                         <div id="modal_calc_breakdown" class="text-xs mt-3 min-h-[1.25rem] text-zinc-500"></div>
@@ -450,12 +450,12 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <flux:field>
-                            <flux:label>Base Charge</flux:label>
-                            <flux:input name="base_charge" id="modal_base_charge" type="number" step="0.01" oninput="updateQuickTotal()" class="text-gray-200" />
+                            <flux:label class="!text-gray-300">Base Charge</flux:label>
+                            <flux:input name="base_charge" id="modal_base_charge" type="number" step="0.01" oninput="updateQuickTotal()" class="!bg-[#0f1722] !border-[#2d4059] !text-gray-200" />
                         </flux:field>
                         <flux:field>
-                            <flux:label>Usage Charge</flux:label>
-                            <flux:input name="usage_charge" id="modal_usage_charge" type="number" step="0.01" oninput="updateQuickTotal()" class="text-gray-200" />
+                            <flux:label class="!text-gray-300">Usage Charge</flux:label>
+                            <flux:input name="usage_charge" id="modal_usage_charge" type="number" step="0.01" oninput="updateQuickTotal()" class="!bg-[#0f1722] !border-[#2d4059] !text-gray-200" />
                         </flux:field>
                     </div>
 
@@ -467,9 +467,9 @@
                     </div>
 
                     <div class="flex gap-3 pt-4">
-                        <flux:button type="submit" variant="primary" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 transition-all font-bold">Generate Bill</flux:button>
+                        <flux:button type="submit" id="modal_submit_btn" variant="primary" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 transition-all font-bold">Generate Bill</flux:button>
                         <flux:modal.close>
-                            <flux:button variant="ghost" class="px-6 border border-[#2d4059] text-gray-400">Cancel</flux:button>
+                            <flux:button variant="ghost" class="px-6 !border !border-[#2d4059] !text-gray-300 hover:!bg-[#1b2636] hover:!text-white">Cancel</flux:button>
                         </flux:modal.close>
                     </div>
                 </div>
@@ -513,6 +513,8 @@
             quickCustomerType = type;
             quickPrevReading = parseFloat(prevReading);
             
+            document.getElementById('modal_present_reading').min = quickPrevReading;
+            
             window.Flux.modal('quick-bill-modal').show();
             
             // Focus input after modal is shown
@@ -542,7 +544,22 @@
             }
 
             const presentReading = parseFloat(input.value) || 0;
-            const consumption = Math.max(0, presentReading - quickPrevReading);
+            
+            if (presentReading < quickPrevReading) {
+                breakdown.textContent = `Invalid: Reading cannot be lower than previous (${quickPrevReading})`;
+                breakdown.className = 'text-xs mt-1 text-rose-500 font-bold';
+                document.getElementById('modal_submit_btn').disabled = true;
+                document.getElementById('modal_submit_btn').classList.add('opacity-50', 'cursor-not-allowed');
+                baseInput.value = 0;
+                usageInput.value = 0;
+                hiddenConsumption.value = 0;
+                updateQuickTotal();
+                return;
+            }
+            
+            document.getElementById('modal_submit_btn').disabled = false;
+            document.getElementById('modal_submit_btn').classList.remove('opacity-50', 'cursor-not-allowed');
+            const consumption = presentReading - quickPrevReading;
             
             hiddenConsumption.value = consumption.toFixed(2);
 

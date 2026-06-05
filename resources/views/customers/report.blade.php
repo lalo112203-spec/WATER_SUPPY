@@ -18,12 +18,12 @@
     </style>
 </head>
 <body class="p-8">
-    <div class="max-w-5xl mx-auto bg-white p-10 shadow-lg rounded-lg print-container">
+    <div class="max-w-5xl mx-auto bg-white/10 p-10 shadow-lg rounded-lg print-container">
         <!-- Header -->
-        <div class="flex justify-between items-start border-b-2 border-gray-100 pb-8 mb-8">
+        <div class="flex justify-between items-start border-b-2 border-white/20 pb-8 mb-8">
             <div>
-                <h1 class="text-3xl font-black text-gray-900 uppercase">Customer Directory Backup</h1>
-                <p class="text-gray-500 font-medium">As of end of {{ $monthName }}</p>
+                <h1 class="text-3xl font-black text-white uppercase">Customer Directory Backup</h1>
+                <p class="text-gray-200 font-medium">As of end of {{ $monthName }}</p>
                 <div class="mt-4 flex gap-6 text-sm text-gray-600">
                     <div><span class="font-bold text-gray-800">Total Records:</span> {{ $customers->count() }}</div>
                     <div><span class="font-bold text-gray-800">Generated:</span> {{ now()->format('M d, Y h:i A') }}</div>
@@ -54,7 +54,7 @@
             </thead>
             <tbody>
                 @forelse($customers as $customer)
-                    <tr class="odd:bg-white even:bg-gray-50/50">
+                    <tr class="odd:bg-white/10 even:bg-gray-50/50">
                         <td class="px-3 py-3 border border-gray-200 font-mono font-bold">{{ $customer->customer_id }}</td>
                         <td class="px-3 py-3 border border-gray-200 uppercase font-medium">{{ $customer->name }}</td>
                         <td class="px-3 py-3 border border-gray-200 text-center">
@@ -64,25 +64,25 @@
                         </td>
                         <td class="px-3 py-3 border border-gray-200">{{ $customer->barangay }}</td>
                         <td class="px-3 py-3 border border-gray-200 text-center font-bold text-blue-600">
-                            {{ number_format($customer->meter_reading ?? 0, 1) }}
+                            {{ number_format($customer->meter_reading ?? 0, 0) }}
                         </td>
                         <td class="px-3 py-3 border border-gray-200 text-center">
                              <span class="font-bold text-[11px] {{ $customer->status === 'active' ? 'text-emerald-600' : 'text-rose-600' }}">
                                 {{ strtoupper($customer->status) }}
                             </span>
                         </td>
-                        <td class="px-3 py-3 border border-gray-200 text-gray-500">{{ $customer->created_at->format('M d, Y') }}</td>
+                        <td class="px-3 py-3 border border-gray-200 text-gray-800 font-medium">{{ $customer->created_at->format('M d, Y') }}</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-3 py-10 text-center text-gray-400 italic">No customer records found for this period.</td>
+                        <td colspan="7" class="px-3 py-10 text-center text-gray-200 italic">No customer records found for this period.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
 
         <!-- Footer -->
-        <div class="mt-12 pt-8 border-t border-gray-100 text-xs text-center text-gray-400 italic">
+        <div class="mt-12 pt-8 border-t border-white/20 text-xs text-center text-gray-200 italic">
             This document serves as a physical record of the customer database. Keep in a secure location.
             <br>
             © {{ date('Y') }} Dolores Water System Solutions

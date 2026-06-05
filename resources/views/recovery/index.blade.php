@@ -48,7 +48,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="px-4 py-4 text-center text-gray-400">No deleted customers in trash</td>
+                                <td colspan="4" class="px-4 py-4 text-center text-gray-200">No deleted customers in trash</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -95,7 +95,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="px-4 py-4 text-center text-gray-400">No deleted bills in trash</td>
+                                <td colspan="4" class="px-4 py-4 text-center text-gray-200">No deleted bills in trash</td>
                             </tr>
                             @endforelse
                         </tbody>

@@ -134,12 +134,17 @@ class CustomerController extends Controller
             'customer_id' => 'nullable|string|unique:customers,customer_id',
             'name' => 'required|string',
             'type' => 'required|in:Regular,Commercial',
+            'street' => 'nullable|string',
+            'phone_number' => 'nullable|string',
             'barangay' => 'required|string',
             'password' => 'nullable|string|min:8',
         ]);
 
         $validated['barangay'] = strtoupper($validated['barangay']);
-        $validated['address'] = $validated['barangay'] . ' DOLORES EASTERN SAMAR';
+        $streetPart = isset($validated['street']) && trim($validated['street']) !== '' 
+            ? trim($validated['street']) . ', ' 
+            : '';
+        $validated['address'] = $streetPart . $validated['barangay'] . ' DOLORES EASTERN SAMAR';
 
         if ($request->filled('customer_id')) {
             $validated['customer_id'] = $request->customer_id;
@@ -155,6 +160,8 @@ class CustomerController extends Controller
             'name' => $validated['name'],
             'type' => $validated['type'],
             'email' => $validated['customer_id'] . '@system.local',
+            'street' => $validated['street'] ?? null,
+            'phone_number' => $validated['phone_number'] ?? null,
             'address' => $validated['address'],
             'barangay' => $validated['barangay'],
             'customer_id' => $validated['customer_id'],
@@ -206,17 +213,24 @@ class CustomerController extends Controller
             'customer_id' => 'required|string|unique:customers,customer_id,' . $customer->id,
             'name' => 'required|string',
             'type' => 'required|in:Regular,Commercial',
+            'street' => 'nullable|string',
+            'phone_number' => 'nullable|string',
             'barangay' => 'required|string',
         ]);
 
         $validated['barangay'] = strtoupper($validated['barangay']);
-        $validated['address'] = $validated['barangay'] . ' DOLORES EASTERN SAMAR';
+        $streetPart = isset($validated['street']) && trim($validated['street']) !== '' 
+            ? trim($validated['street']) . ', ' 
+            : '';
+        $validated['address'] = $streetPart . $validated['barangay'] . ' DOLORES EASTERN SAMAR';
 
         // Keep existing email, just update others
         $customer->update([
             'customer_id' => $validated['customer_id'],
             'name' => $validated['name'],
             'type' => $validated['type'],
+            'street' => $validated['street'] ?? null,
+            'phone_number' => $validated['phone_number'] ?? null,
             'address' => $validated['address'],
             'barangay' => $validated['barangay'],
         ]);
