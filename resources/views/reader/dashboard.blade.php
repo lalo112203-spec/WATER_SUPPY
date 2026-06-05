@@ -1,5 +1,5 @@
 <x-layouts::app title="Meter Reader Dashboard">
-    <div class="px-6 py-4 bg-transparent min-h-[calc(100vh-4rem)] font-sans text-gray-200 relative z-10 max-w-6xl mx-auto">
+    <div class="px-4 sm:px-6 py-4 bg-transparent min-h-[calc(100vh-4rem)] font-sans text-gray-200 relative z-10 max-w-6xl mx-auto">
         
         <div class="flex items-center justify-between mb-8">
             <div>

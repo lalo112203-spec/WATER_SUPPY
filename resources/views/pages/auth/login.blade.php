@@ -1,17 +1,17 @@
 <x-layouts::auth :title="__('Log in')">
     <style>
         /* Override dark mode text contrast issues globally on this page */
-        h1, h2, h3, label, p, span, [data-flux-label], [data-flux-heading], [data-flux-subheading], .text-zinc-600, .text-zinc-800 {
+        html.dark h1, html.dark h2, html.dark h3, html.dark label, html.dark p, html.dark span, html.dark [data-flux-label], html.dark [data-flux-heading], html.dark [data-flux-subheading], html.dark .text-zinc-600, html.dark .text-zinc-800 {
             color: #f3f4f6 !important;
         }
-        input {
+        html.dark input {
             color: #ffffff !important; 
         }
-        button[type="submit"] {
+        html.dark button[type="submit"] {
             background-color: #000000 !important;
             color: #ffffff !important;
         }
-        button[type="submit"] * {
+        html.dark button[type="submit"] * {
             color: #ffffff !important;
         }
     </style>
@@ -99,7 +99,7 @@
         @if (Route::has('register'))
             <div class="space-x-1 text-sm text-center rtl:space-x-reverse text-zinc-600 dark:text-zinc-400">
                 <span>{{ __('Don\'t have an account?') }}</span>
-                <flux:link :href="route('register')" wire:navigate>{{ __('Sign up') }}</flux:link>
+                <flux:link :href="route('register')" wire:navigate>{{ __('Register New Account') }}</flux:link>
             </div>
         @endif
     </div>

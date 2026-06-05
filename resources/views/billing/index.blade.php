@@ -1,5 +1,5 @@
 <x-layouts::app title="Billing Reports">
-    <div class="px-6 py-4 bg-transparent min-h-screen font-sans text-gray-300">
+    <div class="px-4 sm:px-6 py-4 bg-transparent min-h-screen font-sans text-gray-300">
         
         <h1 class="text-3xl font-bold mb-6 text-gray-200">Billing Reports</h1>
         

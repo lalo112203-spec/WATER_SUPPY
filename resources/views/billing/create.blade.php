@@ -290,7 +290,7 @@
                         previousReading = customersData[customerId]?.initial_reading || 0;
                     }
                     
-                    prevReadingDisplay.textContent = previousReading.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                    prevReadingDisplay.textContent = previousReading.toLocaleString(undefined, { maximumFractionDigits: 0 });
                     document.getElementById('usage_units').min = previousReading;
 
                     if (data.readings && data.readings.length > 0) {
@@ -331,9 +331,9 @@
                             html += `
                                 <tr class="hover:bg-[#1b2636]/60 transition duration-300">
                                     <td class="px-6 py-4 text-gray-300 font-medium">${new Date(reading.billing_date).toLocaleDateString()}</td>
-                                    <td class="px-6 py-4 text-right font-mono text-gray-300">${reading.usage_units.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                                    <td class="px-6 py-4 text-right font-mono ${usageColor}">${readingUsage.toFixed(2)}</td>
-                                    <td class="px-6 py-4 text-right font-mono font-bold text-gray-200">₱${reading.total_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                                    <td class="px-6 py-4 text-right font-mono text-gray-300">${reading.usage_units.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                                    <td class="px-6 py-4 text-right font-mono ${usageColor}">${readingUsage.toFixed(0)}</td>
+                                    <td class="px-6 py-4 text-right font-mono font-bold text-gray-200">₱${reading.total_amount.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="px-3 py-1 rounded-full text-xs font-semibold border ${statusColor}">
                                             ${reading.status}
@@ -349,7 +349,7 @@
                         historyDiv.innerHTML = `
                             <div class="flex flex-col items-center py-6">
                                 <p class="text-gray-200 font-medium">No reading history yet</p>
-                                <p class="text-xs text-gray-600">Using initial reading: ${previousReading.toFixed(2)}</p>
+                                <p class="text-xs text-gray-600">Using initial reading: ${previousReading.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
                             </div>
                         `;
                     }
@@ -359,7 +359,7 @@
                     console.error('Error loading history:', error);
                     historyDiv.innerHTML = '<div class="text-center py-12 text-rose-500 font-medium">Failed to load customer history</div>';
                     previousReading = customersData[customerId]?.initial_reading || 0;
-                    prevReadingDisplay.textContent = previousReading.toLocaleString(undefined, { minimumFractionDigits: 2 });
+                    prevReadingDisplay.textContent = previousReading.toLocaleString(undefined, { maximumFractionDigits: 0 });
                     document.getElementById('usage_units').min = previousReading;
                     calculateCharges();
                 });
@@ -411,8 +411,8 @@
             
             const usage = presentReading - previousReading;
             
-            consumptionDisplay.value = usage.toFixed(2);
-            document.getElementById('consumption').value = usage.toFixed(2);
+            consumptionDisplay.value = usage.toFixed(0);
+            document.getElementById('consumption').value = usage.toFixed(0);
 
             // Tiered Charge Formula from User:
             // Regular: (usage - 10) * 15 + 100
@@ -427,11 +427,11 @@
             const billableUsage = Math.max(usage - baseLimit, 0);
             const usageCharge = billableUsage * rate;
 
-            baseChargeInput.value = baseCharge.toFixed(2);
-            usageChargeInput.value = usageCharge.toFixed(2);
+            baseChargeInput.value = baseCharge.toFixed(0);
+            usageChargeInput.value = usageCharge.toFixed(0);
 
             // Show calculation breakdown
-            calculationText.textContent = `Usage: ${usage.toFixed(2)}m³ | Calculation: (${usage.toFixed(2)} - ${baseLimit}) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
+            calculationText.textContent = `Usage: ${usage.toFixed(0)}m³ | Calculation: (${usage.toFixed(0)} - ${baseLimit}) × ₱${rate} = ₱${usageCharge.toFixed(0)}`;
 
             // Determine color class based on total usage
             const waterIncrease = usage;
@@ -457,7 +457,7 @@
             const globalAdditionalChargeTotal = {{ $globalAdditionalChargeTotal }};
             
             const totalAmount = baseCharge + usageCharge + globalAdditionalChargeTotal;
-            document.getElementById('total_amount').value = totalAmount.toFixed(2);
+            document.getElementById('total_amount').value = totalAmount.toFixed(0);
         }
 
         // Load history on page load if customer is pre-selected

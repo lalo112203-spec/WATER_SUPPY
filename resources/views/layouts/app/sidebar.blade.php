@@ -265,6 +265,37 @@
             }
         }
 
+        /* Hide DWSS text when sidebar is collapsed */
+        [data-flux-sidebar-collapsed] .dwss-brand-text,
+        [data-flux-sidebar-collapsed-desktop] .dwss-brand-text,
+        [data-flux-sidebar-collapsed-mobile] .dwss-brand-text {
+            display: none !important;
+            opacity: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* Shrink logo when sidebar is collapsed */
+        [data-flux-sidebar-collapsed] .dwss-logo,
+        [data-flux-sidebar-collapsed-desktop] .dwss-logo,
+        [data-flux-sidebar-collapsed-mobile] .dwss-logo {
+            width: 2.25rem !important;
+            height: 2.25rem !important;
+        }
+        [data-flux-sidebar-collapsed] .dwss-logo-icon,
+        [data-flux-sidebar-collapsed-desktop] .dwss-logo-icon,
+        [data-flux-sidebar-collapsed-mobile] .dwss-logo-icon {
+            width: 1.75rem !important;
+            height: 1.75rem !important;
+        }
+        [data-flux-sidebar-collapsed] .dwss-logo-container,
+        [data-flux-sidebar-collapsed-desktop] .dwss-logo-container,
+        [data-flux-sidebar-collapsed-mobile] .dwss-logo-container {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            justify-content: center !important;
+        }
+
         /* Form Controls visibility in Light Mode */
         html:not(.dark) input:not([type="checkbox"]),
         html:not(.dark) textarea,

@@ -184,8 +184,8 @@
             }
             const usage = presentReading - previousReading;
             
-            consumptionDisplay.value = usage.toFixed(2);
-            document.getElementById('consumption').value = usage.toFixed(2);
+            consumptionDisplay.value = usage.toFixed(0);
+            document.getElementById('consumption').value = usage.toFixed(0);
 
             let baseCharge = settings[customerType]?.base || 0;
             let rate = settings[customerType]?.rate || 0;
@@ -194,9 +194,9 @@
             const billableUsage = Math.max(usage - baseLimit, 0);
             const usageCharge = billableUsage * rate;
 
-            baseChargeInput.value = baseCharge.toFixed(2);
-            usageChargeInput.value = usageCharge.toFixed(2);
-            calculationText.textContent = `Usage: ${usage.toFixed(2)}m³ | Calculation: (${usage.toFixed(2)} - ${baseLimit}) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
+            baseChargeInput.value = baseCharge.toFixed(0);
+            usageChargeInput.value = usageCharge.toFixed(0);
+            calculationText.textContent = `Usage: ${usage.toFixed(0)}m³ | Calculation: (${usage.toFixed(0)} - ${baseLimit}) × ₱${rate} = ₱${usageCharge.toFixed(0)}`;
             
             updateTotal();
         }
@@ -207,7 +207,7 @@
             const globalAdditionalChargeTotal = {{ $globalAdditionalChargeTotal }};
             
             const total = base + usage + globalAdditionalChargeTotal;
-            document.getElementById('total_amount').value = total.toFixed(2);
+            document.getElementById('total_amount').value = total.toFixed(0);
         }
 
         window.addEventListener('DOMContentLoaded', calculateCharges);

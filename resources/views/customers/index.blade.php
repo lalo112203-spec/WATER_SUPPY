@@ -22,8 +22,8 @@
                 </h1>
             </div>
 
-            <div class="flex-1 flex flex-col md:flex-row items-center justify-end gap-4">
-                <form action="{{ route('customers.index') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            <div class="flex-1 flex flex-col xl:flex-row items-end xl:items-center justify-end gap-4 w-full">
+                <form action="{{ route('customers.index') }}" method="GET" class="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
                     <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full md:w-80 h-12 shadow-inner">
                         <div class="pl-4 pr-1 flex items-center justify-center text-gray-200 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[50px]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -44,7 +44,7 @@
                         @endif
                     </div>
 
-                    <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full md:w-64 h-12 shadow-inner">
+                    <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full sm:w-64 h-12 shadow-inner">
                         <div class="pl-4 pr-1 flex items-center justify-center text-gray-200 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[50px]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -66,9 +66,9 @@
                     </div>
                 </form>
 
-                <div class="flex items-center gap-3">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center w-full xl:w-auto gap-3">
                     <a href="{{ route('customers.report') }}" target="_blank"
-                        class="bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500/30 px-5 py-3 rounded-2xl font-bold shadow-sm flex items-center gap-2 transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap group">
+                        class="bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500/30 px-5 py-3 rounded-2xl font-bold shadow-sm flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap group">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                         </svg>
@@ -76,7 +76,7 @@
                     </a>
 
                     <a href="{{ route('customers.create') }}"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl font-bold shadow-[0_4px_15px_rgba(37,99,235,0.3)] flex items-center gap-2 transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap">
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl font-bold shadow-[0_4px_15px_rgba(37,99,235,0.3)] flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                         </svg>
@@ -435,7 +435,7 @@
                     <div class="bg-[#1b2636]/40 p-4 rounded-xl border border-[#2d4059]/50">
                         <div class="flex justify-between items-center mb-4">
                             <span class="text-sm font-medium text-gray-200">Previous Reading:</span>
-                            <span id="modal_prev_reading" class="font-mono font-bold text-gray-200 text-lg">0.00</span>
+                            <span id="modal_prev_reading" class="font-mono font-bold text-gray-200 text-lg">0</span>
                         </div>
                         
                         <div class="space-y-2">
@@ -462,7 +462,7 @@
                     <div class="bg-emerald-500/10 p-4 rounded-2xl border border-emerald-500/30 flex justify-between items-center px-6">
                         <span class="text-emerald-500 font-bold uppercase tracking-widest text-sm">Total Bill</span>
                         <div class="text-right">
-                            <span class="text-emerald-400 font-bold text-3xl">₱<span id="modal_total_display">0.00</span></span>
+                            <span class="text-emerald-400 font-bold text-3xl">₱<span id="modal_total_display">0</span></span>
                         </div>
                     </div>
 
@@ -503,9 +503,9 @@
         function openQuickBillModal(id, name, customerId, type, prevReading) {
             document.getElementById('modal_customer_id').value = id;
             document.getElementById('modal-customer-name').textContent = `${name} (${customerId}) - ${type}`;
-            document.getElementById('modal_prev_reading').textContent = parseFloat(prevReading).toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('modal_prev_reading').textContent = parseFloat(prevReading).toLocaleString(undefined, { maximumFractionDigits: 0 });
             document.getElementById('modal_present_reading').value = '';
-            document.getElementById('modal_total_display').textContent = '0.00';
+            document.getElementById('modal_total_display').textContent = '0';
             document.getElementById('modal_calc_breakdown').textContent = '';
             document.getElementById('modal_base_charge').value = 0;
             document.getElementById('modal_usage_charge').value = 0;
@@ -561,7 +561,7 @@
             document.getElementById('modal_submit_btn').classList.remove('opacity-50', 'cursor-not-allowed');
             const consumption = presentReading - quickPrevReading;
             
-            hiddenConsumption.value = consumption.toFixed(2);
+            hiddenConsumption.value = consumption.toFixed(0);
 
             let baseCharge = 0;
             let rate = 0;
@@ -581,14 +581,14 @@
             const usageCharge = billableUsage * rate;
             const total = baseCharge + usageCharge + globalAdditionalChargeTotal;
 
-            baseInput.value = baseCharge.toFixed(2);
-            usageInput.value = usageCharge.toFixed(2);
+            baseInput.value = baseCharge.toFixed(0);
+            usageInput.value = usageCharge.toFixed(0);
             
             updateQuickTotal();
 
-            let breakdownText = `Consumption: ${consumption.toFixed(2)}m³ | (${consumption.toFixed(2)} - ${baseLimit}) × ₱${rate} = ₱${usageCharge.toFixed(2)}`;
+            let breakdownText = `Consumption: ${consumption.toFixed(0)}m³ | (${consumption.toFixed(0)} - ${baseLimit}) × ₱${rate} = ₱${usageCharge.toFixed(0)}`;
             if (globalAdditionalChargeTotal > 0) {
-                breakdownText += ` + ₱${globalAdditionalChargeTotal.toFixed(2)} (Additional Charges)`;
+                breakdownText += ` + ₱${globalAdditionalChargeTotal.toFixed(0)} (Additional Charges)`;
             }
             breakdown.textContent = breakdownText;
             
@@ -604,7 +604,7 @@
             const base = parseFloat(document.getElementById('modal_base_charge').value) || 0;
             const usage = parseFloat(document.getElementById('modal_usage_charge').value) || 0;
             const total = base + usage + globalAdditionalChargeTotal;
-            document.getElementById('modal_total_display').textContent = total.toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('modal_total_display').textContent = total.toLocaleString(undefined, { maximumFractionDigits: 0 });
         }
 
         function initializeCustomerChart() {
