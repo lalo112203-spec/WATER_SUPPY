@@ -49,7 +49,7 @@
 
                     @forelse($users as $u)
                         <li data-user-id="{{ $u->id }}" class="user-list-item p-4 hover:bg-slate-50 cursor-pointer transition-colors duration-200 border-l-4 border-transparent hover:border-[#263548] group" 
-                            onclick="selectConversation('{{ $u->id }}', '{{ addslashes($u->name) }}', 'Account Number: {{ $u->customer?->customer_id ?? $u->id }}', '{{ $u->profile_photo ? asset('storage/' . $u->profile_photo) : '' }}', '{{ substr($u->name, 0, 1) }}')">
+                            onclick="selectConversation('{{ $u->id }}', {{ Js::from($u->name) }}, 'Account Number: {{ $u->customer?->customer_id ?? $u->id }}', '{{ $u->profile_photo ? asset('storage/' . $u->profile_photo) : '' }}', '{{ substr($u->name, 0, 1) }}')">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-4 w-full">
                                     <div class="relative flex-shrink-0">
