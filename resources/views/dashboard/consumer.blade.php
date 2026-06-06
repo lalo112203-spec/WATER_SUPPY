@@ -65,38 +65,38 @@
                 </div>
                 <div class="overflow-x-auto w-full">
                     <table class="w-full text-left border-collapse min-w-full">
-                        <thead class="bg-[#0f1722]/80 text-[11px] sm:text-[12px]">
+                        <thead class="bg-[#0f1722]/80 text-[10px] sm:text-[12px]">
                             <tr>
-                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Date</th>
-                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Usage</th>
-                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Total</th>
-                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Status</th>
-                                <th class="px-2 sm:px-6 py-4 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548] text-right">Action</th>
+                                <th class="px-1 sm:px-6 py-3 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Date</th>
+                                <th class="px-1 sm:px-6 py-3 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Usage</th>
+                                <th class="px-1 sm:px-6 py-3 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Total</th>
+                                <th class="px-1 sm:px-6 py-3 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Status</th>
+                                <th class="px-1 sm:px-6 py-3 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548] text-right">Action</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50">
                             @if(isset($customer) && $customer->bills->count() > 0)
                                 @foreach($customer->bills as $bill)
                                     <tr class="hover:bg-blue-50/30 transition-colors">
-                                        <td class="px-2 sm:px-6 py-5 whitespace-nowrap text-[13px] sm:text-[15px] font-semibold text-gray-200 tracking-tight">{{ \Carbon\Carbon::parse($bill->billing_date)->format('M d, Y') }}</td>
-                                        <td class="px-2 sm:px-6 py-5 whitespace-nowrap text-[13px] sm:text-[15px] font-medium text-gray-200">{{ $bill->usage_units }} <span class="text-xs">m³</span></td>
-                                        <td class="px-2 sm:px-6 py-5 whitespace-nowrap text-[13px] sm:text-[15px] font-bold text-gray-100">₱{{ number_format($bill->total_amount, 0) }}</td>
-                                        <td class="px-2 sm:px-6 py-5 whitespace-nowrap">
+                                        <td class="px-1 sm:px-6 py-4 whitespace-nowrap text-[11px] sm:text-[15px] font-semibold text-gray-200 tracking-tight">{{ \Carbon\Carbon::parse($bill->billing_date)->format('M d, y') }}</td>
+                                        <td class="px-1 sm:px-6 py-4 whitespace-nowrap text-[11px] sm:text-[15px] font-medium text-gray-200">{{ $bill->usage_units }} <span class="text-[9px] sm:text-xs">m³</span></td>
+                                        <td class="px-1 sm:px-6 py-4 whitespace-nowrap text-[11px] sm:text-[15px] font-bold text-gray-100">₱{{ number_format($bill->total_amount, 0) }}</td>
+                                        <td class="px-1 sm:px-6 py-4 whitespace-nowrap">
                                             @if(strtolower($bill->status) === 'paid')
-                                                <span class="px-2 sm:px-3 py-1 inline-flex text-[10px] sm:text-xs font-bold rounded-full bg-green-100 text-green-700 shadow-sm border border-green-200 uppercase tracking-wide">Paid</span>
+                                                <span class="px-1.5 sm:px-3 py-1 inline-flex text-[9px] sm:text-xs font-bold rounded-full bg-green-100 text-green-700 shadow-sm border border-green-200 uppercase tracking-wide">Paid</span>
                                             @else
-                                                <span class="px-2 sm:px-3 py-1 inline-flex text-[10px] sm:text-xs font-bold rounded-full bg-red-100 text-red-700 shadow-sm border border-red-200 uppercase tracking-wide">Pending</span>
+                                                <span class="px-1.5 sm:px-3 py-1 inline-flex text-[9px] sm:text-xs font-bold rounded-full bg-red-100 text-red-700 shadow-sm border border-red-200 uppercase tracking-wide">Pending</span>
                                             @endif
                                         </td>
-                                        <td class="px-2 sm:px-6 py-5 whitespace-nowrap text-right">
+                                        <td class="px-1 sm:px-6 py-4 whitespace-nowrap text-right">
                                             @if(strtolower($bill->status) !== 'paid')
-                                                <a href="{{ route('billing.receipt', $bill->id) }}" class="text-amber-700 font-bold text-[10px] sm:text-xs uppercase tracking-wide border border-amber-200 bg-amber-50 hover:bg-amber-100 hover:border-amber-300 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 inline-flex items-center text-center shadow-sm transition-all ml-auto w-max">
+                                                <a href="{{ route('billing.receipt', $bill->id) }}" class="text-amber-700 font-bold text-[9px] sm:text-xs uppercase tracking-wide border border-amber-200 bg-amber-50 hover:bg-amber-100 hover:border-amber-300 rounded-lg px-1.5 sm:px-3 py-1 sm:py-1.5 inline-flex items-center text-center shadow-sm transition-all ml-auto w-max">
                                                     <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                                     <span class="hidden sm:inline">Statement</span>
                                                     <span class="sm:hidden">View</span>
                                                 </a>
                                             @else
-                                                <a href="{{ route('billing.receipt', $bill->id) }}" class="text-green-700 font-bold text-[10px] sm:text-xs uppercase tracking-wide border border-green-200 bg-green-50 hover:bg-green-100 hover:border-green-300 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 inline-flex items-center text-center shadow-sm transition-all ml-auto w-max">
+                                                <a href="{{ route('billing.receipt', $bill->id) }}" class="text-green-700 font-bold text-[9px] sm:text-xs uppercase tracking-wide border border-green-200 bg-green-50 hover:bg-green-100 hover:border-green-300 rounded-lg px-1.5 sm:px-3 py-1 sm:py-1.5 inline-flex items-center text-center shadow-sm transition-all ml-auto w-max">
                                                     <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                                     <span class="hidden sm:inline">Receipt</span>
                                                     <span class="sm:hidden">Print</span>
