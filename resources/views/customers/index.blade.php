@@ -213,7 +213,7 @@
                                         </svg>
                                     </button>
                                     <button type="button" 
-                                        onclick="openQuickBillModal('{{ $customer->id }}', '{{ $customer->name }}', '{{ $customer->customer_id }}', '{{ $customer->type }}', {{ $customer->meter_reading ?? 0 }}); event.stopPropagation();"
+                                        onclick="openQuickBillModal('{{ $customer->id }}', {{ Js::from($customer->name) }}, '{{ $customer->customer_id }}', '{{ $customer->type }}', {{ $customer->meter_reading ?? 0 }}); event.stopPropagation();"
                                         class="p-2 text-emerald-400 bg-emerald-900/20 hover:bg-emerald-600/30 rounded-lg transition duration-300 border border-emerald-700/30 shadow-sm"
                                         title="Quick Add Reading">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
