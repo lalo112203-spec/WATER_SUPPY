@@ -24,34 +24,7 @@
             </div>
         @endif
 
-        <!-- Announcements Section -->
-        @if(isset($posts) && count($posts) > 0)
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl sm:rounded-3xl p-1 mb-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] transform transition-transform duration-300 mx-0 sm:mx-2 relative overflow-hidden group">
-            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-            <div class="bg-[#121a25]/80 backdrop-blur-md/95 backdrop-blur-sm rounded-[22px] p-6 lg:p-8">
-                <h2 class="text-xl font-bold text-gray-100 mb-6 flex items-center tracking-tight">
-                    <span class="bg-blue-100 text-blue-600 p-2 rounded-xl mr-4 shadow-sm">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
-                    </span>
-                    System Announcements
-                </h2>
-                <div class="space-y-4 max-h-72 overflow-y-auto pr-3 custom-scrollbar">
-                    @foreach($posts as $post)
-                        <div class="bg-[#0f1722]/80 hover:bg-[#121a25]/80 backdrop-blur-md border border-[#263548] hover:border-blue-100 hover:shadow-md hover:shadow-blue-500/5 transition-all duration-300 p-5 rounded-2xl">
-                            @if($post->title)
-                                <h3 class="font-extrabold text-gray-100 text-lg mb-2 tracking-tight">{{ $post->title }}</h3>
-                            @endif
-                            <p class="text-gray-300 text-[15px] leading-relaxed mb-4">{{ $post->content }}</p>
-                            <div class="flex items-center text-gray-200 text-[12px] font-bold uppercase tracking-wider space-x-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                <span>{{ $post->created_at->format('M d, Y • h:i A') }}</span>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-        @endif
+
 
         <div class="grid grid-cols-1 gap-6 sm:gap-8 flex-1 mb-8 mx-0 sm:mx-2 items-start">
             

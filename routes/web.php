@@ -13,6 +13,7 @@ Route::redirect('/', '/dashboard')->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/consumer/announcements', [DashboardController::class, 'consumerAnnouncements'])->name('consumer.announcements');
 
     // Reader
     Route::get('reader/dashboard', [\App\Http\Controllers\ReaderController::class, 'index'])->name('reader.dashboard');

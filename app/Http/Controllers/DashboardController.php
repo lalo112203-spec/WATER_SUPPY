@@ -24,7 +24,7 @@ class DashboardController extends Controller
                 'waterUsages'
             ])->find($user->customer_id);
 
-            return view('dashboard.consumer', compact('customer', 'posts'));
+            return view('dashboard.consumer', compact('customer'));
         }
 
         $adminId = auth()->id();
@@ -115,5 +115,15 @@ class DashboardController extends Controller
             'customerTypes' => $customerTypes,
             'revenueByType' => $revenueByType,
         ]);
+    }
+
+    public function consumerAnnouncements(): View|\Illuminate\Http\RedirectResponse
+    {
+        $user = auth()->user();
+        if ($user->role !== 'consumer') {
+            return redirect()->route('dashboard');
+        }
+        $posts = \App\Models\Post::with('admin')->orderBy('created_at', 'desc')->get();
+        return view('dashboard.consumer-announcements', compact('posts'));
     }
 }

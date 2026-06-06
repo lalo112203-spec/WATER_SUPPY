@@ -456,6 +456,13 @@
                     </div>
                 </flux:sidebar.item>
 
+                @if(auth()->user()->role === 'consumer')
+                    <flux:sidebar.item icon="megaphone" :href="route('consumer.announcements')"
+                        :current="request()->routeIs('consumer.announcements')" wire:navigate>
+                        <span>{{ __('Announcements') }}</span>
+                    </flux:sidebar.item>
+                @endif
+
                 @if(auth()->user()->role === 'admin')
                     <flux:sidebar.item icon="trash" :href="route('recovery.index')"
                         :current="request()->routeIs('recovery.*')" wire:navigate>
