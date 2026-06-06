@@ -1,13 +1,13 @@
 <x-layouts::app title="Dashboard">
-    <div class="flex flex-col py-8 px-4 sm:px-6 lg:px-8 w-full font-sans min-h-[calc(100vh-4rem)]">
+    <div class="flex flex-col py-4 sm:py-8 px-1 sm:px-6 lg:px-8 w-full font-sans min-h-[calc(100vh-4rem)]">
         
         <!-- Header -->
-        <div class="mb-8 px-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="mb-6 sm:mb-8 px-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-                <h1 class="text-[28px] font-bold text-gray-100 tracking-tight flex items-center">
+                <h1 class="text-[24px] sm:text-[28px] font-bold text-gray-100 tracking-tight flex items-center">
                     Welcome back, <span class="text-blue-600 ml-2">{{ auth()->user()->name }}</span>
                 </h1>
-                <p class="mt-2 text-[15px] text-gray-200 font-medium">View your billing history and latest announcements.</p>
+                <p class="mt-1 sm:mt-2 text-[14px] sm:text-[15px] text-gray-200 font-medium">View your billing history and latest announcements.</p>
             </div>
         </div>
 
@@ -26,7 +26,7 @@
 
         <!-- Announcements Section -->
         @if(isset($posts) && count($posts) > 0)
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-1 mb-10 shadow-[0_8px_30px_rgb(0,0,0,0.06)] transform transition-transform duration-300 mx-2 relative overflow-hidden group">
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl sm:rounded-3xl p-1 mb-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] transform transition-transform duration-300 mx-0 sm:mx-2 relative overflow-hidden group">
             <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
             <div class="bg-[#121a25]/80 backdrop-blur-md/95 backdrop-blur-sm rounded-[22px] p-6 lg:p-8">
                 <h2 class="text-xl font-bold text-gray-100 mb-6 flex items-center tracking-tight">
@@ -53,11 +53,11 @@
         </div>
         @endif
 
-        <div class="grid grid-cols-1 gap-8 flex-1 mb-8 mx-2 items-start">
+        <div class="grid grid-cols-1 gap-6 sm:gap-8 flex-1 mb-8 mx-0 sm:mx-2 items-start">
             
             <!-- Payment History Section -->
-            <div class="bg-[#121a25]/80 backdrop-blur-md shadow-[0_4px_20px_rgb(0,0,0,0.03)] rounded-3xl overflow-hidden border border-[#263548]">
-                <div class="p-4 sm:p-6 border-b border-[#263548] flex items-center justify-between">
+            <div class="bg-[#121a25]/80 backdrop-blur-md shadow-[0_4px_20px_rgb(0,0,0,0.03)] rounded-2xl sm:rounded-3xl overflow-hidden border border-[#263548]">
+                <div class="p-3 sm:p-6 border-b border-[#263548] flex items-center justify-between">
                     <h2 class="text-xl font-bold text-gray-100 tracking-tight flex items-center">
                         <svg class="w-6 h-6 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         Billing Overview

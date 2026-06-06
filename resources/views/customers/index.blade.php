@@ -420,7 +420,7 @@
 
     <!-- Quick Bill Modal -->
     <flux:modal name="quick-bill-modal" class="md:w-[500px] !bg-[#121a25] !border !border-[#2d4059] !text-gray-200">
-        <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl">
+        <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar">
             <flux:heading size="lg" class="mb-2 !text-white">Quick Add Reading</flux:heading>
             <flux:subheading id="modal-customer-name" class="mb-6 !text-gray-400">Customer Name</flux:subheading>
 
@@ -431,7 +431,7 @@
                 <input type="hidden" name="due_date" value="{{ now()->addDays(30)->format('Y-m-d') }}">
                 <input type="hidden" name="consumption" id="modal_consumption_hidden">
 
-                <div class="space-y-6">
+                <div class="space-y-4 sm:space-y-6">
                     <div class="bg-[#1b2636]/40 p-4 rounded-xl border border-[#2d4059]/50">
                         <div class="flex justify-between items-center mb-4">
                             <span class="text-sm font-medium text-gray-200">Previous Reading:</span>
@@ -451,11 +451,11 @@
                     <div class="grid grid-cols-2 gap-4">
                         <flux:field>
                             <flux:label class="!text-gray-300">Base Charge</flux:label>
-                            <flux:input name="base_charge" id="modal_base_charge" type="number" step="0.01" oninput="updateQuickTotal()" class="!bg-[#0f1722] !border-[#2d4059] !text-gray-200" />
+                            <flux:input name="base_charge" id="modal_base_charge" type="number" step="0.01" oninput="updateQuickTotal()" class="!bg-[#0f1722] !border-[#2d4059] !text-gray-200 opacity-70 cursor-not-allowed" readonly />
                         </flux:field>
                         <flux:field>
                             <flux:label class="!text-gray-300">Usage Charge</flux:label>
-                            <flux:input name="usage_charge" id="modal_usage_charge" type="number" step="0.01" oninput="updateQuickTotal()" class="!bg-[#0f1722] !border-[#2d4059] !text-gray-200" />
+                            <flux:input name="usage_charge" id="modal_usage_charge" type="number" step="0.01" oninput="updateQuickTotal()" class="!bg-[#0f1722] !border-[#2d4059] !text-gray-200 opacity-70 cursor-not-allowed" readonly />
                         </flux:field>
                     </div>
 

@@ -11,10 +11,12 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use NotificationChannels\WebPush\HasPushSubscriptions;
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, SoftDeletes;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, SoftDeletes, HasPushSubscriptions;
 
     /**
      * The attributes that are mass assignable.

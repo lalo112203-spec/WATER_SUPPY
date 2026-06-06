@@ -172,13 +172,16 @@ class BillingController extends Controller
             'paid_date' => now(),
         ]);
         
-        // Notify the consumer device/account
+        // Notify the consumer device/account via in-app message
         if ($bill->customer && $bill->customer->user) {
             \App\Models\Message::create([
                 'sender_id' => auth()->id(),
                 'receiver_id' => $bill->customer->user->id,
                 'message' => 'Your bill from ' . $bill->billing_date->format('M d, Y') . ' for the amount of ' . number_format($bill->total_amount, 2) . ' has been successfully marked as paid. Thank you!',
             ]);
+            
+            // Dispatch Web Push Notification
+            $bill->customer->user->notify(new \App\Notifications\BillPaidPushNotification($bill->total_amount, $bill->billing_date->format('M d, Y')));
         }
  
         return redirect()->route('billing.index')

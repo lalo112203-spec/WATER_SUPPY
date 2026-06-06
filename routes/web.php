@@ -62,6 +62,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // API Routes for AJAX
     Route::get('api/customers/{customer}/readings', [BillingController::class, 'getCustomerReadings']);
+    Route::post('push-subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'store'])->name('push.subscribe');
 });
 
 require __DIR__.'/settings.php';

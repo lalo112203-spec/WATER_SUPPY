@@ -315,6 +315,13 @@
         }
     </style>
     <script>
+        window.Laravel = {
+            csrfToken: '{{ csrf_token() }}',
+            vapidPublicKey: '{{ config('webpush.vapid.public_key') }}'
+        };
+    </script>
+    <script src="{{ asset('js/webpush.js') }}"></script>
+    <script>
         function shouldBeCustom() {
             let localApp = window.localStorage.getItem('flux.appearance');
             let dbApp = '{{ auth()->user()->appearance ?? "dark" }}';
