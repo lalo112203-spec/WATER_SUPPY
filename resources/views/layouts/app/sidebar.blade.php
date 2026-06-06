@@ -403,7 +403,7 @@
 <body class="min-h-screen text-gray-300 antialiased selection:bg-cyan-500/30">
     @if(auth()->check())
     <flux:sidebar collapsible {{ auth()->user()->role === 'consumer' ? 'collapsed' : '' }}
-        class="dark border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
+        class="dark border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl {{ auth()->user()->role === 'consumer' ? '!w-56' : '' }}">
         <flux:sidebar.header>
             <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
             <flux:sidebar.collapse />
