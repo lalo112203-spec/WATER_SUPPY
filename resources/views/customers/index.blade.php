@@ -10,7 +10,7 @@
     </style>
     <div class="px-4 py-2 bg-transparent min-h-[calc(100vh-4rem)] font-sans text-gray-200 relative z-10">
 
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-4 gap-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-4 gap-4 flex-wrap">
             <div class="flex items-center gap-4">
                 <h1 class="text-2xl font-bold flex items-center gap-3 drop-shadow-sm whitespace-nowrap">
                     <div class="p-2 bg-blue-600/10 rounded-xl border border-blue-600/20 shadow-[0_0_15px_rgba(37,99,235,0.1)]">
@@ -22,67 +22,71 @@
                 </h1>
             </div>
 
-            <div class="flex-1 flex flex-col xl:flex-row items-end xl:items-center justify-end gap-4 w-full">
-                <form action="{{ route('customers.index') }}" method="GET" class="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
-                    <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full md:w-80 h-12 shadow-inner">
-                        <div class="pl-4 pr-1 flex items-center justify-center text-gray-200 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[50px]">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <div class="flex-1 flex justify-end w-full">
+                <form action="{{ route('customers.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <!-- Column 1: Print & Search -->
+                    <div class="flex flex-col gap-3 w-full sm:w-auto">
+                        <a href="{{ route('customers.report') }}" target="_blank"
+                            class="w-full bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500/30 px-5 py-2.5 rounded-2xl font-bold shadow-sm flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap group">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                             </svg>
-                        </div>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search person..." onchange="this.form.submit()"
-                            class="flex-1 bg-transparent border-none text-[14px] px-0 py-0 outline-none text-gray-100 placeholder-gray-500 h-full w-full">
-                        <button type="submit" class="hidden"></button>
-                        @if (request('search'))
-                            <div class="px-4 flex items-center justify-center">
-                                <a href="{{ route('customers.index', request()->except('search')) }}" class="text-gray-200 hover:text-rose-400 transition-colors duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </a>
+                            Print Monthly Report
+                        </a>
+
+                        <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full h-11 shadow-inner">
+                            <div class="pl-4 pr-1 flex items-center justify-center text-gray-200 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[40px]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
                             </div>
-                        @endif
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search person..." onchange="this.form.submit()"
+                                class="flex-1 bg-transparent border-none text-[14px] px-0 py-0 outline-none text-gray-100 placeholder-gray-500 h-full w-full">
+                            <button type="submit" class="hidden"></button>
+                            @if (request('search'))
+                                <div class="px-4 flex items-center justify-center">
+                                    <a href="{{ route('customers.index', request()->except('search')) }}" class="text-gray-200 hover:text-rose-400 transition-colors duration-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
                     </div>
 
-                    <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full sm:w-64 h-12 shadow-inner">
-                        <div class="pl-4 pr-1 flex items-center justify-center text-gray-200 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[50px]">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <!-- Column 2: Register & Barangay -->
+                    <div class="flex flex-col gap-3 w-full sm:w-auto">
+                        <button type="button" onclick="window.Flux.modal('create-customer-modal').show()"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-2xl font-bold shadow-[0_4px_15px_rgba(37,99,235,0.3)] flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                             </svg>
-                        </div>
-                        <select name="barangay" onchange="this.form.submit()"
-                            class="flex-1 bg-transparent border-none text-[14px] px-0 py-0 outline-none appearance-none text-gray-100 font-medium cursor-pointer h-full w-full">
-                            <option value="" class="bg-[#0f1722]">All Barangays</option>
-                            @foreach($barangays as $brgy)
-                                <option value="{{ $brgy }}" {{ request('barangay') == $brgy ? 'selected' : '' }} class="bg-[#0f1722]">{{ $brgy }}</option>
-                            @endforeach
-                        </select>
-                        <div class="px-4 flex items-center justify-center text-gray-200 pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
+                            Register New Customer
+                        </button>
+
+                        <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full h-11 shadow-inner">
+                            <div class="pl-4 pr-1 flex items-center justify-center text-gray-200 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[40px]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                            <select name="barangay" onchange="this.form.submit()"
+                                class="flex-1 bg-transparent border-none text-[14px] px-0 py-0 outline-none appearance-none text-gray-100 font-medium cursor-pointer h-full w-full">
+                                <option value="" class="bg-[#0f1722]">All Barangays</option>
+                                @foreach($barangays as $brgy)
+                                    <option value="{{ $brgy }}" {{ request('barangay') == $brgy ? 'selected' : '' }} class="bg-[#0f1722]">{{ $brgy }}</option>
+                                @endforeach
+                            </select>
+                            <div class="px-4 flex items-center justify-center text-gray-200 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </form>
-
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center w-full xl:w-auto gap-3">
-                    <a href="{{ route('customers.report') }}" target="_blank"
-                        class="bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500/30 px-5 py-3 rounded-2xl font-bold shadow-sm flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap group">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                        </svg>
-                        Print Monthly Report
-                    </a>
-
-                    <a href="{{ route('customers.create') }}"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl font-bold shadow-[0_4px_15px_rgba(37,99,235,0.3)] flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-nowrap">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                        </svg>
-                        Register New Customer
-                    </a>
-                </div>
             </div>
         </div>
 
@@ -154,6 +158,7 @@
                         <th class="px-6 py-3 font-semibold border-b border-[#263548]">Account Number</th>
                         <th class="px-6 py-3 font-semibold border-b border-[#263548]">Name</th>
                         <th class="px-6 py-3 font-semibold border-b border-[#263548]">Type</th>
+                        <th class="px-6 py-3 font-semibold border-b border-[#263548]">Meter Post</th>
                         <th class="px-6 py-3 font-semibold hidden lg:table-cell border-b border-[#263548]">Address</th>
                         <th class="px-6 py-3 font-semibold border-b border-[#263548]">Usage</th>
                         <th class="px-6 py-3 font-semibold text-right border-b border-[#263548]">Action</th>
@@ -165,7 +170,7 @@
                         {{-- Only show barangay separator if we are NOT filtering by a specific barangay --}}
                         @if(!request('barangay') && $customer->barangay !== $lastBarangay)
                             <tr class="bg-[#1b2636]/60 text-[#94a3b8] uppercase text-[10px] tracking-widest">
-                                <td colspan="6" class="px-6 py-2 font-bold border-y border-[#263548]/50">
+                                <td colspan="7" class="px-6 py-2 font-bold border-y border-[#263548]/50">
                                     <div class="flex items-center gap-2">
                                         <div class="h-1.5 w-1.5 rounded-full bg-cyan-500"></div>
                                         {{ $customer->barangay ?? 'No Barangay Set' }}
@@ -191,6 +196,9 @@
                                     class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {{ $customer->type === 'Regular' ? 'bg-cyan-900/40 text-cyan-300 border-cyan-700/50' : 'bg-orange-900/40 text-orange-300 border-orange-700/50' }}">
                                     {{ $customer->type }}
                                 </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-medium text-gray-200">{{ $customer->meter_post ?? 'N/A' }}</div>
                             </td>
                             <td class="px-6 py-4 text-xs text-gray-200 hidden lg:table-cell max-w-[200px]"
                                 title="{{ $customer->address }}"><div class="truncate">{{ $customer->address }}</div></td>
@@ -222,6 +230,14 @@
                                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
                                     </button>
+                                    <button type="button" 
+                                        onclick="openEditCustomerModal('{{ $customer->id }}', {{ Js::from($customer) }}); event.stopPropagation();"
+                                        class="p-2 text-blue-400 bg-blue-900/20 hover:bg-blue-600/30 rounded-lg transition duration-300 border border-blue-700/30 shadow-sm"
+                                        title="Edit Customer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg>
+                                    </button>
                                     <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="inline"
                                         onsubmit="return confirm('Are you sure you want to delete this customer?');">
                                         @csrf
@@ -240,7 +256,7 @@
                             </td>
                         </tr>
                         <tr id="details-{{ $customer->id }}" class="hidden bg-[#0a1018]/50 overflow-hidden transition-all duration-300">
-                            <td colspan="6" class="px-8 py-8 border-b border-[#263548]">
+                            <td colspan="7" class="px-8 py-8 border-b border-[#263548]">
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-8 animate-fadeIn">
                                     <!-- Primary Details -->
                                     <div class="space-y-4">
@@ -384,7 +400,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-gray-200">
+                            <td colspan="7" class="px-6 py-12 text-center text-gray-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-[#263548] mb-3"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -401,9 +417,9 @@
                                     <p class="text-lg font-medium text-gray-300">No customers found</p>
                                     <p class="text-sm mt-1 text-gray-200">Start by registering your first user to the water
                                         system.</p>
-                                    <a href="{{ route('customers.create') }}"
+                                    <button type="button" onclick="window.Flux.modal('create-customer-modal').show()"
                                         class="inline-block mt-4 bg-cyan-600/80 border border-cyan-400/50 text-white px-5 py-2 rounded-xl text-sm hover:bg-cyan-500 transition shadow-[0_0_15px_rgba(6,182,212,0.3)] backdrop-blur-sm">Register
-                                        Customer</a>
+                                        Customer</button>
                                 @endif
                             </td>
                         </tr>
@@ -476,8 +492,195 @@
             </form>
         </div>
     </flux:modal>
+    <!-- Create Customer Modal -->
+    <flux:modal name="create-customer-modal" class="md:w-[800px] !bg-[#121a25] !border !border-[#2d4059] !text-gray-200">
+        <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between mb-4 border-b border-[#263548] pb-2">
+                <flux:heading size="lg" class="!text-white">Register New Customer</flux:heading>
+                <flux:modal.close>
+                    <button type="button" class="text-gray-400 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </flux:modal.close>
+            </div>
+            <form method="POST" action="{{ route('customers.store') }}">
+                @csrf
+                <input type="hidden" name="form_type" value="create">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-200 mb-1 text-xs font-medium">Account Number (Leave blank to auto-generate)</label>
+                        <input type="text" name="customer_id" value="{{ old('customer_id', old('form_type') === 'create' ? '' : ($nextId ?? '')) }}" placeholder="Auto-generate" class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
+                        @if(old('form_type') === 'create') @error('customer_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                    </div>
+                    <div>
+                        <label class="block text-gray-200 mb-1 text-xs font-medium">Full Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="name" value="{{ old('form_type') === 'create' ? old('name') : '' }}" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
+                        @if(old('form_type') === 'create') @error('name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                    </div>
+                    <div>
+                        <label class="block text-gray-200 mb-1 text-xs font-medium">Customer Type <span class="text-red-500">*</span></label>
+                        <select name="type" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
+                            <option value="">Select Type</option>
+                            <option value="Regular" {{ (old('form_type') === 'create' && old('type') === 'Regular') ? 'selected' : '' }}>Regular</option>
+                            <option value="Commercial" {{ (old('form_type') === 'create' && old('type') === 'Commercial') ? 'selected' : '' }}>Commercial</option>
+                        </select>
+                        @if(old('form_type') === 'create') @error('type') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                    </div>
+                    <div>
+                        <label class="block text-gray-200 mb-1 text-xs font-medium">Phone Number</label>
+                        <input type="text" name="phone_number" value="{{ old('form_type') === 'create' ? old('phone_number') : '' }}" placeholder="e.g. 09123456789" class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
+                        @if(old('form_type') === 'create') @error('phone_number') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="flex flex-col md:flex-row gap-4 items-start">
+                        <div class="w-full md:w-1/2">
+                            <label class="block text-gray-200 mb-1 text-xs font-medium">Meter Post <span class="text-red-500">*</span></label>
+                            <input type="text" name="meter_post" value="{{ old('form_type') === 'create' ? old('meter_post') : '' }}" required placeholder="Meter Post" class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm uppercase">
+                            @if(old('form_type') === 'create') @error('meter_post') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <label class="block text-gray-200 mb-1 text-xs font-medium">Barangay <span class="text-red-500">*</span></label>
+                            <input type="text" name="barangay" list="barangays_list" value="{{ old('form_type') === 'create' ? old('barangay') : '' }}" required placeholder="Barangay e.g. BRGY 1" class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm uppercase">
+                            @if(old('form_type') === 'create') @error('barangay') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4 bg-[#1a2432]/50 p-4 border border-[#263548] rounded">
+                    <label class="flex items-center space-x-3 text-gray-300 font-medium mb-3 cursor-pointer">
+                        <input type="checkbox" name="create_account" id="create_account" value="1" class="rounded text-[#42a5f5] focus:ring-[#42a5f5] bg-[#0f151e] border-[#263548] w-5 h-5 cursor-pointer" {{ (old('form_type') === 'create' && old('create_account')) ? 'checked' : '' }}>
+                        <span class="text-sm">Also Create Login Account for this Customer</span>
+                    </label>
+                    <div id="password_field" style="{{ (old('form_type') === 'create' && old('create_account')) ? 'display: block;' : 'display: none;' }}">
+                        <label class="block text-gray-200 mb-1 text-xs font-medium">Password <span class="text-red-500">*</span></label>
+                        <input type="password" name="password" id="password" class="w-full md:w-1/2 px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
+                        <p class="text-[10px] text-gray-400 mt-1">Minimum 8 characters. Login using Account Number and this password.</p>
+                        @if(old('form_type') === 'create') @error('password') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-[#263548]">
+                    <flux:modal.close>
+                        <flux:button variant="ghost" class="px-6 !border !border-[#2d4059] !text-gray-300 hover:!bg-[#1b2636] hover:!text-white">Cancel</flux:button>
+                    </flux:modal.close>
+                    <flux:button type="submit" variant="primary" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 transition-all font-bold text-white">Save Customer</flux:button>
+                </div>
+            </form>
+        </div>
+    </flux:modal>
+
+    <!-- Edit Customer Modal -->
+    <flux:modal name="edit-customer-modal" class="md:w-[800px] !bg-[#121a25] !border !border-[#2d4059] !text-gray-200">
+        <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between mb-4 border-b border-[#263548] pb-2">
+                <flux:heading size="lg" class="!text-white">Edit Customer</flux:heading>
+                <flux:modal.close>
+                    <button type="button" class="text-gray-400 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </flux:modal.close>
+            </div>
+            <form method="POST" id="edit-customer-form" action="{{ old('form_type') === 'edit' && old('customer_db_id') ? route('customers.update', old('customer_db_id')) : '' }}">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="form_type" value="edit">
+                <input type="hidden" name="customer_db_id" id="edit_customer_db_id" value="{{ old('customer_db_id') }}">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-200 mb-1 text-xs font-medium">Account Number</label>
+                        <input type="text" name="customer_id" id="edit_customer_id" value="{{ old('form_type') === 'edit' ? old('customer_id') : '' }}" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
+                        @if(old('form_type') === 'edit') @error('customer_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                    </div>
+                    <div>
+                        <label class="block text-gray-200 mb-1 text-xs font-medium">Full Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="name" id="edit_name" value="{{ old('form_type') === 'edit' ? old('name') : '' }}" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
+                        @if(old('form_type') === 'edit') @error('name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                    </div>
+                    <div>
+                        <label class="block text-gray-200 mb-1 text-xs font-medium">Customer Type <span class="text-red-500">*</span></label>
+                        <select name="type" id="edit_type" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
+                            <option value="Regular" {{ (old('form_type') === 'edit' && old('type') === 'Regular') ? 'selected' : '' }}>Regular</option>
+                            <option value="Commercial" {{ (old('form_type') === 'edit' && old('type') === 'Commercial') ? 'selected' : '' }}>Commercial</option>
+                        </select>
+                        @if(old('form_type') === 'edit') @error('type') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                    </div>
+                    <div>
+                        <label class="block text-gray-200 mb-1 text-xs font-medium">Phone Number</label>
+                        <input type="text" name="phone_number" id="edit_phone_number" value="{{ old('form_type') === 'edit' ? old('phone_number') : '' }}" placeholder="e.g. 09123456789" class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
+                        @if(old('form_type') === 'edit') @error('phone_number') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                    </div>
+                </div>
+
+                <div class="mb-4 flex flex-col md:flex-row gap-4 items-start">
+                    <div class="w-full md:w-1/2">
+                        <label class="block text-gray-200 mb-1 text-xs font-medium">Meter Post <span class="text-red-500">*</span></label>
+                        <input type="text" name="meter_post" id="edit_meter_post" value="{{ old('form_type') === 'edit' ? old('meter_post') : '' }}" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm uppercase">
+                        @if(old('form_type') === 'edit') @error('meter_post') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <label class="block text-gray-200 mb-1 text-xs font-medium">Barangay <span class="text-red-500">*</span></label>
+                        <input type="text" name="barangay" id="edit_barangay" list="barangays_list" value="{{ old('form_type') === 'edit' ? old('barangay') : '' }}" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm uppercase">
+                        @if(old('form_type') === 'edit') @error('barangay') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-[#263548]">
+                    <flux:modal.close>
+                        <flux:button variant="ghost" class="px-6 !border !border-[#2d4059] !text-gray-300 hover:!bg-[#1b2636] hover:!text-white">Cancel</flux:button>
+                    </flux:modal.close>
+                    <flux:button type="submit" variant="primary" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 transition-all font-bold text-white">Update Customer</flux:button>
+                </div>
+            </form>
+        </div>
+    </flux:modal>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" data-navigate-track></script>
     <script>
+        function openEditCustomerModal(id, customer) {
+            document.getElementById('edit_customer_db_id').value = id;
+            document.getElementById('edit_customer_id').value = customer.customer_id;
+            document.getElementById('edit_name').value = customer.name;
+            document.getElementById('edit_type').value = customer.type;
+            document.getElementById('edit_phone_number').value = customer.phone_number || '';
+            document.getElementById('edit_meter_post').value = customer.meter_post || '';
+            document.getElementById('edit_barangay').value = customer.barangay || '';
+            
+            document.getElementById('edit-customer-form').action = `/customers/${id}`;
+            window.Flux.modal('edit-customer-modal').show();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const createAcc = document.getElementById('create_account');
+            if (createAcc) {
+                createAcc.addEventListener('change', function () {
+                    const passField = document.getElementById('password_field');
+                    const passInput = document.getElementById('password');
+                    if (this.checked) {
+                        passField.style.display = 'block';
+                        passInput.required = true;
+                    } else {
+                        passField.style.display = 'none';
+                        passInput.required = false;
+                    }
+                });
+            }
+
+            @if($errors->any())
+                @if(old('form_type') === 'create')
+                    setTimeout(() => window.Flux.modal('create-customer-modal').show(), 100);
+                @elseif(old('form_type') === 'edit')
+                    setTimeout(() => window.Flux.modal('edit-customer-modal').show(), 100);
+                @endif
+            @endif
+        });
+
         function toggleDetails(id) {
             const detailsRow = document.getElementById('details-' + id);
             const mainRow = document.getElementById('row-' + id);

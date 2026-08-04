@@ -141,6 +141,7 @@
                         <p class="text-xs text-gray-200 uppercase tracking-wider mb-1">Billed To</p>
                         <p class="font-medium text-gray-200">{{ $bill->customer->name }}</p>
                         <p class="text-sm text-gray-200 mt-1">Account Number: {{ $bill->customer->customer_id ?? $bill->customer->id }}</p>
+                        <p class="text-sm text-gray-200 mt-1">Meter Post: {{ $bill->customer->meter_post ?? 'N/A' }}</p>
                         <p class="text-sm text-gray-200 mt-1">{{ $bill->customer->address }}</p>
                     </div>
                     <div class="text-right">

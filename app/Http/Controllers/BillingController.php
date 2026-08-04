@@ -78,6 +78,20 @@ class BillingController extends Controller
             ],
         ];
  
+        $customers = Customer::where('admin_id', $adminId)->where('status', 'active')->get();
+        
+        $settings = [
+            'regular_base_charge' => SystemSetting::get('regular_base_charge', 100),
+            'commercial_base_charge' => SystemSetting::get('commercial_base_charge', 250),
+            'regular_usage_rate' => SystemSetting::get('regular_usage_rate', 15),
+            'commercial_usage_rate' => SystemSetting::get('commercial_usage_rate', 25),
+            'regular_base_limit' => SystemSetting::get('regular_base_limit', 10),
+            'commercial_base_limit' => SystemSetting::get('commercial_base_limit', 10),
+        ];
+
+        $globalAdditionalCharges = json_decode(SystemSetting::get('global_additional_charges', '[]'), true);
+        $globalAdditionalChargeTotal = collect($globalAdditionalCharges)->sum('amount');
+ 
         return view('billing.index', [
             'pendingBills' => $pendingBills,
             'paidBills' => $paidBills,
@@ -87,35 +101,14 @@ class BillingController extends Controller
             'paidCustomersCount' => $paidCustomersCount,
             'unpaidCustomersCount' => $unpaidCustomersCount,
             'thresholds' => $thresholds,
+            'customers' => $customers,
+            'settings' => $settings,
+            'globalAdditionalCharges' => $globalAdditionalCharges,
+            'globalAdditionalChargeTotal' => $globalAdditionalChargeTotal
         ]);
     }
  
-    public function create(): View
-    {
-        $adminId = auth()->id();
-        $customers = Customer::where('admin_id', $adminId)->where('status', 'active')->get();
-        $thresholds = [
-            'Regular' => [
-                'green_max' => SystemSetting::get('regular_green_max', 10),
-                'orange_max' => SystemSetting::get('regular_orange_max', 14),
-            ],
-            'Commercial' => [
-                'green_max' => SystemSetting::get('commercial_green_max', 49),
-                'orange_max' => SystemSetting::get('commercial_orange_max', 50),
-            ],
-        ];
- 
-        $settings = [
-            'regular_base_charge' => SystemSetting::get('regular_base_charge', 100),
-            'commercial_base_charge' => SystemSetting::get('commercial_base_charge', 250),
-            'regular_usage_rate' => SystemSetting::get('regular_usage_rate', 15),
-            'commercial_usage_rate' => SystemSetting::get('commercial_usage_rate', 25),
-            'regular_base_limit' => SystemSetting::get('regular_base_limit', 10),
-            'commercial_base_limit' => SystemSetting::get('commercial_base_limit', 10),
-        ];
- 
-        return view('billing.create', compact('customers', 'thresholds', 'globalAdditionalCharges', 'globalAdditionalChargeTotal', 'settings'));
-    }
+
  
     public function store(Request $request)
     {
@@ -153,7 +146,18 @@ class BillingController extends Controller
  
     public function show(Bill $bill): View
     {
-        return view('billing.show', compact('bill'));
+        $settings = [
+            'regular_base_charge' => SystemSetting::get('regular_base_charge', 100),
+            'commercial_base_charge' => SystemSetting::get('commercial_base_charge', 250),
+            'regular_usage_rate' => SystemSetting::get('regular_usage_rate', 15),
+            'commercial_usage_rate' => SystemSetting::get('commercial_usage_rate', 25),
+            'regular_base_limit' => SystemSetting::get('regular_base_limit', 10),
+            'commercial_base_limit' => SystemSetting::get('commercial_base_limit', 10),
+        ];
+
+        $globalAdditionalChargeTotal = collect($bill->applied_additional_charges ?? [])->sum('amount');
+
+        return view('billing.show', compact('bill', 'settings', 'globalAdditionalChargeTotal'));
     }
  
     public function receipt(Bill $bill): View
@@ -221,34 +225,7 @@ class BillingController extends Controller
             'customer' => $customer
         ]);
     }
-    public function edit(Bill $bill): View
-    {
-        $adminId = auth()->id();
-        $customers = Customer::where('admin_id', $adminId)->where('status', 'active')->get();
-        $thresholds = [
-            'Regular' => [
-                'green_max' => SystemSetting::get('regular_green_max', 10),
-                'orange_max' => SystemSetting::get('regular_orange_max', 14),
-            ],
-            'Commercial' => [
-                'green_max' => SystemSetting::get('commercial_green_max', 49),
-                'orange_max' => SystemSetting::get('commercial_orange_max', 50),
-            ],
-        ];
 
-        $settings = [
-            'regular_base_charge' => SystemSetting::get('regular_base_charge', 100),
-            'commercial_base_charge' => SystemSetting::get('commercial_base_charge', 250),
-            'regular_usage_rate' => SystemSetting::get('regular_usage_rate', 15),
-            'commercial_usage_rate' => SystemSetting::get('commercial_usage_rate', 25),
-            'regular_base_limit' => SystemSetting::get('regular_base_limit', 10),
-            'commercial_base_limit' => SystemSetting::get('commercial_base_limit', 10),
-        ];
-
-        $globalAdditionalChargeTotal = collect($bill->applied_additional_charges ?? [])->sum('amount');
- 
-        return view('billing.edit', compact('bill', 'customers', 'thresholds', 'globalAdditionalChargeTotal', 'settings'));
-    }
  
     public function update(Request $request, Bill $bill)
     {

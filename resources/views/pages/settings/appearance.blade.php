@@ -317,10 +317,10 @@ new #[Title('Appearance settings')] class extends Component {
                     <flux:heading class="!text-white mb-2">{{ __('Text Size') }}</flux:heading>
                     <flux:select wire:model.blur="text_size" placeholder="Select size...">
                         <flux:select.option value="">Default</flux:select.option>
-                        <flux:select.option value="12px">Small</flux:select.option>
-                        <flux:select.option value="18px">Large</flux:select.option>
-                        <flux:select.option value="22px">Extra Large</flux:select.option>
-                        <flux:select.option value="26px">2XL</flux:select.option>
+                        <flux:select.option value="12px">12px</flux:select.option>
+                        <flux:select.option value="18px">18px</flux:select.option>
+                        <flux:select.option value="22px">22px</flux:select.option>
+                        <flux:select.option value="26px">26px</flux:select.option>
                     </flux:select>
                 </div>
             </div>

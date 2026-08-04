@@ -21,7 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Customers
     Route::get('customers/report', [CustomerController::class, 'report'])->name('customers.report');
-    Route::resource('customers', CustomerController::class)->except(['show']);
+    Route::resource('customers', CustomerController::class)->except(['show', 'create', 'edit']);
     Route::post('customers/{customer}/create-account', [CustomerController::class, 'createAccount'])->name('customers.create-account');
     Route::post('customers/{customer}/update-password', [CustomerController::class, 'updatePassword'])->name('customers.update-password');
 
@@ -35,10 +35,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Billing
     Route::get('billing', [BillingController::class, 'index'])->name('billing.index');
-    Route::get('billing/create', [BillingController::class, 'create'])->name('billing.create');
+
     Route::post('billing', [BillingController::class, 'store'])->name('billing.store');
     Route::get('billing/{bill}', [BillingController::class, 'show'])->name('billing.show');
-    Route::get('billing/{bill}/edit', [BillingController::class, 'edit'])->name('billing.edit');
+
     Route::put('billing/{bill}', [BillingController::class, 'update'])->name('billing.update');
     Route::get('billing/{bill}/receipt', [BillingController::class, 'receipt'])->name('billing.receipt');
     Route::patch('billing/{bill}/mark-paid', [BillingController::class, 'markAsPaid'])->name('billing.mark-paid');

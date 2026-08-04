@@ -86,6 +86,9 @@ class CustomerController extends Controller
             ]);
         }
 
+        $allIds = Customer::pluck('customer_id')->map(fn($val) => (int) $val)->toArray();
+        $nextId = (count($allIds) > 0 ? max($allIds) : 1000) + 1;
+
         return view('customers.index', [
             'customers' => $customers,
             'totalCustomers' => $totalCustomers,
@@ -95,7 +98,8 @@ class CustomerController extends Controller
             'unpaidCustomersCount' => $unpaidCustomersCount,
             'barangays' => $barangays,
             'settings' => $settings,
-            'globalAdditionalChargeTotal' => $globalAdditionalChargeTotal
+            'globalAdditionalChargeTotal' => $globalAdditionalChargeTotal,
+            'nextId' => $nextId
         ]);
     }
 
@@ -118,15 +122,7 @@ class CustomerController extends Controller
         return view('customers.report', compact('customers', 'monthName'));
     }
 
-    public function create(): View
-    {
-        $allIds = Customer::pluck('customer_id')->map(fn($val) => (int) $val)->toArray();
-        $nextId = (count($allIds) > 0 ? max($allIds) : 1000) + 1;
-        
-        $barangays = Customer::where('admin_id', auth()->id())->whereNotNull('barangay')->distinct()->pluck('barangay')->sort();
-        
-        return view('customers.create', compact('nextId', 'barangays'));
-    }
+
 
     public function store(Request $request)
     {
@@ -134,17 +130,17 @@ class CustomerController extends Controller
             'customer_id' => 'nullable|string|unique:customers,customer_id',
             'name' => 'required|string',
             'type' => 'required|in:Regular,Commercial',
-            'street' => 'nullable|string',
+            'meter_post' => 'required|string',
             'phone_number' => 'nullable|string',
             'barangay' => 'required|string',
             'password' => 'nullable|string|min:8',
         ]);
 
         $validated['barangay'] = strtoupper($validated['barangay']);
-        $streetPart = isset($validated['street']) && trim($validated['street']) !== '' 
-            ? trim($validated['street']) . ', ' 
+        $meterPostPart = isset($validated['meter_post']) && trim($validated['meter_post']) !== '' 
+            ? trim($validated['meter_post']) . ', ' 
             : '';
-        $validated['address'] = $streetPart . $validated['barangay'] . ' DOLORES EASTERN SAMAR';
+        $validated['address'] = $meterPostPart . $validated['barangay'] . ' DOLORES EASTERN SAMAR';
 
         if ($request->filled('customer_id')) {
             $validated['customer_id'] = $request->customer_id;
@@ -160,7 +156,7 @@ class CustomerController extends Controller
             'name' => $validated['name'],
             'type' => $validated['type'],
             'email' => $validated['customer_id'] . '@system.local',
-            'street' => $validated['street'] ?? null,
+            'meter_post' => $validated['meter_post'] ?? null,
             'phone_number' => $validated['phone_number'] ?? null,
             'address' => $validated['address'],
             'barangay' => $validated['barangay'],
@@ -200,12 +196,7 @@ class CustomerController extends Controller
 
 
 
-    public function edit(Customer $customer): View
-    {
-        $barangays = Customer::where('admin_id', auth()->id())->whereNotNull('barangay')->distinct()->pluck('barangay')->sort();
-        
-        return view('customers.edit', compact('customer', 'barangays'));
-    }
+
 
     public function update(Request $request, Customer $customer)
     {
@@ -213,23 +204,23 @@ class CustomerController extends Controller
             'customer_id' => 'required|string|unique:customers,customer_id,' . $customer->id,
             'name' => 'required|string',
             'type' => 'required|in:Regular,Commercial',
-            'street' => 'nullable|string',
+            'meter_post' => 'required|string',
             'phone_number' => 'nullable|string',
             'barangay' => 'required|string',
         ]);
 
         $validated['barangay'] = strtoupper($validated['barangay']);
-        $streetPart = isset($validated['street']) && trim($validated['street']) !== '' 
-            ? trim($validated['street']) . ', ' 
+        $meterPostPart = isset($validated['meter_post']) && trim($validated['meter_post']) !== '' 
+            ? trim($validated['meter_post']) . ', ' 
             : '';
-        $validated['address'] = $streetPart . $validated['barangay'] . ' DOLORES EASTERN SAMAR';
+        $validated['address'] = $meterPostPart . $validated['barangay'] . ' DOLORES EASTERN SAMAR';
 
         // Keep existing email, just update others
         $customer->update([
             'customer_id' => $validated['customer_id'],
             'name' => $validated['name'],
             'type' => $validated['type'],
-            'street' => $validated['street'] ?? null,
+            'meter_post' => $validated['meter_post'] ?? null,
             'phone_number' => $validated['phone_number'] ?? null,
             'address' => $validated['address'],
             'barangay' => $validated['barangay'],
