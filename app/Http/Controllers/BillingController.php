@@ -138,6 +138,16 @@ class BillingController extends Controller
             $customer->update([
                 'meter_reading' => $validated['usage_units']
             ]);
+
+            if ($customer->user) {
+                \App\Models\Message::create([
+                    'sender_id' => auth()->id(),
+                    'receiver_id' => $customer->user->id,
+                    'message' => 'A new bill for the amount of ' . number_format($validated['total_amount'], 2) . ' has been generated. Due date is ' . \Carbon\Carbon::parse($validated['due_date'])->format('M d, Y') . '.',
+                ]);
+                
+                $customer->user->notify(new \App\Notifications\NewBillPushNotification($validated['total_amount'], \Carbon\Carbon::parse($validated['due_date'])->format('M d, Y')));
+            }
         }
  
         return redirect()->back()

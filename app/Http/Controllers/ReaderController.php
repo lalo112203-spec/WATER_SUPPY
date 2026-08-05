@@ -90,6 +90,16 @@ class ReaderController extends Controller
             'meter_reading' => $currentReading
         ]);
 
+        if ($customer && $customer->user) {
+            \App\Models\Message::create([
+                'sender_id' => auth()->id(),
+                'receiver_id' => $customer->user->id,
+                'message' => 'A new bill for the amount of ' . number_format($totalAmount, 2) . ' has been generated. Due date is ' . \Carbon\Carbon::parse($dueDate)->format('M d, Y') . '.',
+            ]);
+            
+            $customer->user->notify(new \App\Notifications\NewBillPushNotification($totalAmount, \Carbon\Carbon::parse($dueDate)->format('M d, Y')));
+        }
+
         return redirect()->route('reader.dashboard')
             ->with('success', 'Reading successfully submitted and bill generated for ' . $customer->name);
     }
