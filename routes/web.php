@@ -13,13 +13,15 @@ Route::redirect('/', '/dashboard')->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/consumer/announcements', [DashboardController::class, 'consumerAnnouncements'])->name('consumer.announcements');
 
     // Reader
     Route::get('reader/dashboard', [\App\Http\Controllers\ReaderController::class, 'index'])->name('reader.dashboard');
     Route::post('reader/reading', [\App\Http\Controllers\ReaderController::class, 'storeReading'])->name('reader.storeReading');
 
-    // Customers
+    Route::middleware([\App\Http\Middleware\PreventReaderAccess::class])->group(function () {
+        Route::get('/consumer/announcements', [DashboardController::class, 'consumerAnnouncements'])->name('consumer.announcements');
+
+        // Customers
     Route::get('customers/report', [CustomerController::class, 'report'])->name('customers.report');
     Route::resource('customers', CustomerController::class)->except(['show', 'create', 'edit']);
     Route::post('customers/{customer}/create-account', [CustomerController::class, 'createAccount'])->name('customers.create-account');
@@ -61,9 +63,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('registration-codes', [RegistrationCodeController::class, 'store'])->name('registration-codes.store');
     Route::delete('registration-codes/{registrationCode}', [RegistrationCodeController::class, 'destroy'])->name('registration-codes.destroy');
 
-    // API Routes for AJAX
-    Route::get('api/customers/{customer}/readings', [BillingController::class, 'getCustomerReadings']);
-    Route::post('push-subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'store'])->name('push.subscribe');
+        // API Routes for AJAX
+        Route::get('api/customers/{customer}/readings', [BillingController::class, 'getCustomerReadings']);
+        Route::post('push-subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'store'])->name('push.subscribe');
+    });
 });
 
 require __DIR__.'/settings.php';

@@ -254,14 +254,21 @@
             main,
             [data-flux-main],
             flux\:main {
+                @if(auth()->check() && auth()->user()->role === 'reader')
+                margin-left: 0 !important;
+                padding-top: 1rem !important;
+                @else
                 margin-left: 16rem !important;
                 padding-top: 2rem !important;
+                @endif
             }
 
             /* When sidebar is collapsed on desktop, reduce margin */
             [data-flux-sidebar-collapsed-desktop] ~ flux\:main,
             [data-flux-sidebar-collapsed-desktop] ~ [data-flux-main] {
+                @if(auth()->check() && auth()->user()->role !== 'reader')
                 margin-left: 4rem !important;
+                @endif
             }
         }
 
@@ -401,7 +408,7 @@
 </head>
 
 <body class="min-h-screen text-gray-300 antialiased selection:bg-cyan-500/30">
-    @if(auth()->check())
+    @if(auth()->check() && auth()->user()->role !== 'reader')
     <flux:sidebar collapsible {{ auth()->user()->role === 'consumer' ? 'collapsed' : '' }}
         class="dark border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl {{ auth()->user()->role === 'consumer' ? '!w-56' : '' }}">
         <flux:sidebar.header>
@@ -481,7 +488,7 @@
     @endif
 
     <!-- Global Header -->
-    @if(auth()->check())
+    @if(auth()->check() && auth()->user()->role !== 'reader')
     <flux:header class="{{ auth()->user()->role === 'admin' ? 'lg:hidden' : '' }}">
         <flux:sidebar.toggle icon="bars-2" inset="left" />
 
