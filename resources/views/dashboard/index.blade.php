@@ -143,7 +143,7 @@
                             <span class="text-white font-normal text-sm ml-2">Revenue Trend</span>
                         </h2>
                     </div>
-                    <div class="p-6 pt-0 flex-1 relative min-h-[400px] z-10">
+                    <div class="p-6 pt-0 flex-1 relative min-h-[280px] z-10">
                         <canvas id="revenueChart"></canvas>
                     </div>
                 </div>
@@ -159,7 +159,7 @@
                             <span class="text-white font-normal text-sm ml-2">Usage Flow</span>
                         </h2>
                     </div>
-                    <div class="p-6 pt-0 flex-1 relative min-h-[400px] z-10">
+                    <div class="p-6 pt-0 flex-1 relative min-h-[280px] z-10">
                         <canvas id="usageChart"></canvas>
                     </div>
                 </div>

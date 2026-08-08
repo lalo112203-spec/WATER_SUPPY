@@ -115,7 +115,13 @@
     </style>
 
     <div class="max-w-xl mx-auto py-8">
-        <div class="mb-4 flex justify-end no-print">
+        <div class="mb-4 flex justify-between items-center no-print">
+            <a href="javascript:history.back()" class="flex items-center gap-2 px-4 py-2 bg-[#1b2636] hover:bg-[#263548] text-gray-300 rounded-lg text-sm font-semibold transition-all border border-[#2d4059]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back
+            </a>
             <button onclick="window.print()" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -159,11 +165,18 @@
                 </div>
 
                 <div class="grid grid-cols-3 gap-4 py-6 border-b border-[#263548] print:border-zinc-200">
-                    <div class="text-center border-x border-[#263548] print:border-zinc-200 col-span-3">
+                    <div class="text-center border-r border-[#263548] print:border-zinc-200">
+                        <p class="text-[10px] text-gray-200 uppercase tracking-widest mb-1 print:text-zinc-500">Previous Reading</p>
+                        <p class="font-bold text-gray-200 text-lg print:text-black">{{ $bill->previous_reading !== null ? number_format($bill->previous_reading, 0) : '-' }}</p>
+                    </div>
+                    <div class="text-center border-r border-[#263548] print:border-zinc-200">
+                        <p class="text-[10px] text-gray-200 uppercase tracking-widest mb-1 print:text-zinc-500">New Reading</p>
+                        <p class="font-bold text-gray-200 text-lg print:text-black">{{ $bill->new_reading !== null ? number_format($bill->new_reading, 0) : '-' }}</p>
+                    </div>
+                    <div class="text-center">
                         <p class="text-[10px] text-gray-200 uppercase tracking-widest mb-1 print:text-zinc-500">Total Consumption</p>
                         <p class="font-bold text-blue-400 text-xl print:text-black">{{ number_format($bill->consumption, 0) }} m³</p>
                     </div>
-                    <!-- Single highlighted consumption row -->
                 </div>
 
                 <div class="py-6">

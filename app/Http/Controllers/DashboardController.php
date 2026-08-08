@@ -23,8 +23,12 @@ class DashboardController extends Controller
                 },
                 'waterUsages'
             ])->find($user->customer_id);
+            
+            $settings = \App\Models\SystemSetting::pluck('value', 'key')->toArray();
+            $globalAdditionalCharges = json_decode(\App\Models\SystemSetting::get('global_additional_charges', '[]'), true);
+            $globalAdditionalChargeTotal = collect($globalAdditionalCharges)->sum('amount');
 
-            return view('dashboard.consumer', compact('customer'));
+            return view('dashboard.consumer', compact('customer', 'settings', 'globalAdditionalCharges', 'globalAdditionalChargeTotal'));
         }
 
         $adminId = auth()->id();
@@ -125,5 +129,78 @@ class DashboardController extends Controller
         }
         $posts = \App\Models\Post::with('admin')->orderBy('created_at', 'desc')->get();
         return view('dashboard.consumer-announcements', compact('posts'));
+    }
+
+    public function storeReading(\Illuminate\Http\Request $request)
+    {
+        $user = auth()->user();
+        if ($user->role !== 'consumer') {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'reading' => 'required|numeric|min:0',
+        ]);
+
+        $customer = Customer::findOrFail($user->customer_id);
+        
+        $currentReading = $validated['reading'];
+        $previousReading = $customer->meter_reading ?? 0;
+        
+        $usage = $currentReading - $previousReading;
+
+        if ($usage < 0) {
+            return redirect()->back()->withErrors(['reading' => "New reading ({$currentReading}) cannot be lower than the previous reading ({$previousReading})."]);
+        } elseif ($usage === 0) {
+            return redirect()->back()->withErrors(['reading' => "No water used. Bill cannot be generated for zero consumption."]);
+        }
+
+        $typePrefix = $customer->type === 'Commercial' ? 'commercial' : 'regular';
+        
+        $baseLimit = (float) \App\Models\SystemSetting::get("{$typePrefix}_base_limit", 10);
+        $rate = (float) \App\Models\SystemSetting::get("{$typePrefix}_usage_rate", $customer->type === 'Commercial' ? 25 : 15);
+        $baseCharge = (float) \App\Models\SystemSetting::get("{$typePrefix}_base_charge", $customer->type === 'Commercial' ? 250 : 100);
+
+        $billableUsage = max($usage - $baseLimit, 0);
+        $usageCharge = $billableUsage * $rate;
+
+        $globalAdditionalCharges = json_decode(\App\Models\SystemSetting::get('global_additional_charges', '[]'), true);
+        $globalAdditionalChargeTotal = collect($globalAdditionalCharges)->sum('amount');
+
+        $totalAmount = $baseCharge + $usageCharge + $globalAdditionalChargeTotal;
+
+        $billingDate = now()->format('Y-m-d');
+        $dueDate = now()->addDays(30)->format('Y-m-d'); 
+
+        $bill = Bill::create([
+            'customer_id' => $customer->id,
+            'billing_date' => $billingDate,
+            'previous_reading' => $previousReading,
+            'new_reading' => $currentReading,
+            'usage_units' => $usage,
+            'consumption' => $usage, 
+            'base_charge' => $baseCharge,
+            'usage_charge' => $usageCharge,
+            'additional_charge_amount' => 0,
+            'applied_additional_charges' => $globalAdditionalCharges,
+            'total_amount' => $totalAmount,
+            'due_date' => $dueDate,
+            'status' => 'Pending',
+        ]);
+
+        $customer->update([
+            'meter_reading' => $currentReading
+        ]);
+        
+        \App\Models\Message::create([
+            'sender_id' => collect(\App\Models\User::where('role', 'admin')->get())->first()->id ?? $user->id,
+            'receiver_id' => $user->id,
+            'message' => 'You have submitted a new reading. A new bill for the amount of ' . number_format($totalAmount, 2) . ' has been generated. Due date is ' . \Carbon\Carbon::parse($dueDate)->format('M d, Y') . '.',
+        ]);
+        
+        $user->notify(new \App\Notifications\NewBillPushNotification($totalAmount, \Carbon\Carbon::parse($dueDate)->format('M d, Y')));
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Reading successfully submitted and bill generated.');
     }
 }

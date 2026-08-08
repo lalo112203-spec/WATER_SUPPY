@@ -43,8 +43,20 @@ class SettingsController extends Controller
     public function authorize(Request $request)
     {
         $request->validate([
-            'password' => 'required|current_password',
+            'password' => 'required',
         ]);
+
+        $systemLockPassword = SystemSetting::get('system_lock_password');
+        
+        if ($systemLockPassword) {
+            if (!\Illuminate\Support\Facades\Hash::check($request->password, $systemLockPassword)) {
+                return back()->withErrors(['password' => __('The provided password does not match our records.')]);
+            }
+        } else {
+            if (!\Illuminate\Support\Facades\Hash::check($request->password, auth()->user()->password)) {
+                return back()->withErrors(['password' => __('The provided password does not match our records.')]);
+            }
+        }
 
         session()->flash('settings_authorized', true);
 
@@ -59,8 +71,20 @@ class SettingsController extends Controller
         }
  
         $request->validate([
-            'admin_password_verification' => 'required|current_password',
+            'admin_password_verification' => 'required',
         ]);
+
+        $systemLockPassword = SystemSetting::get('system_lock_password');
+        
+        if ($systemLockPassword) {
+            if (!\Illuminate\Support\Facades\Hash::check($request->admin_password_verification, $systemLockPassword)) {
+                return back()->withErrors(['admin_password_verification' => __('The provided password does not match our records.')])->withInput();
+            }
+        } else {
+            if (!\Illuminate\Support\Facades\Hash::check($request->admin_password_verification, auth()->user()->password)) {
+                return back()->withErrors(['admin_password_verification' => __('The provided password does not match our records.')])->withInput();
+            }
+        }
  
         $validated = $request->validate([
             'regular_base_charge' => 'required|numeric|min:0',

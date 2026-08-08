@@ -49,6 +49,14 @@
             
             <div class="space-y-4">
                 <div class="flex justify-between">
+                    <flux:text>Previous Reading</flux:text>
+                    <flux:text class="font-semibold">{{ $bill->previous_reading !== null ? number_format($bill->previous_reading, 0) : '-' }} m³</flux:text>
+                </div>
+                <div class="flex justify-between">
+                    <flux:text>New Reading</flux:text>
+                    <flux:text class="font-semibold">{{ $bill->new_reading !== null ? number_format($bill->new_reading, 0) : '-' }} m³</flux:text>
+                </div>
+                <div class="flex justify-between border-t border-zinc-200 dark:border-zinc-700 pt-3 mt-1">
                     <flux:text>Water Consumption ({{ $bill->consumption ?? 0 }} m³)</flux:text>
                     <flux:text class="font-semibold">₱{{ number_format($bill->usage_charge, 0) }}</flux:text>
                 </div>
@@ -166,10 +174,10 @@
                         </div>
 
                         <div class="bg-[#1e293b]/40 border border-amber-500/20 p-4 rounded-2xl relative">
-                            <label for="usage_units" class="block text-sm font-medium text-gray-300 mb-1">New Reading (m³) *</label>
-                            <input type="number" step="1" id="usage_units" name="usage_units" required
-                                min="{{ max(0, $bill->usage_units - $bill->consumption) }}"
-                                value="{{ old('usage_units', $bill->usage_units) }}" oninput="calculateCharges()" 
+                            <label for="new_reading" class="block text-sm font-medium text-gray-300 mb-1">New Reading (m³) *</label>
+                            <input type="number" step="1" id="new_reading" name="new_reading" required
+                                min="{{ $bill->previous_reading }}"
+                                value="{{ old('new_reading', $bill->new_reading) }}" oninput="calculateCharges()" 
                                 class="w-full bg-[#0f1722]/60 border border-[#2d4059] text-gray-100 text-lg font-bold rounded-xl py-2 px-3 outline-none transition-all duration-300">
                             <p id="usage-calculation" class="text-xs mt-2 flex items-center gap-2 min-h-[1rem]"></p>
                         </div>
@@ -250,11 +258,11 @@
             }
         };
 
-        const previousReading = {{ max(0, $bill->usage_units - $bill->consumption) }};
+        const previousReading = {{ $bill->previous_reading ?? 0 }};
 
         function calculateCharges() {
             const customerType = '{{ $bill->customer->type }}';
-            const presentReadingInput = document.getElementById('usage_units');
+            const presentReadingInput = document.getElementById('new_reading');
             const consumptionDisplay = document.getElementById('calculated_usage_display');
             const baseChargeInput = document.getElementById('base_charge');
             const usageChargeInput = document.getElementById('usage_charge');

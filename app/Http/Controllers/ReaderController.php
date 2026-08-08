@@ -52,6 +52,8 @@ class ReaderController extends Controller
 
         if ($usage < 0) {
             return redirect()->back()->withErrors(['reading' => "New reading ({$currentReading}) cannot be lower than the previous reading ({$previousReading})."]);
+        } elseif ($usage === 0) {
+            return redirect()->back()->withErrors(['reading' => "No water used. Bill cannot be generated for zero consumption."]);
         }
 
         $typePrefix = $customer->type === 'Commercial' ? 'commercial' : 'regular';
@@ -75,6 +77,8 @@ class ReaderController extends Controller
         $bill = Bill::create([
             'customer_id' => $customer->id,
             'billing_date' => $billingDate,
+            'previous_reading' => $previousReading,
+            'new_reading' => $currentReading,
             'usage_units' => $usage,
             'consumption' => $usage, // same as usage_units based on existing system logic
             'base_charge' => $baseCharge,

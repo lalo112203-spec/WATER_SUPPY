@@ -128,13 +128,18 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'customer_id' => 'nullable|string|unique:customers,customer_id',
-            'name' => 'required|string',
+            'last_name' => 'required|string',
+            'first_name' => 'required|string',
+            'middle_name' => 'nullable|string',
             'type' => 'required|in:Regular,Commercial',
             'meter_post' => 'required|string',
             'phone_number' => 'nullable|string',
             'barangay' => 'required|string',
             'password' => 'nullable|string|min:8',
         ]);
+
+        $fullName = trim(strtoupper($validated['last_name']) . ', ' . strtoupper($validated['first_name']) . ' ' . strtoupper($validated['middle_name'] ?? ''));
+        $validated['name'] = preg_replace('/\s+/', ' ', $fullName);
 
         $validated['barangay'] = strtoupper($validated['barangay']);
         $meterPostPart = isset($validated['meter_post']) && trim($validated['meter_post']) !== '' 
@@ -202,12 +207,17 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'customer_id' => 'required|string|unique:customers,customer_id,' . $customer->id,
-            'name' => 'required|string',
+            'last_name' => 'required|string',
+            'first_name' => 'required|string',
+            'middle_name' => 'nullable|string',
             'type' => 'required|in:Regular,Commercial',
             'meter_post' => 'required|string',
             'phone_number' => 'nullable|string',
             'barangay' => 'required|string',
         ]);
+
+        $fullName = trim(strtoupper($validated['last_name']) . ', ' . strtoupper($validated['first_name']) . ' ' . strtoupper($validated['middle_name'] ?? ''));
+        $validated['name'] = preg_replace('/\s+/', ' ', $fullName);
 
         $validated['barangay'] = strtoupper($validated['barangay']);
         $meterPostPart = isset($validated['meter_post']) && trim($validated['meter_post']) !== '' 

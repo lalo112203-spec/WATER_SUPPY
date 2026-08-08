@@ -13,6 +13,8 @@ class Bill extends Model
     protected $fillable = [
         'customer_id',
         'billing_date',
+        'previous_reading',
+        'new_reading',
         'usage_units',
         'consumption',
         'base_charge',

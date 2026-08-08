@@ -20,6 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware([\App\Http\Middleware\PreventReaderAccess::class])->group(function () {
         Route::get('/consumer/announcements', [DashboardController::class, 'consumerAnnouncements'])->name('consumer.announcements');
+        Route::post('/consumer/reading', [DashboardController::class, 'storeReading'])->name('consumer.storeReading');
 
         // Customers
     Route::get('customers/report', [CustomerController::class, 'report'])->name('customers.report');

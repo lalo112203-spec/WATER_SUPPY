@@ -43,8 +43,17 @@ class AppServiceProvider extends ServiceProvider
             }
         }
 
-        // Ensure database file exists on Railway
-        if (isset($_ENV['RAILWAY_ENVIRONMENT'])) {
+        // Configure Railway Database automatically
+        if (isset($_ENV['DATABASE_URL'])) {
+            $url = parse_url($_ENV['DATABASE_URL']);
+            $driver = $url['scheme'] === 'postgres' ? 'pgsql' : $url['scheme'];
+            
+            config(['database.default' => $driver]);
+            config(["database.connections.{$driver}.url" => $_ENV['DATABASE_URL']]);
+        } elseif (isset($_ENV['MYSQL_URL'])) {
+            config(['database.default' => 'mysql']);
+            config(["database.connections.mysql.url" => $_ENV['MYSQL_URL']]);
+        } elseif (isset($_ENV['RAILWAY_ENVIRONMENT'])) {
             $dbPath = storage_path('database.sqlite');
             if (!file_exists($dbPath)) {
                 touch($dbPath);

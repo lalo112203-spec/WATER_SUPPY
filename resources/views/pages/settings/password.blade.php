@@ -9,24 +9,34 @@ use Livewire\Component;
 new #[Title('Password settings')] class extends Component {
     use PasswordValidationRules;
 
+    public string $account_type = 'admin'; // admin, reader, customer, system_lock
+    public ?int $selected_customer_id = null;
+    
     public string $current_password = '';
     public string $password = '';
     public string $password_confirmation = '';
     public string $registration_code = '';
 
-    /**
-     * Update the password for the currently authenticated user.
-     */
+    public function with(): array
+    {
+        return [
+            'customers' => \App\Models\User::where('role', 'consumer')
+                ->whereNotNull('customer_id')
+                ->with('customer')
+                ->get(),
+        ];
+    }
+
     public function updatePassword(): void
     {
-        try {
-            $rules = [
+        $user = Auth::user();
+        
+        // If not admin, they can only change their own password (with registration code)
+        if ($user->role !== 'admin') {
+            $this->validate([
                 'current_password' => $this->currentPasswordRules(),
                 'password' => $this->passwordRules(),
-            ];
-
-            if (auth()->user()->role !== 'admin') {
-                $rules['registration_code'] = [
+                'registration_code' => [
                     'required',
                     'string',
                     'size:8',
@@ -38,34 +48,62 @@ new #[Title('Password settings')] class extends Component {
                             $fail('The registration code is invalid or has already been used.');
                         }
                     },
-                ];
-            }
+                ],
+            ]);
 
-            $validated = $this->validate($rules);
-        } catch (ValidationException $e) {
-            $this->reset('current_password', 'password', 'password_confirmation', 'registration_code');
-
-            throw $e;
-        }
-
-        $user = Auth::user();
-        $user->update([
-            'password' => $validated['password'],
-        ]);
-
-        // Mark code as used if applicable
-        if (auth()->user()->role !== 'admin') {
-            $code = \App\Models\RegistrationCode::where('code', $validated['registration_code'])->first();
+            $user->update(['password' => $this->password]);
+            
+            $code = \App\Models\RegistrationCode::where('code', $this->registration_code)->first();
             if ($code) {
                 $code->update([
                     'is_used' => true,
                     'used_by' => $user->id,
                 ]);
             }
+
+            $this->reset('current_password', 'password', 'password_confirmation', 'registration_code');
+            $this->dispatch('password-updated');
+            return;
         }
 
-        $this->reset('current_password', 'password', 'password_confirmation', 'registration_code');
+        // Admin logic
+        if ($this->account_type === 'admin') {
+            $this->validate([
+                'current_password' => $this->currentPasswordRules(),
+                'password' => $this->passwordRules(),
+            ]);
+            $user->update(['password' => $this->password]);
+            
+        } elseif ($this->account_type === 'reader') {
+            $this->validate([
+                'current_password' => $this->currentPasswordRules(), // Require admin password
+                'password' => $this->passwordRules(),
+            ]);
+            $reader = \App\Models\User::where('role', 'reader')->first();
+            if ($reader) {
+                $reader->update(['password' => $this->password]);
+            }
+            
+        } elseif ($this->account_type === 'customer') {
+            $this->validate([
+                'selected_customer_id' => 'required|exists:users,id',
+                'current_password' => $this->currentPasswordRules(), // Require admin password
+                'password' => $this->passwordRules(),
+            ]);
+            $customerUser = \App\Models\User::find($this->selected_customer_id);
+            if ($customerUser && $customerUser->role === 'consumer') {
+                $customerUser->update(['password' => $this->password]);
+            }
+            
+        } elseif ($this->account_type === 'system_lock') {
+            $this->validate([
+                'current_password' => $this->currentPasswordRules(), // Require admin password
+                'password' => $this->passwordRules(),
+            ]);
+            \App\Models\SystemSetting::set('system_lock_password', \Illuminate\Support\Facades\Hash::make($this->password));
+        }
 
+        $this->reset('current_password', 'password', 'password_confirmation', 'selected_customer_id');
         $this->dispatch('password-updated');
     }
 }; ?>
@@ -77,21 +115,40 @@ new #[Title('Password settings')] class extends Component {
 
     <x-pages::settings.layout :heading="__('Update password')">
         <form method="POST" wire:submit="updatePassword" class="mt-6 space-y-6">
+            @if(auth()->user()->role === 'admin')
+            <div class="mb-6">
+                <flux:select wire:model.live="account_type" :label="__('Account to Update')">
+                    <option value="admin">My Account (Admin)</option>
+                    <option value="reader">Reader Account</option>
+                    <option value="customer">Customer Account</option>
+                    <option value="system_lock">System Lock</option>
+                </flux:select>
+            </div>
+
+            @if($account_type === 'customer')
+            <div class="mb-6">
+                <flux:select wire:model="selected_customer_id" :label="__('Select Customer')" searchable>
+                    <option value="">Choose a customer...</option>
+                    @foreach($customers as $customerUser)
+                        <option value="{{ $customerUser->id }}">
+                            {{ $customerUser->customer?->customer_id ?? 'N/A' }} - {{ $customerUser->customer?->name ?? 'Unknown' }}
+                        </option>
+                    @endforeach
+                </flux:select>
+            </div>
+            @endif
+            @endif
+
             <div class="relative">
                 <flux:input
                     wire:model="current_password"
-                    :label="__('Current password')"
+                    :label="auth()->user()->role === 'admin' && $account_type !== 'admin' ? __('Your Admin Password') : __('Current password')"
                     id="current_password"
                     type="password"
                     required
                     autocomplete="current-password"
+                    viewable
                 />
-                <button type="button" onclick="togglePassword('current_password')" class="absolute right-3 p-1 text-cyan-400 hover:text-white hover:bg-cyan-500/20 rounded-md transition-all" style="top: 28px;" id="toggle_current_password" title="Show/Hide Password">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                </button>
             </div>
             <div class="relative">
                 <flux:input
@@ -101,13 +158,8 @@ new #[Title('Password settings')] class extends Component {
                     type="password"
                     required
                     autocomplete="new-password"
+                    viewable
                 />
-                <button type="button" onclick="togglePassword('new_password')" class="absolute right-3 p-1 text-cyan-400 hover:text-white hover:bg-cyan-500/20 rounded-md transition-all" style="top: 28px;" id="toggle_new_password" title="Show/Hide Password">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                </button>
             </div>
             <div class="relative">
                 <flux:input
@@ -117,13 +169,8 @@ new #[Title('Password settings')] class extends Component {
                     type="password"
                     required
                     autocomplete="new-password"
+                    viewable
                 />
-                <button type="button" onclick="togglePassword('password_confirmation')" class="absolute right-3 p-1 text-cyan-400 hover:text-white hover:bg-cyan-500/20 rounded-md transition-all" style="top: 28px;" id="toggle_password_confirmation" title="Show/Hide Password">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                </button>
             </div>
 
             @if(auth()->user()->role !== 'admin')
@@ -153,27 +200,4 @@ new #[Title('Password settings')] class extends Component {
         </form>
     </x-pages::settings.layout>
 </section>
-
-<script>
-    function togglePassword(id) {
-        const input = document.getElementById(id);
-        const button = document.getElementById('toggle_' + id);
-        if (input.type === 'password') {
-            input.type = 'text';
-            button.innerHTML = `
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
-                </svg>
-            `;
-        } else {
-            input.type = 'password';
-            button.innerHTML = `
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                </svg>
-            `;
-        }
-    }
-</script>
 

@@ -2,8 +2,7 @@
     <div class="px-4 sm:px-6 py-4 bg-transparent min-h-screen font-sans text-gray-300">
         
         <h1 class="text-3xl font-bold mb-6 text-gray-200">Billing Reports</h1>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
             <div class="bg-[#1b2636]/40 backdrop-blur-md rounded-2xl border border-[#2d4059]/50 p-6 relative overflow-hidden group hover:border-emerald-500/50 transition-all">
                 <div class="relative z-10">
                     <p class="text-[11px] font-bold text-emerald-300 uppercase tracking-widest mb-1 drop-shadow-sm">Paid Bills</p>
@@ -186,7 +185,7 @@
                         </td>
                         <td class="px-4 py-3 font-semibold text-gray-300">₱{{ number_format($bill->total_amount, 0) }}</td>
                         <td class="px-4 py-3">
-
+                            <div class="flex items-center gap-2">
                                 <a href="{{ route('billing.receipt', $bill) }}" class="p-1.5 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors border border-emerald-200" title="Print Receipt">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />

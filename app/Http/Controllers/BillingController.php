@@ -115,8 +115,8 @@ class BillingController extends Controller
         $validated = $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'billing_date' => 'required|date',
-            'usage_units' => 'required|numeric',
-            'consumption' => 'required|numeric',
+            'new_reading' => 'required|numeric|min:0',
+            'consumption' => 'required|numeric|min:0',
             'base_charge' => 'required|numeric',
             'usage_charge' => 'required|numeric',
             'additional_charge_amount' => 'nullable|numeric|min:0',
@@ -127,16 +127,24 @@ class BillingController extends Controller
         $globalAdditionalCharges = json_decode(SystemSetting::get('global_additional_charges', '[]'), true);
         $globalAdditionalChargeTotal = collect($globalAdditionalCharges)->sum('amount');
 
+        $customer = Customer::find($validated['customer_id']);
+        $previousReading = $customer ? ($customer->meter_reading ?? 0) : 0;
+        $newReading = $validated['new_reading'];
+        $usage = $newReading - $previousReading;
+
+        $validated['previous_reading'] = $previousReading;
+        $validated['new_reading'] = $newReading;
+        $validated['usage_units'] = max(0, $usage);
+        $validated['consumption'] = max(0, $usage);
         $validated['applied_additional_charges'] = $globalAdditionalCharges;
         $validated['total_amount'] = ($validated['base_charge'] + $validated['usage_charge']) + (($validated['additional_charge_amount'] ?? 0) + $globalAdditionalChargeTotal);
         $validated['status'] = 'Pending';
  
         $bill = Bill::create($validated);
  
-        $customer = Customer::find($validated['customer_id']);
         if ($customer) {
             $customer->update([
-                'meter_reading' => $validated['usage_units']
+                'meter_reading' => $newReading
             ]);
 
             if ($customer->user) {
@@ -207,7 +215,7 @@ class BillingController extends Controller
         $customerId = $bill->customer_id;
         $bill->delete();
 
-        // Update customer's current meter reading to the latest remaining bill's usage units
+        // Update customer's current meter reading to the latest remaining bill's new reading
         $latestBill = Bill::where('customer_id', $customerId)
             ->orderBy('billing_date', 'desc')
             ->orderBy('id', 'desc')
@@ -216,7 +224,7 @@ class BillingController extends Controller
         $customer = Customer::find($customerId);
         if ($customer) {
             $customer->update([
-                'meter_reading' => $latestBill ? $latestBill->usage_units : 0
+                'meter_reading' => $latestBill ? $latestBill->new_reading : 0
             ]);
         }
 
@@ -241,8 +249,8 @@ class BillingController extends Controller
     {
         $validated = $request->validate([
             'billing_date' => 'required|date',
-            'usage_units' => 'required|numeric',
-            'consumption' => 'required|numeric',
+            'new_reading' => 'required|numeric|min:0',
+            'consumption' => 'required|numeric|min:0',
             'base_charge' => 'required|numeric',
             'usage_charge' => 'required|numeric',
             'additional_charge_amount' => 'nullable|numeric|min:0',
@@ -251,6 +259,14 @@ class BillingController extends Controller
         ]);
  
         $globalAdditionalChargeTotal = collect($bill->applied_additional_charges ?? [])->sum('amount');
+        
+        $newReading = $validated['new_reading'];
+        $previousReading = $bill->previous_reading ?? 0;
+        $usage = max(0, $newReading - $previousReading);
+
+        $validated['new_reading'] = $newReading;
+        $validated['usage_units'] = $usage;
+        $validated['consumption'] = $usage;
         $validated['total_amount'] = ($validated['base_charge'] + $validated['usage_charge']) + (($validated['additional_charge_amount'] ?? 0) + $globalAdditionalChargeTotal);
  
         $bill->update($validated);
@@ -265,7 +281,7 @@ class BillingController extends Controller
             $customer = Customer::find($bill->customer_id);
             if ($customer) {
                 $customer->update([
-                    'meter_reading' => $bill->usage_units
+                    'meter_reading' => $bill->new_reading
                 ]);
             }
         }

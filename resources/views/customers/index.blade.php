@@ -34,17 +34,17 @@
                             Print Monthly Report
                         </a>
 
-                        <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full h-11 shadow-inner">
-                            <div class="pl-4 pr-1 flex items-center justify-center text-gray-200 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[40px]">
+                        <div class="relative flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full h-11 shadow-inner">
+                            <div class="absolute left-0 pl-4 pr-1 flex items-center justify-center text-gray-200 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[40px] pointer-events-none z-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
                             <input type="text" name="search" value="{{ request('search') }}" placeholder="Search person..." onchange="this.form.submit()"
-                                class="flex-1 bg-transparent border-none text-[14px] px-0 py-0 outline-none text-gray-100 placeholder-gray-500 h-full w-full">
+                                class="w-full h-full bg-transparent border-none text-[14px] pl-12 pr-10 outline-none text-gray-100 placeholder-gray-500 relative z-20">
                             <button type="submit" class="hidden"></button>
                             @if (request('search'))
-                                <div class="px-4 flex items-center justify-center">
+                                <div class="absolute right-0 h-full px-4 flex items-center justify-center z-30">
                                     <a href="{{ route('customers.index', request()->except('search')) }}" class="text-gray-200 hover:text-rose-400 transition-colors duration-300">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -65,21 +65,21 @@
                             Register New Customer
                         </button>
 
-                        <div class="flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full h-11 shadow-inner">
-                            <div class="pl-4 pr-1 flex items-center justify-center text-gray-200 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[40px]">
+                        <div class="relative flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full h-11 shadow-inner">
+                            <div class="absolute left-0 pl-4 pr-1 flex items-center justify-center text-gray-200 group-focus-within:text-blue-500 transition-colors duration-300 min-w-[40px] pointer-events-none z-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                             </div>
                             <select name="barangay" onchange="this.form.submit()"
-                                class="flex-1 bg-transparent border-none text-[14px] px-0 py-0 outline-none appearance-none text-gray-100 font-medium cursor-pointer h-full w-full">
-                                <option value="" class="bg-[#0f1722]">All Barangays</option>
+                                class="w-full h-full bg-transparent border-none text-[14px] pl-12 pr-10 outline-none appearance-none text-gray-100 font-medium cursor-pointer relative z-20">
+                                <option value="" class="bg-[#0f1722] text-gray-100">All Barangays</option>
                                 @foreach($barangays as $brgy)
-                                    <option value="{{ $brgy }}" {{ request('barangay') == $brgy ? 'selected' : '' }} class="bg-[#0f1722]">{{ $brgy }}</option>
+                                    <option value="{{ $brgy }}" {{ request('barangay') == $brgy ? 'selected' : '' }} class="bg-[#0f1722] text-gray-100">{{ $brgy }}</option>
                                 @endforeach
                             </select>
-                            <div class="px-4 flex items-center justify-center text-gray-200 pointer-events-none">
+                            <div class="absolute right-0 px-4 h-full flex items-center justify-center text-gray-200 pointer-events-none z-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
@@ -118,7 +118,7 @@
             </div>
 
             <!-- Chart -->
-            <div class="col-span-1 lg:col-span-2">
+            <div class="col-span-1">
                 <div
                     class="bg-[#121a25]/80 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.6)] overflow-hidden border border-[#263548] p-4 w-full h-full relative">
                     <div
@@ -133,7 +133,7 @@
                         </svg>
                         Customer Growth Trend
                     </h3>
-                    <div class="p-4 pt-0 flex-1 relative min-h-[300px] z-10">
+                    <div class="p-4 pt-0 flex-1 relative min-h-[160px] z-10">
                         <canvas id="customerChart"></canvas>
                     </div>
                 </div>
@@ -456,7 +456,7 @@
                         
                         <div class="space-y-2">
                             <label for="modal_present_reading" class="block text-sm font-medium text-gray-300">Present Reading (m³)</label>
-                            <input type="number" step="1" id="modal_present_reading" name="usage_units" required
+                            <input type="number" step="1" id="modal_present_reading" name="new_reading" required
                                 oninput="calculateQuickCharges()" placeholder="Enter reading..."
                                 class="w-full bg-[#0f1722]/80 border border-[#2d4059] focus:border-emerald-500/50 text-emerald-400 placeholder-gray-500 text-2xl font-black rounded-xl py-3 px-4 outline-none transition-all duration-300 shadow-inner">
                         </div>
@@ -497,29 +497,40 @@
         <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar">
             <div class="flex items-center justify-between mb-4 border-b border-[#263548] pb-2">
                 <flux:heading size="lg" class="!text-white">Register New Customer</flux:heading>
-                <flux:modal.close>
-                    <button type="button" class="text-gray-400 hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </flux:modal.close>
             </div>
             <form method="POST" action="{{ route('customers.store') }}">
                 @csrf
                 <input type="hidden" name="form_type" value="create">
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-gray-200 mb-1 text-xs font-medium">Account Number (Leave blank to auto-generate)</label>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 items-end">
+                    <div class="md:col-span-1">
+                        <label class="block text-gray-200 mb-1 text-[10px] font-medium">Account No. (Leave blank to auto-gen)</label>
                         <input type="text" name="customer_id" value="{{ old('customer_id', old('form_type') === 'create' ? '' : ($nextId ?? '')) }}" placeholder="Auto-generate" class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
                         @if(old('form_type') === 'create') @error('customer_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
                     </div>
-                    <div>
-                        <label class="block text-gray-200 mb-1 text-xs font-medium">Full Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" value="{{ old('form_type') === 'create' ? old('name') : '' }}" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
-                        @if(old('form_type') === 'create') @error('name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                    <div class="md:col-span-3">
+                        <label class="block text-gray-200 mb-2 text-xs font-bold uppercase tracking-wider text-cyan-500">Customer Name</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-gray-200 mb-1 text-[10px] font-medium">Surname <span class="text-red-500">*</span></label>
+                                <input type="text" name="last_name" value="{{ old('form_type') === 'create' ? old('last_name') : '' }}" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm uppercase">
+                                @if(old('form_type') === 'create') @error('last_name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                            </div>
+                            <div>
+                                <label class="block text-gray-200 mb-1 text-[10px] font-medium">First Name <span class="text-red-500">*</span></label>
+                                <input type="text" name="first_name" value="{{ old('form_type') === 'create' ? old('first_name') : '' }}" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm uppercase">
+                                @if(old('form_type') === 'create') @error('first_name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                            </div>
+                            <div>
+                                <label class="block text-gray-200 mb-1 text-[10px] font-medium">Middle Name</label>
+                                <input type="text" name="middle_name" value="{{ old('form_type') === 'create' ? old('middle_name') : '' }}" class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm uppercase">
+                                @if(old('form_type') === 'create') @error('middle_name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                            </div>
+                        </div>
                     </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-gray-200 mb-1 text-xs font-medium">Customer Type <span class="text-red-500">*</span></label>
                         <select name="type" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
@@ -579,13 +590,6 @@
         <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar">
             <div class="flex items-center justify-between mb-4 border-b border-[#263548] pb-2">
                 <flux:heading size="lg" class="!text-white">Edit Customer</flux:heading>
-                <flux:modal.close>
-                    <button type="button" class="text-gray-400 hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                </flux:modal.close>
             </div>
             <form method="POST" id="edit-customer-form" action="{{ old('form_type') === 'edit' && old('customer_db_id') ? route('customers.update', old('customer_db_id')) : '' }}">
                 @csrf
@@ -593,17 +597,35 @@
                 <input type="hidden" name="form_type" value="edit">
                 <input type="hidden" name="customer_db_id" id="edit_customer_db_id" value="{{ old('customer_db_id') }}">
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-gray-200 mb-1 text-xs font-medium">Account Number</label>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 items-end">
+                    <div class="md:col-span-1">
+                        <label class="block text-gray-200 mb-1 text-[10px] font-medium">Account Number</label>
                         <input type="text" name="customer_id" id="edit_customer_id" value="{{ old('form_type') === 'edit' ? old('customer_id') : '' }}" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
                         @if(old('form_type') === 'edit') @error('customer_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
                     </div>
-                    <div>
-                        <label class="block text-gray-200 mb-1 text-xs font-medium">Full Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" id="edit_name" value="{{ old('form_type') === 'edit' ? old('name') : '' }}" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
-                        @if(old('form_type') === 'edit') @error('name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                    <div class="md:col-span-3">
+                        <label class="block text-gray-200 mb-2 text-xs font-bold uppercase tracking-wider text-cyan-500">Customer Name</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-gray-200 mb-1 text-[10px] font-medium">Surname <span class="text-red-500">*</span></label>
+                                <input type="text" name="last_name" id="edit_last_name" value="{{ old('form_type') === 'edit' ? old('last_name') : '' }}" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm uppercase">
+                                @if(old('form_type') === 'edit') @error('last_name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                            </div>
+                            <div>
+                                <label class="block text-gray-200 mb-1 text-[10px] font-medium">First Name <span class="text-red-500">*</span></label>
+                                <input type="text" name="first_name" id="edit_first_name" value="{{ old('form_type') === 'edit' ? old('first_name') : '' }}" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm uppercase">
+                                @if(old('form_type') === 'edit') @error('first_name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                            </div>
+                            <div>
+                                <label class="block text-gray-200 mb-1 text-[10px] font-medium">Middle Name</label>
+                                <input type="text" name="middle_name" id="edit_middle_name" value="{{ old('form_type') === 'edit' ? old('middle_name') : '' }}" class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm uppercase">
+                                @if(old('form_type') === 'edit') @error('middle_name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                            </div>
+                        </div>
                     </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-gray-200 mb-1 text-xs font-medium">Customer Type <span class="text-red-500">*</span></label>
                         <select name="type" id="edit_type" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
@@ -646,7 +668,13 @@
         function openEditCustomerModal(id, customer) {
             document.getElementById('edit_customer_db_id').value = id;
             document.getElementById('edit_customer_id').value = customer.customer_id;
-            document.getElementById('edit_name').value = customer.name;
+            
+            let parts = customer.name.split(',');
+            document.getElementById('edit_last_name').value = parts[0] ? parts[0].trim() : '';
+            let firstMiddle = parts.length > 1 ? parts[1].trim().split(' ') : [];
+            document.getElementById('edit_first_name').value = firstMiddle[0] || '';
+            document.getElementById('edit_middle_name').value = firstMiddle.slice(1).join(' ') || '';
+            
             document.getElementById('edit_type').value = customer.type;
             document.getElementById('edit_phone_number').value = customer.phone_number || '';
             document.getElementById('edit_meter_post').value = customer.meter_post || '';
@@ -751,6 +779,16 @@
             if (presentReading < quickPrevReading) {
                 breakdown.textContent = `Invalid: Reading cannot be lower than previous (${quickPrevReading})`;
                 breakdown.className = 'text-xs mt-1 text-rose-500 font-bold';
+                document.getElementById('modal_submit_btn').disabled = true;
+                document.getElementById('modal_submit_btn').classList.add('opacity-50', 'cursor-not-allowed');
+                baseInput.value = 0;
+                usageInput.value = 0;
+                hiddenConsumption.value = 0;
+                updateQuickTotal();
+                return;
+            } else if (presentReading === quickPrevReading) {
+                breakdown.textContent = `No water used. Bill cannot be generated.`;
+                breakdown.className = 'text-xs mt-1 text-zinc-400 font-bold';
                 document.getElementById('modal_submit_btn').disabled = true;
                 document.getElementById('modal_submit_btn').classList.add('opacity-50', 'cursor-not-allowed');
                 baseInput.value = 0;
@@ -897,6 +935,20 @@
                 searchTimeout = setTimeout(() => {
                     this.form.submit();
                 }, 800);
+            });
+        }
+
+        // Toggle password field in create customer modal
+        const createAccountCheckbox = document.getElementById('create_account');
+        const passwordField = document.getElementById('password_field');
+        if (createAccountCheckbox && passwordField) {
+            createAccountCheckbox.addEventListener('change', function() {
+                passwordField.style.display = this.checked ? 'block' : 'none';
+                if (this.checked) {
+                    document.getElementById('password').setAttribute('required', 'required');
+                } else {
+                    document.getElementById('password').removeAttribute('required');
+                }
             });
         }
     </script>
