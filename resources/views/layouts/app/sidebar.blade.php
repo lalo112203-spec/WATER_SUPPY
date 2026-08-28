@@ -24,77 +24,47 @@
             font-family: 'Inter', system-ui, sans-serif !important;
         }
 
-        /* Sidebar Styling (Fixed, Dark, Premium) */
-        flux\:sidebar,
-        [data-flux-sidebar] {
+        /* Navbar and Sidebar Styling (Dark, Premium) */
+        flux\:sidebar, [data-flux-sidebar], flux\:header, [data-flux-header] {
             background-color: var(--sidebar-bg) !important;
-            border-right: none !important;
-            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2) !important;
+            border: none !important;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2) !important;
             z-index: 50 !important;
         }
 
-        /* Enforce desktop fixed behavior without breaking mobile transform */
-        @media (min-width: 1024px) {
-
-            flux\:sidebar,
-            [data-flux-sidebar] {
-                height: 100vh !important;
-                position: fixed !important;
-                left: 0 !important;
-                top: 0 !important;
-            }
-        }
-
-        flux\:sidebar *,
-        [data-flux-sidebar] * {
+        flux\:sidebar *, [data-flux-sidebar] *, flux\:header *, [data-flux-header] * {
             background-color: transparent !important;
         }
 
-        /* Unstoppable Specificity to Force Sidebar Text to White */
-        /* Unstoppable Specificity to Force Sidebar Text to White (Beating Custom Theme's :not selectors) */
-        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item],
-        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item] div,
-        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item] span,
-        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item] p,
-        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item] svg,
-        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile],
-        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile] div,
-        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile] span,
-        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile] p,
-        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile] svg,
-        html body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item] div,
-        html body [data-flux-sidebar] [data-flux-sidebar-item][data-flux-sidebar-item] span,
-        html body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile] div,
-        html body [data-flux-sidebar] [data-flux-sidebar-profile][data-flux-sidebar-profile] span {
+        /* Unstoppable Specificity to Force Text to White */
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item] *,
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-profile] *,
+        html.custom-theme body [data-flux-navbar] [data-flux-navbar-item] *,
+        html body [data-flux-sidebar] [data-flux-sidebar-item] *,
+        html body [data-flux-sidebar] [data-flux-sidebar-profile] *,
+        html body [data-flux-navbar] [data-flux-navbar-item] * {
             color: #ffffff !important;
         }
 
-        /* Active Sidebar Item - Pill Style */
-        [data-flux-sidebar] [data-flux-sidebar-item][data-current] {
+        /* Active Item - Pill Style */
+        [data-flux-sidebar] [data-flux-sidebar-item][data-current],
+        [data-flux-navbar] [data-flux-navbar-item][data-current] {
             background-color: var(--accent-blue) !important;
             border-radius: 9999px !important;
-            margin: 0 16px !important;
-            width: calc(100% - 32px) !important;
-            box-sizing: border-box !important;
             box-shadow: 0 4px 12px rgba(0, 38, 255, 0.3) !important;
         }
 
         /* Active Text Force White */
-        [data-flux-sidebar] [data-flux-sidebar-item][data-current],
-        [data-flux-sidebar] [data-flux-sidebar-item][data-current] span,
-        [data-flux-sidebar] [data-flux-sidebar-item][data-current] svg,
-        [data-flux-sidebar] [data-flux-sidebar-item][data-current] div,
-        [data-flux-sidebar] [data-flux-sidebar-item][data-current] * {
+        [data-flux-sidebar] [data-flux-sidebar-item][data-current] *,
+        [data-flux-navbar] [data-flux-navbar-item][data-current] * {
             color: #ffffff !important;
         }
 
         /* Hover Effect for Inactive Items */
-        [data-flux-sidebar] [data-flux-sidebar-item]:hover:not([data-current]) {
+        [data-flux-sidebar] [data-flux-sidebar-item]:hover:not([data-current]),
+        [data-flux-navbar] [data-flux-navbar-item]:hover:not([data-current]) {
             background-color: rgba(255, 255, 255, 0.05) !important;
             border-radius: 9999px !important;
-            margin: 0 16px !important;
-            width: calc(100% - 32px) !important;
-            box-sizing: border-box !important;
         }
         
 
@@ -241,35 +211,12 @@
             background: #334155;
         }
 
-        /* Ensure main content is shifted correctly */
+        /* Ensure main content has padding for top header */
         main,
         [data-flux-main],
         flux\:main {
-            padding-top: 1rem !important;
-            /* Mobile padding so it doesn't hide behind mobile header */
-        }
-
-        @media (min-width: 1024px) {
-
-            main,
-            [data-flux-main],
-            flux\:main {
-                @if(auth()->check() && auth()->user()->role === 'reader')
-                margin-left: 0 !important;
-                padding-top: 1rem !important;
-                @else
-                margin-left: 16rem !important;
-                padding-top: 2rem !important;
-                @endif
-            }
-
-            /* When sidebar is collapsed on desktop, reduce margin */
-            [data-flux-sidebar-collapsed-desktop] ~ flux\:main,
-            [data-flux-sidebar-collapsed-desktop] ~ [data-flux-main] {
-                @if(auth()->check() && auth()->user()->role !== 'reader')
-                margin-left: 4rem !important;
-                @endif
-            }
+            padding-top: 5rem !important;
+            margin-left: 0 !important;
         }
 
         /* Hide DWSS text when sidebar is collapsed */
@@ -409,105 +356,77 @@
 
 <body class="min-h-screen text-gray-300 antialiased selection:bg-cyan-500/30">
     @if(auth()->check() && auth()->user()->role !== 'reader')
-    <flux:sidebar collapsible {{ auth()->user()->role === 'consumer' ? 'collapsed' : '' }}
-        class="dark border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl {{ auth()->user()->role === 'consumer' ? '!w-56' : '' }}">
-        <flux:sidebar.header>
-            <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
-            <flux:sidebar.collapse />
-        </flux:sidebar.header>
+    
+    <!-- Top Header for Desktop & Mobile -->
+    <flux:header container class="dark border-b border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
+        <flux:sidebar.toggle class="lg:hidden mr-4" icon="bars-2" inset="left" />
+        
+        <x-app-logo href="{{ route('dashboard') }}" wire:navigate />
 
-        <flux:sidebar.nav>
-            <flux:sidebar.group class="grid">
-                <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
-                    wire:navigate>
-                    <span>{{ __('Dashboard') }}</span>
-                </flux:sidebar.item>
+        <!-- Desktop Navigation -->
+        <flux:navbar class="max-lg:hidden ml-6 gap-2">
+            <flux:navbar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                {{ __('Dashboard') }}
+            </flux:navbar.item>
 
-                @if(auth()->user()->role === 'admin')
-                    <flux:sidebar.item icon="users" :href="route('customers.index')"
-                        :current="request()->routeIs('customers.*')" wire:navigate>
-                        <span>{{ __('Customers') }}</span>
-                    </flux:sidebar.item>
+            @if(auth()->user()->role === 'admin')
+                <flux:navbar.item icon="users" :href="route('customers.index')" :current="request()->routeIs('customers.*')" wire:navigate>
+                    {{ __('Customers') }}
+                </flux:navbar.item>
 
-                    <flux:sidebar.item icon="list-bullet" :href="route('billing.index')"
-                        :current="request()->routeIs('billing.*')" wire:navigate>
-                        <span>{{ __('Billing Reports') }}</span>
-                    </flux:sidebar.item>
+                <flux:navbar.item icon="list-bullet" :href="route('billing.index')" :current="request()->routeIs('billing.*')" wire:navigate>
+                    {{ __('Billing Reports') }}
+                </flux:navbar.item>
 
-                    <flux:sidebar.item icon="adjustments-horizontal" :href="route('settings.index')"
-                        :current="request()->routeIs('settings.*')" wire:navigate>
-                        <span>{{ __('Settings') }}</span>
-                    </flux:sidebar.item>
+                <flux:navbar.item icon="adjustments-horizontal" :href="route('settings.index')" :current="request()->routeIs('settings.*')" wire:navigate>
+                    {{ __('Settings') }}
+                </flux:navbar.item>
 
-                    <flux:sidebar.item icon="key" :href="route('registration-codes.index')"
-                        :current="request()->routeIs('registration-codes.*')" wire:navigate>
-                        <span>{{ __('Registration Codes') }}</span>
-                    </flux:sidebar.item>
-                @endif
+                <flux:navbar.item icon="key" :href="route('registration-codes.index')" :current="request()->routeIs('registration-codes.*')" wire:navigate>
+                    {{ __('Registration Codes') }}
+                </flux:navbar.item>
+            @endif
 
-                @php
-                    $unreadCount = \App\Models\Message::where('receiver_id', auth()->id())->whereNull('read_at')->count();
-                @endphp
-                <flux:sidebar.item icon="chat-bubble-left" :href="route('messages.index')"
-                    :current="request()->routeIs('messages.*')" wire:navigate>
-                    <div class="flex items-center justify-between w-full">
-                        @if(auth()->user()->role === 'admin')
-                            <span>{{ __('Message & Posting') }}</span>
-                        @else
-                            <span>{{ __('Messages') }}</span>
-                        @endif
-                        @if($unreadCount > 0)
-                            <span
-                                class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $unreadCount }}</span>
-                        @endif
-                    </div>
-                </flux:sidebar.item>
+            @php
+                $unreadCount = \App\Models\Message::where('receiver_id', auth()->id())->whereNull('read_at')->count();
+            @endphp
+            <flux:navbar.item icon="chat-bubble-left" :href="route('messages.index')" :current="request()->routeIs('messages.*')" wire:navigate>
+                <div class="flex items-center gap-2">
+                    <span>{{ auth()->user()->role === 'admin' ? __('Message & Posting') : __('Messages') }}</span>
+                    @if($unreadCount > 0)
+                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $unreadCount }}</span>
+                    @endif
+                </div>
+            </flux:navbar.item>
 
-                @if(auth()->user()->role === 'consumer')
-                    <flux:sidebar.item icon="megaphone" :href="route('consumer.announcements')"
-                        :current="request()->routeIs('consumer.announcements')" wire:navigate>
-                        <span>{{ __('Announcements') }}</span>
-                    </flux:sidebar.item>
-                @endif
+            @if(auth()->user()->role === 'consumer')
+                <flux:navbar.item icon="megaphone" :href="route('consumer.announcements')" :current="request()->routeIs('consumer.announcements')" wire:navigate>
+                    {{ __('Announcements') }}
+                </flux:navbar.item>
+            @endif
 
-                @if(auth()->user()->role === 'admin')
-                    <flux:sidebar.item icon="trash" :href="route('recovery.index')"
-                        :current="request()->routeIs('recovery.*')" wire:navigate>
-                        <span>{{ __('Recovery / Trash') }}</span>
-                    </flux:sidebar.item>
-
-                @endif
-            </flux:sidebar.group>
-        </flux:sidebar.nav>
+            @if(auth()->user()->role === 'admin')
+                <flux:navbar.item icon="trash" :href="route('recovery.index')" :current="request()->routeIs('recovery.*')" wire:navigate>
+                    {{ __('Recovery / Trash') }}
+                </flux:navbar.item>
+            @endif
+        </flux:navbar>
 
         <flux:spacer />
 
-
-        <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
-    </flux:sidebar>
-    @endif
-
-    <!-- Global Header -->
-    @if(auth()->check() && auth()->user()->role !== 'reader')
-    <flux:header class="{{ auth()->user()->role === 'admin' ? 'lg:hidden' : '' }}">
-        <flux:sidebar.toggle icon="bars-2" inset="left" />
-
-        <flux:spacer />
-
-        <flux:dropdown position="top" align="end">
+        <!-- User Dropdown Desktop -->
+        <flux:dropdown position="bottom" align="end" class="max-lg:hidden">
             @if(auth()->user()->profile_photo)
                 <flux:profile :avatar="asset('storage/' . auth()->user()->profile_photo)" icon-trailing="chevron-down" />
             @else
                 <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
             @endif
-
             <flux:menu>
                 <flux:menu.radio.group>
                     <div class="p-0 text-sm font-normal">
                         <div class="flex items-center gap-3 px-2 py-3 text-start">
                             @if(auth()->user()->profile_photo)
-                                <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}"
-                                    class="h-10 w-10 rounded-xl object-cover">
+                                <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}" class="h-10 w-10 rounded-xl object-cover">
                             @else
                                 <flux:avatar :name="auth()->user()->name" :initials="auth()->user()->initials()" />
                             @endif
@@ -522,32 +441,79 @@
                         </div>
                     </div>
                 </flux:menu.radio.group>
-
                 <flux:menu.separator />
-
                 <flux:menu.radio.group>
-                    <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>
-                        {{ __('Settings') }}
-                    </flux:menu.item>
+                    <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
                 </flux:menu.radio.group>
-
                 <flux:menu.separator />
-
                 <form method="POST" action="{{ route('logout') }}" class="w-full">
                     @csrf
-                    <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle"
-                        class="w-full cursor-pointer" data-test="logout-button">
-                        {{ __('Log out') }}
-                    </flux:menu.item>
+                    <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full cursor-pointer">{{ __('Log out') }}</flux:menu.item>
                 </form>
             </flux:menu>
         </flux:dropdown>
     </flux:header>
+
+    <!-- Mobile Sidebar -->
+    <flux:sidebar collapsible="mobile" class="lg:hidden dark border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
+        <flux:sidebar.header>
+            <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+            <flux:sidebar.collapse />
+        </flux:sidebar.header>
+
+        <flux:sidebar.nav>
+            <flux:sidebar.group class="grid gap-1">
+                <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                    <span>{{ __('Dashboard') }}</span>
+                </flux:sidebar.item>
+
+                @if(auth()->user()->role === 'admin')
+                    <flux:sidebar.item icon="users" :href="route('customers.index')" :current="request()->routeIs('customers.*')" wire:navigate>
+                        <span>{{ __('Customers') }}</span>
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="list-bullet" :href="route('billing.index')" :current="request()->routeIs('billing.*')" wire:navigate>
+                        <span>{{ __('Billing Reports') }}</span>
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="adjustments-horizontal" :href="route('settings.index')" :current="request()->routeIs('settings.*')" wire:navigate>
+                        <span>{{ __('Settings') }}</span>
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="key" :href="route('registration-codes.index')" :current="request()->routeIs('registration-codes.*')" wire:navigate>
+                        <span>{{ __('Registration Codes') }}</span>
+                    </flux:sidebar.item>
+                @endif
+
+                <flux:sidebar.item icon="chat-bubble-left" :href="route('messages.index')" :current="request()->routeIs('messages.*')" wire:navigate>
+                    <div class="flex items-center justify-between w-full">
+                        <span>{{ auth()->user()->role === 'admin' ? __('Message & Posting') : __('Messages') }}</span>
+                        @if($unreadCount > 0)
+                            <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $unreadCount }}</span>
+                        @endif
+                    </div>
+                </flux:sidebar.item>
+
+                @if(auth()->user()->role === 'consumer')
+                    <flux:sidebar.item icon="megaphone" :href="route('consumer.announcements')" :current="request()->routeIs('consumer.announcements')" wire:navigate>
+                        <span>{{ __('Announcements') }}</span>
+                    </flux:sidebar.item>
+                @endif
+
+                @if(auth()->user()->role === 'admin')
+                    <flux:sidebar.item icon="trash" :href="route('recovery.index')" :current="request()->routeIs('recovery.*')" wire:navigate>
+                        <span>{{ __('Recovery / Trash') }}</span>
+                    </flux:sidebar.item>
+                @endif
+            </flux:sidebar.group>
+        </flux:sidebar.nav>
+        <flux:spacer />
+        
+        <x-desktop-user-menu :name="auth()->user()->name" />
+    </flux:sidebar>
     @endif
 
-    {{ $slot }}
+    <flux:main>
+        {{ $slot }}
+    </flux:main>
 
     @fluxScripts
 </body>
-
 </html>
