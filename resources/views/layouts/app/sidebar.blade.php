@@ -218,6 +218,13 @@
             padding-top: 5rem !important;
             margin-left: 0 !important;
         }
+        
+        /* Prevent Flux from injecting an empty sidebar column */
+        @media (min-width: 1024px) {
+            body, [data-flux-layout] {
+                grid-template-columns: 1fr !important;
+            }
+        }
 
         /* Hide DWSS text when sidebar is collapsed */
         [data-flux-sidebar-collapsed] .dwss-brand-text,
@@ -510,9 +517,7 @@
     </flux:sidebar>
     @endif
 
-    <flux:main>
-        {{ $slot }}
-    </flux:main>
+    {{ $slot }}
 
     @fluxScripts
 </body>
