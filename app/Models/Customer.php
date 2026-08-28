@@ -15,6 +15,7 @@ class Customer extends Model
         'customer_id',
         'name',
         'type',
+        'customer_type_id',
         'email',
         'meter_post',
         'phone_number',
@@ -43,5 +44,10 @@ class Customer extends Model
     public function user()
     {
         return $this->hasOne(User::class);
+    }
+
+    public function customerType()
+    {
+        return $this->belongsTo(CustomerType::class);
     }
 }

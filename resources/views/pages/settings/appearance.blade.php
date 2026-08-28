@@ -185,7 +185,7 @@ new #[Title('Appearance settings')] class extends Component {
 
     <flux:heading class="sr-only">{{ __('Appearance settings') }}</flux:heading>
 
-    <x-pages::settings.layout :heading="__('Appearance')">
+    <x-pages::settings.layout :heading="__('Appearance')" maxWidth="max-w-5xl">
 
 
         <form wire:submit="updateAppearance" class="mt-8 space-y-6">
@@ -205,7 +205,10 @@ new #[Title('Appearance settings')] class extends Component {
                 </div>
             @endif
 
-            <div class="space-y-2">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                <!-- Left Column: Background Images -->
+                <div class="space-y-6">
+                    <div class="space-y-2">
                 <flux:heading class="!text-white mb-2">{{ __('Custom Background Image') }}</flux:heading>
                 
                 @if(auth()->user()->background_image || auth()->user()->background_url)
@@ -261,7 +264,11 @@ new #[Title('Appearance settings')] class extends Component {
                 @error('messenger_background') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
             </div>
 
-            <div class="space-y-2 mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+                </div>
+                
+                <!-- Right Column: Typography & Colors -->
+                <div class="space-y-6">
+                    <div class="space-y-2">
                 <flux:heading class="!text-white mb-2">{{ __('Custom Background Color') }}</flux:heading>
                 <div class="flex items-center gap-4">
                     <input type="color" wire:model.blur="background_color" class="h-10 w-20 cursor-pointer rounded border border-gray-300">
@@ -341,8 +348,10 @@ new #[Title('Appearance settings')] class extends Component {
             @error('text_size') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
             @error('font_weight') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
 
-            <div class="pt-4">
-                <flux:button type="submit" variant="primary">{{ __('Save Appearance') }}</flux:button>
+            <div class="pt-8">
+                <flux:button type="submit" variant="primary" class="w-full h-12">{{ __('Save Appearance') }}</flux:button>
+            </div>
+                </div>
             </div>
         </form>
     </x-pages::settings.layout>

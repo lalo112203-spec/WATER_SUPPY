@@ -89,6 +89,15 @@ class CustomerController extends Controller
         $allIds = Customer::pluck('customer_id')->map(fn($val) => (int) $val)->toArray();
         $nextId = (count($allIds) > 0 ? max($allIds) : 1000) + 1;
 
+        $customerTypes = \App\Models\CustomerType::all();
+
+        foreach ($customerTypes as $type) {
+            $lowerName = strtolower($type->name);
+            $settings[$lowerName.'_base_charge'] = $type->base_charge;
+            $settings[$lowerName.'_usage_rate'] = $type->usage_rate;
+            $settings[$lowerName.'_base_limit'] = $type->base_limit;
+        }
+
         return view('customers.index', [
             'customers' => $customers,
             'totalCustomers' => $totalCustomers,
@@ -99,7 +108,8 @@ class CustomerController extends Controller
             'barangays' => $barangays,
             'settings' => $settings,
             'globalAdditionalChargeTotal' => $globalAdditionalChargeTotal,
-            'nextId' => $nextId
+            'nextId' => $nextId,
+            'customerTypes' => $customerTypes
         ]);
     }
 
@@ -131,12 +141,14 @@ class CustomerController extends Controller
             'last_name' => 'required|string',
             'first_name' => 'required|string',
             'middle_name' => 'nullable|string',
-            'type' => 'required|in:Regular,Commercial',
+            'customer_type_id' => 'required|exists:customer_types,id',
             'meter_post' => 'required|string',
             'phone_number' => 'nullable|string',
             'barangay' => 'required|string',
             'password' => 'nullable|string|min:8',
         ]);
+
+        $customerType = \App\Models\CustomerType::find($validated['customer_type_id']);
 
         $fullName = trim(strtoupper($validated['last_name']) . ', ' . strtoupper($validated['first_name']) . ' ' . strtoupper($validated['middle_name'] ?? ''));
         $validated['name'] = preg_replace('/\s+/', ' ', $fullName);
@@ -159,7 +171,8 @@ class CustomerController extends Controller
         $customer = Customer::create([
             'admin_id' => auth()->id(),
             'name' => $validated['name'],
-            'type' => $validated['type'],
+            'type' => $customerType->name,
+            'customer_type_id' => $validated['customer_type_id'],
             'email' => $validated['customer_id'] . '@system.local',
             'meter_post' => $validated['meter_post'] ?? null,
             'phone_number' => $validated['phone_number'] ?? null,
@@ -210,11 +223,13 @@ class CustomerController extends Controller
             'last_name' => 'required|string',
             'first_name' => 'required|string',
             'middle_name' => 'nullable|string',
-            'type' => 'required|in:Regular,Commercial',
+            'customer_type_id' => 'required|exists:customer_types,id',
             'meter_post' => 'required|string',
             'phone_number' => 'nullable|string',
             'barangay' => 'required|string',
         ]);
+
+        $customerType = \App\Models\CustomerType::find($validated['customer_type_id']);
 
         $fullName = trim(strtoupper($validated['last_name']) . ', ' . strtoupper($validated['first_name']) . ' ' . strtoupper($validated['middle_name'] ?? ''));
         $validated['name'] = preg_replace('/\s+/', ' ', $fullName);
@@ -229,7 +244,8 @@ class CustomerController extends Controller
         $customer->update([
             'customer_id' => $validated['customer_id'],
             'name' => $validated['name'],
-            'type' => $validated['type'],
+            'type' => $customerType->name,
+            'customer_type_id' => $validated['customer_type_id'],
             'meter_post' => $validated['meter_post'] ?? null,
             'phone_number' => $validated['phone_number'] ?? null,
             'address' => $validated['address'],

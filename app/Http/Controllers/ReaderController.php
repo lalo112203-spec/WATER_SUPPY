@@ -22,14 +22,15 @@ class ReaderController extends Controller
                 return $customer->barangay ?: 'Unassigned Barangay';
             });
 
-        $settings = [
-            'regular_base_charge' => SystemSetting::get('regular_base_charge', 100),
-            'commercial_base_charge' => SystemSetting::get('commercial_base_charge', 250),
-            'regular_usage_rate' => SystemSetting::get('regular_usage_rate', 15),
-            'commercial_usage_rate' => SystemSetting::get('commercial_usage_rate', 25),
-            'regular_base_limit' => SystemSetting::get('regular_base_limit', 10),
-            'commercial_base_limit' => SystemSetting::get('commercial_base_limit', 10),
-        ];
+        $customerTypes = \App\Models\CustomerType::all();
+        $settings = [];
+        
+        foreach ($customerTypes as $type) {
+            $lowerName = strtolower($type->name);
+            $settings[$lowerName.'_base_charge'] = $type->base_charge;
+            $settings[$lowerName.'_usage_rate'] = $type->usage_rate;
+            $settings[$lowerName.'_base_limit'] = $type->base_limit;
+        }
 
         $globalAdditionalChargeTotal = collect(json_decode(SystemSetting::get('global_additional_charges', '[]'), true))->sum('amount');
 
@@ -56,11 +57,16 @@ class ReaderController extends Controller
             return redirect()->back()->withErrors(['reading' => "No water used. Bill cannot be generated for zero consumption."]);
         }
 
-        $typePrefix = $customer->type === 'Commercial' ? 'commercial' : 'regular';
-        
-        $baseLimit = (float) SystemSetting::get("{$typePrefix}_base_limit", 10);
-        $rate = (float) SystemSetting::get("{$typePrefix}_usage_rate", $customer->type === 'Commercial' ? 25 : 15);
-        $baseCharge = (float) SystemSetting::get("{$typePrefix}_base_charge", $customer->type === 'Commercial' ? 250 : 100);
+        $customerType = $customer->customerType;
+        if (!$customerType) {
+            $baseLimit = 10;
+            $rate = 15;
+            $baseCharge = 100;
+        } else {
+            $baseLimit = (float) $customerType->base_limit;
+            $rate = (float) $customerType->usage_rate;
+            $baseCharge = (float) $customerType->base_charge;
+        }
 
         $billableUsage = max($usage - $baseLimit, 0);
         $usageCharge = $billableUsage * $rate;

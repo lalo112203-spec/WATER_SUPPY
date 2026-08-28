@@ -67,27 +67,24 @@ class BillingController extends Controller
         $totalBilled = Bill::whereIn('customer_id', $myCustomerIds)
             ->sum('total_amount');
  
-        $thresholds = [
-            'Regular' => [
-                'green_max' => SystemSetting::get('regular_green_max', 10),
-                'orange_max' => SystemSetting::get('regular_orange_max', 14),
-            ],
-            'Commercial' => [
-                'green_max' => SystemSetting::get('commercial_green_max', 49),
-                'orange_max' => SystemSetting::get('commercial_orange_max', 50),
-            ],
-        ];
- 
+        $customerTypes = \App\Models\CustomerType::all();
+        $thresholds = [];
+        $settings = [];
+
+        foreach ($customerTypes as $type) {
+            $thresholds[$type->name] = [
+                'green_max' => $type->green_max,
+                'orange_max' => $type->orange_max,
+            ];
+
+            // Maintain same key pattern dynamically
+            $lowerName = strtolower($type->name);
+            $settings[$lowerName.'_base_charge'] = $type->base_charge;
+            $settings[$lowerName.'_usage_rate'] = $type->usage_rate;
+            $settings[$lowerName.'_base_limit'] = $type->base_limit;
+        }
+
         $customers = Customer::where('admin_id', $adminId)->where('status', 'active')->get();
-        
-        $settings = [
-            'regular_base_charge' => SystemSetting::get('regular_base_charge', 100),
-            'commercial_base_charge' => SystemSetting::get('commercial_base_charge', 250),
-            'regular_usage_rate' => SystemSetting::get('regular_usage_rate', 15),
-            'commercial_usage_rate' => SystemSetting::get('commercial_usage_rate', 25),
-            'regular_base_limit' => SystemSetting::get('regular_base_limit', 10),
-            'commercial_base_limit' => SystemSetting::get('commercial_base_limit', 10),
-        ];
 
         $globalAdditionalCharges = json_decode(SystemSetting::get('global_additional_charges', '[]'), true);
         $globalAdditionalChargeTotal = collect($globalAdditionalCharges)->sum('amount');
@@ -164,14 +161,15 @@ class BillingController extends Controller
  
     public function show(Bill $bill): View
     {
-        $settings = [
-            'regular_base_charge' => SystemSetting::get('regular_base_charge', 100),
-            'commercial_base_charge' => SystemSetting::get('commercial_base_charge', 250),
-            'regular_usage_rate' => SystemSetting::get('regular_usage_rate', 15),
-            'commercial_usage_rate' => SystemSetting::get('commercial_usage_rate', 25),
-            'regular_base_limit' => SystemSetting::get('regular_base_limit', 10),
-            'commercial_base_limit' => SystemSetting::get('commercial_base_limit', 10),
-        ];
+        $customerTypes = \App\Models\CustomerType::all();
+        $settings = [];
+        
+        foreach ($customerTypes as $type) {
+            $lowerName = strtolower($type->name);
+            $settings[$lowerName.'_base_charge'] = $type->base_charge;
+            $settings[$lowerName.'_usage_rate'] = $type->usage_rate;
+            $settings[$lowerName.'_base_limit'] = $type->base_limit;
+        }
 
         $globalAdditionalChargeTotal = collect($bill->applied_additional_charges ?? [])->sum('amount');
 

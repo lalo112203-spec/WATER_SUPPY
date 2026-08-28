@@ -7,6 +7,9 @@
         .animate-fadeIn {
             animation: fadeIn 0.3s ease-out forwards;
         }
+        select:invalid {
+            color: #9ca3af !important; /* Tailwind gray-400 to match placeholder */
+        }
     </style>
     <div class="px-4 py-2 bg-transparent min-h-[calc(100vh-4rem)] font-sans text-gray-200 relative z-10">
 
@@ -533,12 +536,13 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-gray-200 mb-1 text-xs font-medium">Customer Type <span class="text-red-500">*</span></label>
-                        <select name="type" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
-                            <option value="">Select Type</option>
-                            <option value="Regular" {{ (old('form_type') === 'create' && old('type') === 'Regular') ? 'selected' : '' }}>Regular</option>
-                            <option value="Commercial" {{ (old('form_type') === 'create' && old('type') === 'Commercial') ? 'selected' : '' }}>Commercial</option>
+                        <select name="customer_type_id" onchange="handleCustomerTypeColor(this)" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
+                            <option value="" disabled selected hidden>Select Type</option>
+                            @foreach($customerTypes as $type)
+                                <option value="{{ $type->id }}" class="text-gray-200 bg-[#0f151e]" {{ (old('form_type') === 'create' && old('customer_type_id') == $type->id) ? 'selected' : '' }}>{{ $type->name }}</option>
+                            @endforeach
                         </select>
-                        @if(old('form_type') === 'create') @error('type') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                        @if(old('form_type') === 'create') @error('customer_type_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
                     </div>
                     <div>
                         <label class="block text-gray-200 mb-1 text-xs font-medium">Phone Number</label>
@@ -628,11 +632,13 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-gray-200 mb-1 text-xs font-medium">Customer Type <span class="text-red-500">*</span></label>
-                        <select name="type" id="edit_type" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
-                            <option value="Regular" {{ (old('form_type') === 'edit' && old('type') === 'Regular') ? 'selected' : '' }}>Regular</option>
-                            <option value="Commercial" {{ (old('form_type') === 'edit' && old('type') === 'Commercial') ? 'selected' : '' }}>Commercial</option>
+                        <select name="customer_type_id" id="edit_customer_type_id" onchange="handleCustomerTypeColor(this)" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
+                            <option value="" disabled selected hidden>Select Type</option>
+                            @foreach($customerTypes as $type)
+                                <option value="{{ $type->id }}" class="text-gray-200 bg-[#0f151e]" {{ (old('form_type') === 'edit' && old('customer_type_id') == $type->id) ? 'selected' : '' }}>{{ $type->name }}</option>
+                            @endforeach
                         </select>
-                        @if(old('form_type') === 'edit') @error('type') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
+                        @if(old('form_type') === 'edit') @error('customer_type_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
                     </div>
                     <div>
                         <label class="block text-gray-200 mb-1 text-xs font-medium">Phone Number</label>
@@ -675,7 +681,7 @@
             document.getElementById('edit_first_name').value = firstMiddle[0] || '';
             document.getElementById('edit_middle_name').value = firstMiddle.slice(1).join(' ') || '';
             
-            document.getElementById('edit_type').value = customer.type;
+            document.getElementById('edit_customer_type_id').value = customer.customer_type_id;
             document.getElementById('edit_phone_number').value = customer.phone_number || '';
             document.getElementById('edit_meter_post').value = customer.meter_post || '';
             document.getElementById('edit_barangay').value = customer.barangay || '';
@@ -808,15 +814,10 @@
             let rate = 0;
             let baseLimit = 10;
 
-            if (quickCustomerType === 'Commercial') {
-                baseCharge = parseFloat(systemSettings.commercial_base_charge) || 250;
-                rate = parseFloat(systemSettings.commercial_usage_rate) || 25;
-                baseLimit = parseFloat(systemSettings.commercial_base_limit) || 10;
-            } else {
-                baseCharge = parseFloat(systemSettings.regular_base_charge) || 100;
-                rate = parseFloat(systemSettings.regular_usage_rate) || 15;
-                baseLimit = parseFloat(systemSettings.regular_base_limit) || 10;
-            }
+            let typeKey = quickCustomerType.toLowerCase();
+            baseCharge = parseFloat(systemSettings[typeKey + '_base_charge']) || 100;
+            rate = parseFloat(systemSettings[typeKey + '_usage_rate']) || 15;
+            baseLimit = parseFloat(systemSettings[typeKey + '_base_limit']) || 10;
 
             const billableUsage = Math.max(consumption - baseLimit, 0);
             const usageCharge = billableUsage * rate;
@@ -950,6 +951,31 @@
                     document.getElementById('password').removeAttribute('required');
                 }
             });
+        }
+
+
+        function handleCustomerTypeColor(select) {
+            if (!select.value || select.value === "") {
+                select.style.color = '#9ca3af'; // Tailwind gray-400 placeholder
+            } else {
+                select.style.color = '#e5e7eb'; // Tailwind gray-200 text
+            }
+        }
+
+        // Initialize colors on load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('select[name="customer_type_id"]').forEach(select => {
+                handleCustomerTypeColor(select);
+            });
+        });
+        
+        // Also update when edit modal opens
+        const originalOpenEditCustomerModal = window.openEditCustomerModal;
+        if (originalOpenEditCustomerModal) {
+            window.openEditCustomerModal = function(id, customer) {
+                originalOpenEditCustomerModal(id, customer);
+                handleCustomerTypeColor(document.getElementById('edit_customer_type_id'));
+            };
         }
     </script>
 </x-layouts::app>

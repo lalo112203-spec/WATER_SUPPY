@@ -98,7 +98,7 @@
                                             {{ $customer->customer_id }}
                                         </span>
                                         <span class="bg-[#1b2636] text-white/80 text-xs px-3 py-1 rounded-lg border border-[#2d4059]">
-                                            {{ $customer->type }}
+                                            {{ $customer->customerType ? $customer->customerType->name : $customer->type }}
                                         </span>
                                         @if($customer->barangay)
                                         <span class="bg-indigo-500/10 text-indigo-400 text-xs px-3 py-1 rounded-lg border border-indigo-500/20 consumer-brgy flex items-center gap-1">
@@ -127,7 +127,7 @@
                                         <div class="relative flex-1">
                                             <input type="number" step="1" name="reading" id="reading-{{ $customer->id }}" required placeholder="0"
                                                 min="{{ $customer->meter_reading ?? 0 }}"
-                                                oninput="calculateBill({{ $customer->id }}, '{{ $customer->type }}', {{ $customer->meter_reading ?? 0 }})"
+                                                oninput="calculateBill({{ $customer->id }}, '{{ $customer->customerType ? $customer->customerType->name : $customer->type }}', {{ $customer->meter_reading ?? 0 }})"
                                                 class="w-full bg-[#1b2636]/60 border border-[#2d4059] focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 text-gray-100 text-lg font-mono rounded-xl py-2 pl-3 pr-8 outline-none transition-all duration-300 placeholder:text-gray-600">
                                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs font-bold">m³</span>
                                         </div>
@@ -156,16 +156,13 @@
 
     <script>
         const settings = {
-            Regular: { 
-                base: {{ $settings['regular_base_charge'] ?? 100 }}, 
-                rate: {{ $settings['regular_usage_rate'] ?? 15 }},
-                limit: {{ $settings['regular_base_limit'] ?? 10 }}
+            @foreach(\App\Models\CustomerType::all() as $type)
+            "{{ $type->name }}": { 
+                base: {{ $type->base_charge }}, 
+                rate: {{ $type->usage_rate }},
+                limit: {{ $type->base_limit }}
             },
-            Commercial: { 
-                base: {{ $settings['commercial_base_charge'] ?? 250 }}, 
-                rate: {{ $settings['commercial_usage_rate'] ?? 25 }},
-                limit: {{ $settings['commercial_base_limit'] ?? 10 }}
-            }
+            @endforeach
         };
         const globalAdditionalChargeTotal = {{ $globalAdditionalChargeTotal ?? 0 }};
 

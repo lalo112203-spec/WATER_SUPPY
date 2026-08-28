@@ -245,23 +245,12 @@
     </flux:modal>
     
     <script>
-        const settings = {
-            Regular: { 
-                base: {{ $settings['regular_base_charge'] }}, 
-                rate: {{ $settings['regular_usage_rate'] }},
-                limit: {{ $settings['regular_base_limit'] ?? 10 }}
-            },
-            Commercial: { 
-                base: {{ $settings['commercial_base_charge'] }}, 
-                rate: {{ $settings['commercial_usage_rate'] }},
-                limit: {{ $settings['commercial_base_limit'] ?? 10 }}
-            }
-        };
+        const systemSettings = {!! json_encode($settings) !!};
 
         const previousReading = {{ $bill->previous_reading ?? 0 }};
 
         function calculateCharges() {
-            const customerType = '{{ $bill->customer->type }}';
+            const customerType = '{{ $bill->customer->customerType ? $bill->customer->customerType->name : $bill->customer->type }}';
             const presentReadingInput = document.getElementById('new_reading');
             const consumptionDisplay = document.getElementById('calculated_usage_display');
             const baseChargeInput = document.getElementById('base_charge');
@@ -295,9 +284,10 @@
             consumptionDisplay.value = usage.toFixed(0);
             document.getElementById('consumption').value = usage.toFixed(0);
 
-            let baseCharge = settings[customerType]?.base || 0;
-            let rate = settings[customerType]?.rate || 0;
-            let baseLimit = settings[customerType]?.limit || 10;
+            const typeKey = customerType.toLowerCase();
+            let baseCharge = parseFloat(systemSettings[typeKey + '_base_charge']) || 100;
+            let rate = parseFloat(systemSettings[typeKey + '_usage_rate']) || 15;
+            let baseLimit = parseFloat(systemSettings[typeKey + '_base_limit']) || 10;
 
             const billableUsage = Math.max(usage - baseLimit, 0);
             const usageCharge = billableUsage * rate;
