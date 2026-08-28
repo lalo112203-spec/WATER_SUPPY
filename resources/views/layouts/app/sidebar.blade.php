@@ -221,8 +221,15 @@
         
         /* Prevent Flux from injecting an empty sidebar column */
         @media (min-width: 1024px) {
-            body, [data-flux-layout] {
+            body, [data-flux-layout], :has(>[data-flux-sidebar]) {
                 grid-template-columns: 1fr !important;
+                grid-template-areas:
+                    "header"
+                    "main"
+                    "footer" !important;
+            }
+            flux\:sidebar, [data-flux-sidebar] {
+                display: none !important;
             }
         }
 
