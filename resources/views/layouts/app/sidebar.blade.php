@@ -382,7 +382,7 @@
     @if(auth()->check() && auth()->user()->role !== 'reader')
     
     <!-- Top Header for Desktop & Mobile -->
-    <flux:header container class="dark border-b border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
+    <flux:header class="dark border-b border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
         <flux:sidebar.toggle class="lg:hidden mr-4" icon="bars-2" inset="left" />
         
         <x-app-logo href="{{ route('dashboard') }}" wire:navigate />
