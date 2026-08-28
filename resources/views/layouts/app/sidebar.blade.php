@@ -221,7 +221,7 @@
         
         /* Prevent Flux from injecting an empty sidebar column */
         @media (min-width: 1024px) {
-            body, [data-flux-layout], :has(>[data-flux-sidebar]) {
+            body {
                 grid-template-columns: 1fr !important;
                 grid-template-areas:
                     "header"
@@ -231,6 +231,16 @@
             flux\:sidebar, [data-flux-sidebar] {
                 display: none !important;
             }
+        }
+
+        /* Make Navbar Items Bigger */
+        [data-flux-navbar] [data-flux-navbar-item] {
+            font-size: 1.15rem !important;
+            padding: 0.75rem 1.25rem !important;
+        }
+        [data-flux-navbar] [data-flux-navbar-item] svg {
+            width: 1.5rem !important;
+            height: 1.5rem !important;
         }
 
         /* Hide DWSS text when sidebar is collapsed */
@@ -368,7 +378,7 @@
     </script>
 </head>
 
-<body class="min-h-screen text-gray-300 antialiased selection:bg-cyan-500/30">
+<body class="min-h-screen text-gray-300 antialiased selection:bg-cyan-500/30" style="grid-template-columns: 1fr !important; grid-template-areas: 'header' 'main' 'footer' !important;">
     @if(auth()->check() && auth()->user()->role !== 'reader')
     
     <!-- Top Header for Desktop & Mobile -->
