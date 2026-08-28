@@ -388,25 +388,35 @@
         <x-app-logo href="{{ route('dashboard') }}" wire:navigate />
 
         <!-- Desktop Navigation -->
-        <flux:navbar class="max-lg:hidden ml-6 gap-3">
-            <flux:navbar.item class="!text-[1.15rem] [&_svg]:!size-6 !px-4 !py-3" icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+        <style>
+            .custom-nav-large a, .custom-nav-large button {
+                font-size: 1.15rem !important;
+                padding: 0.75rem 1.25rem !important;
+            }
+            .custom-nav-large a svg, .custom-nav-large button svg {
+                width: 1.5rem !important;
+                height: 1.5rem !important;
+            }
+        </style>
+        <flux:navbar class="max-lg:hidden ml-6 gap-3 custom-nav-large">
+            <flux:navbar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                 {{ __('Dashboard') }}
             </flux:navbar.item>
 
             @if(auth()->user()->role === 'admin')
-                <flux:navbar.item class="!text-[1.15rem] [&_svg]:!size-6 !px-4 !py-3" icon="users" :href="route('customers.index')" :current="request()->routeIs('customers.*')" wire:navigate>
+                <flux:navbar.item icon="users" :href="route('customers.index')" :current="request()->routeIs('customers.*')" wire:navigate>
                     {{ __('Customers') }}
                 </flux:navbar.item>
 
-                <flux:navbar.item class="!text-[1.15rem] [&_svg]:!size-6 !px-4 !py-3" icon="list-bullet" :href="route('billing.index')" :current="request()->routeIs('billing.*')" wire:navigate>
+                <flux:navbar.item icon="list-bullet" :href="route('billing.index')" :current="request()->routeIs('billing.*')" wire:navigate>
                     {{ __('Billing Reports') }}
                 </flux:navbar.item>
 
-                <flux:navbar.item class="!text-[1.15rem] [&_svg]:!size-6 !px-4 !py-3" icon="adjustments-horizontal" :href="route('settings.index')" :current="request()->routeIs('settings.*')" wire:navigate>
+                <flux:navbar.item icon="adjustments-horizontal" :href="route('settings.index')" :current="request()->routeIs('settings.*')" wire:navigate>
                     {{ __('Settings') }}
                 </flux:navbar.item>
 
-                <flux:navbar.item class="!text-[1.15rem] [&_svg]:!size-6 !px-4 !py-3" icon="key" :href="route('registration-codes.index')" :current="request()->routeIs('registration-codes.*')" wire:navigate>
+                <flux:navbar.item icon="key" :href="route('registration-codes.index')" :current="request()->routeIs('registration-codes.*')" wire:navigate>
                     {{ __('Registration Codes') }}
                 </flux:navbar.item>
             @endif
@@ -414,7 +424,7 @@
             @php
                 $unreadCount = \App\Models\Message::where('receiver_id', auth()->id())->whereNull('read_at')->count();
             @endphp
-            <flux:navbar.item class="!text-[1.15rem] [&_svg]:!size-6 !px-4 !py-3" icon="chat-bubble-left" :href="route('messages.index')" :current="request()->routeIs('messages.*')" wire:navigate>
+            <flux:navbar.item icon="chat-bubble-left" :href="route('messages.index')" :current="request()->routeIs('messages.*')" wire:navigate>
                 <div class="flex items-center gap-2">
                     <span>{{ auth()->user()->role === 'admin' ? __('Message & Posting') : __('Messages') }}</span>
                     @if($unreadCount > 0)
@@ -424,13 +434,13 @@
             </flux:navbar.item>
 
             @if(auth()->user()->role === 'consumer')
-                <flux:navbar.item class="!text-[1.15rem] [&_svg]:!size-6 !px-4 !py-3" icon="megaphone" :href="route('consumer.announcements')" :current="request()->routeIs('consumer.announcements')" wire:navigate>
+                <flux:navbar.item icon="megaphone" :href="route('consumer.announcements')" :current="request()->routeIs('consumer.announcements')" wire:navigate>
                     {{ __('Announcements') }}
                 </flux:navbar.item>
             @endif
 
             @if(auth()->user()->role === 'admin')
-                <flux:navbar.item class="!text-[1.15rem] [&_svg]:!size-6 !px-4 !py-3" icon="trash" :href="route('recovery.index')" :current="request()->routeIs('recovery.*')" wire:navigate>
+                <flux:navbar.item icon="trash" :href="route('recovery.index')" :current="request()->routeIs('recovery.*')" wire:navigate>
                     {{ __('Recovery / Trash') }}
                 </flux:navbar.item>
             @endif
