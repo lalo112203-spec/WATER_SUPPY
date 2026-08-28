@@ -85,14 +85,14 @@
                                 @endif
                             </h3>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 items-end">
                             <flux:input name="types[{{ $type->id }}][base_charge]" :label="__('Base Charge (₱)')" type="number" step="0.01" value="{{ old('types.'.$type->id.'.base_charge', $type->base_charge) }}" />
                             <flux:input name="types[{{ $type->id }}][usage_rate]" :label="__('Usage Rate (₱ per m³)')" type="number" step="0.01" value="{{ old('types.'.$type->id.'.usage_rate', $type->usage_rate) }}" />
                             <flux:input name="types[{{ $type->id }}][base_limit]" :label="__('Base Usage Limit (m³)')" type="number" value="{{ old('types.'.$type->id.'.base_limit', $type->base_limit) }}" />
                         </div>
                         
                         <h4 class="text-sm font-semibold text-gray-300 mb-3 border-b border-gray-700/50 pb-2">Usage Alerts</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
                             <flux:input name="types[{{ $type->id }}][green_max]" :label="__('Green Alert (m³)')" type="number" value="{{ old('types.'.$type->id.'.green_max', $type->green_max) }}" />
                             <flux:input name="types[{{ $type->id }}][orange_max]" :label="__('Orange Alert (m³)')" type="number" value="{{ old('types.'.$type->id.'.orange_max', $type->orange_max) }}" />
                             <flux:input name="types[{{ $type->id }}][red_max]" :label="__('Red Alert (m³)')" type="number" value="{{ old('types.'.$type->id.'.red_max', $type->red_max) }}" />
