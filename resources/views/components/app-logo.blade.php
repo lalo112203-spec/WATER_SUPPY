@@ -13,9 +13,28 @@
         </div>
     </a>
 @else
-    <flux:brand name="D.W.S.S" class="[&>div.truncate]:!whitespace-normal [&>div.truncate]:!text-2xl [&>div.truncate]:!leading-tight [&>div.truncate]:!text-[#22d3ee] [&>div.truncate]:!font-black [&>div.truncate]:!tracking-normal [&>div.truncate]:!drop-shadow-[0_0_12px_rgba(34,211,238,0.7)]" {{ $attributes }}>
-        <x-slot name="logo" class="flex aspect-square size-12 items-center justify-center rounded-full bg-white/10/10 p-0.5 shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/20">
-            <x-app-logo-icon class="size-10" />
+    <style>
+        .dwss-brand-desktop > div.truncate {
+            white-space: normal !important;
+            font-size: 32px !important;
+            line-height: 1.2 !important;
+            color: #22d3ee !important;
+            font-weight: 900 !important;
+            letter-spacing: normal !important;
+            filter: drop-shadow(0 0 12px rgba(34,211,238,0.7)) !important;
+        }
+        .dwss-logo-desktop {
+            width: 3.5rem !important;
+            height: 3.5rem !important;
+        }
+        .dwss-logo-desktop svg {
+            width: 2.75rem !important;
+            height: 2.75rem !important;
+        }
+    </style>
+    <flux:brand name="D.W.S.S" class="dwss-brand-desktop" {{ $attributes }}>
+        <x-slot name="logo" class="dwss-logo-desktop flex aspect-square items-center justify-center rounded-full bg-white/10/10 p-0.5 shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/20">
+            <x-app-logo-icon class="dwss-logo-desktop-icon" />
         </x-slot>
     </flux:brand>
 @endif
