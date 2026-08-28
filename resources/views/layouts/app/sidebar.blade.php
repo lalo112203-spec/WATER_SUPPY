@@ -389,13 +389,28 @@
 
         <!-- Desktop Navigation -->
         <style>
-            .custom-nav-large a, .custom-nav-large button {
+            /* Override the inner text size and prevent Tailwind text-sm from blocking inheritance */
+            .custom-nav-large a [data-content], 
+            .custom-nav-large button [data-content],
+            .custom-nav-large a span,
+            .custom-nav-large button span {
                 font-size: 1.15rem !important;
-                padding: 0.75rem 1.25rem !important;
+                line-height: 1.5 !important;
             }
-            .custom-nav-large a svg, .custom-nav-large button svg {
+            
+            /* Override the SVG icon size */
+            .custom-nav-large a svg, 
+            .custom-nav-large button svg {
                 width: 1.5rem !important;
                 height: 1.5rem !important;
+            }
+            
+            /* Make the button paddings and height larger for a bigger click target */
+            .custom-nav-large a, 
+            .custom-nav-large button {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+                height: 3rem !important;
             }
         </style>
         <flux:navbar class="max-lg:hidden ml-6 gap-3 custom-nav-large">
