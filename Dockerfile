@@ -26,8 +26,18 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
+# Setup environment and database
+RUN cp .env.example .env
+RUN touch database/database.sqlite
+
 # Install PHP dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev
+
+# Generate app key
+RUN php artisan key:generate
+
+# Run migrations (for SQLite)
+RUN php artisan migrate --force
 
 # Install Node dependencies and build assets
 RUN npm install && npm run build
