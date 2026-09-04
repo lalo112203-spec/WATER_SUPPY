@@ -46,4 +46,4 @@ RUN npm install && npm run build
 ENV PORT=8080
 EXPOSE 8080
 
-CMD php artisan serve --host=0.0.0.0 --port=$PORT
+CMD APP_ENV=local APP_DEBUG=true LOG_CHANNEL=stderr php artisan serve --host=0.0.0.0 --port=$PORT
