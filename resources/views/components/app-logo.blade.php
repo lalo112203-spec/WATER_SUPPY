@@ -8,7 +8,7 @@
             <x-app-logo-icon class="size-10 dwss-logo-icon transition-all duration-300" />
         </div>
         <div class="flex flex-col leading-none dwss-brand-text transition-all duration-300">
-            <span class="text-[64px] font-black tracking-normal whitespace-nowrap drop-shadow-[0_0_12px_rgba(34,211,238,0.7)]" 
+            <span class="text-3xl font-black tracking-normal whitespace-nowrap drop-shadow-[0_0_12px_rgba(34,211,238,0.7)]" 
                 style="color: #22d3ee !important; @if(optional(auth()->user())->font_family) font-family: {{ auth()->user()->font_family }} !important; @endif @if(optional(auth()->user())->text_stroke_width && optional(auth()->user())->text_stroke_color) -webkit-text-stroke: {{ auth()->user()->text_stroke_width }} {{ auth()->user()->text_stroke_color }}; paint-order: stroke fill; @endif">D.W.S.S</span>
         </div>
     </a>
