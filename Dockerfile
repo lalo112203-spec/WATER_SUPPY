@@ -31,7 +31,7 @@ RUN cp .env.example .env
 RUN touch database/database.sqlite
 
 # Install PHP dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+RUN composer install --no-interaction --optimize-autoloader
 
 # Generate app key
 RUN php artisan key:generate
