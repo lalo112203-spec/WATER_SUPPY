@@ -121,6 +121,25 @@ class BillingController extends Controller
             'due_date' => 'required|date|after:billing_date',
         ]);
  
+        // Check for an existing bill in the same month
+        $billingDate = \Carbon\Carbon::parse($validated['billing_date']);
+        $existingBill = Bill::where('customer_id', $validated['customer_id'])
+            ->whereYear('billing_date', $billingDate->year)
+            ->whereMonth('billing_date', $billingDate->month)
+            ->first();
+
+        if ($existingBill && !$request->boolean('force_billing')) {
+            $customer = Customer::find($validated['customer_id']);
+            return redirect()->back()
+                ->withInput()
+                ->with('billing_warning', [
+                    'customer_name' => $customer?->name ?? 'This customer',
+                    'month'         => \Carbon\Carbon::parse($existingBill->billing_date)->format('F Y'),
+                    'amount'        => number_format($existingBill->total_amount, 2),
+                    'bill_id'       => $existingBill->id,
+                ]);
+        }
+
         $globalAdditionalCharges = json_decode(SystemSetting::get('global_additional_charges', '[]'), true);
         $globalAdditionalChargeTotal = collect($globalAdditionalCharges)->sum('amount');
 
@@ -183,6 +202,26 @@ class BillingController extends Controller
         }
  
         return view('billing.receipt', compact('bill'));
+    }
+
+    public function printBatch(Request $request): View
+    {
+        $request->validate([
+            'bill_ids' => 'required|array',
+            'bill_ids.*' => 'exists:bills,id'
+        ]);
+
+        $bills = Bill::whereIn('id', $request->bill_ids)->get();
+
+        if (auth()->user()->role === 'consumer') {
+            foreach ($bills as $bill) {
+                if (auth()->user()->customer_id !== $bill->customer_id) {
+                    abort(403);
+                }
+            }
+        }
+
+        return view('billing.receipt-batch', compact('bills'));
     }
  
     public function markAsPaid(Bill $bill)

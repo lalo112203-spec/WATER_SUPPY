@@ -24,7 +24,7 @@
             <div
                 class="bg-[#0f172a]/60 backdrop-blur-md rounded-3xl shadow-lg border border-white/20 p-6 flex items-start justify-between relative overflow-hidden group hover:border-cyan-500/50 transition-all">
                 <div class="relative z-10">
-                    <p class="text-[13px] font-medium text-blue-300 uppercase tracking-widest mb-1 drop-shadow-sm">Total Customers</p>
+                    <p class="text-[13px] font-medium text-blue-300 uppercase tracking-widest mb-1 drop-shadow-sm">Total Consumers</p>
                     <h3 class="text-3xl font-extrabold text-blue-400 tracking-tight drop-shadow-md">{{ $totalCustomers }}</h3>
                 </div>
                 <div
@@ -42,7 +42,7 @@
             <div
                 class="bg-[#0f172a]/60 backdrop-blur-md rounded-3xl shadow-lg border border-white/20 p-6 flex items-start justify-between relative overflow-hidden group hover:border-emerald-500/50 transition-all">
                 <div class="relative z-10">
-                    <p class="text-[13px] font-medium text-emerald-300 uppercase tracking-widest mb-1 drop-shadow-sm">Paid Customers</p>
+                    <p class="text-[13px] font-medium text-emerald-300 uppercase tracking-widest mb-1 drop-shadow-sm">Paid Consumers</p>
                     <h3 class="text-3xl font-extrabold text-emerald-400 tracking-tight drop-shadow-md">{{ $paidCustomersCount }}</h3>
                 </div>
                 <div
@@ -60,7 +60,7 @@
             <div
                 class="bg-[#0f172a]/60 backdrop-blur-md rounded-3xl shadow-lg border border-white/20 p-6 flex items-start justify-between relative overflow-hidden group hover:border-orange-500/50 transition-all">
                 <div class="relative z-10">
-                    <p class="text-[13px] font-medium text-orange-300 uppercase tracking-widest mb-1 drop-shadow-sm">Unpaid Customers</p>
+                    <p class="text-[13px] font-medium text-orange-300 uppercase tracking-widest mb-1 drop-shadow-sm">Unpaid Consumers</p>
                     <h3 class="text-3xl font-extrabold text-orange-400 tracking-tight drop-shadow-md">{{ $unpaidCustomersCount }}</h3>
                 </div>
                 <div
@@ -167,7 +167,7 @@
 
             <div class="flex flex-col gap-8">
                 <div class="bg-[#0f172a]/60 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden border border-white/20 flex flex-col p-6 flex-1 relative min-h-[220px]">
-                    <h2 class="text-[15px] font-bold text-white dark:text-gray-200 mb-2">Customer Types</h2>
+                    <h2 class="text-[15px] font-bold text-white dark:text-gray-200 mb-2">Consumer Types</h2>
                     <div class="relative flex-1 flex items-center justify-center min-h-[160px]">
                         <canvas id="customerChart"></canvas>
                     </div>

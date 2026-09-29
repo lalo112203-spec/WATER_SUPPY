@@ -11,7 +11,7 @@
         <div class="flex flex-col xl:flex-row gap-8">
             <!-- Deleted Customers -->
             <div class="flex-1">
-                <h2 class="text-lg font-semibold mb-3 text-red-600">Deleted Customers</h2>
+                <h2 class="text-lg font-semibold mb-3 text-red-600">Deleted Consumers</h2>
                 <div class="bg-[#121a25]/80 backdrop-blur-md rounded shadow-sm overflow-hidden border border-[#263548]">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -36,7 +36,7 @@
                                                 Restore
                                             </button>
                                         </form>
-                                        <form action="{{ route('recovery.forceDeleteCustomer', $customer->id) }}" method="POST" class="inline" onsubmit="return confirm('WARNING: This will permanently delete this customer and all their data. This cannot be undone. Proceed?');">
+                                        <form action="{{ route('recovery.forceDeleteCustomer', $customer->id) }}" method="POST" class="inline" onsubmit="return confirm('WARNING: This will permanently delete this consumer and all their data. This cannot be undone. Proceed?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium">
@@ -48,7 +48,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="px-4 py-4 text-center text-gray-200">No deleted customers in trash</td>
+                                <td colspan="4" class="px-4 py-4 text-center text-gray-200">No deleted Consumers in trash</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -63,7 +63,7 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-red-500 text-white">
-                                <th class="px-4 py-3 font-medium">Customer</th>
+                                <th class="px-4 py-3 font-medium">Consumer</th>
                                 <th class="px-4 py-3 font-medium">Period</th>
                                 <th class="px-4 py-3 font-medium">Amount</th>
                                 <th class="px-4 py-3 font-medium text-right">Action</th>

@@ -117,9 +117,10 @@
                                     </div>
                                 </div>
 
-                                <form method="POST" action="{{ route('reader.storeReading') }}" class="mt-auto relative z-10 bg-[#0f1722]/50 p-4 rounded-2xl border border-[#263548]">
+                                <form method="POST" action="{{ route('reader.storeReading') }}" class="mt-auto relative z-10 bg-[#0f1722]/50 p-4 rounded-2xl border border-[#263548] reader-reading-form" data-customer-id="{{ $customer->id }}" data-customer-name="{{ $customer->name }}">
                                     @csrf
                                     <input type="hidden" name="customer_id" value="{{ $customer->id }}">
+                                    <input type="hidden" name="force_billing" value="0" class="force-billing-input">
                                     
                                     <label class="block text-xs font-bold text-cyan-500 mb-2 uppercase tracking-wider">Input New Reading</label>
                                     
@@ -134,6 +135,14 @@
                                         <button type="submit" id="btn-{{ $customer->id }}" class="bg-cyan-600 hover:bg-cyan-500 text-white p-2 rounded-xl shadow-[0_4px_15px_rgba(6,182,212,0.4)] transition-all duration-300 flex items-center justify-center shrink-0">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </button>
+                                        <button type="button"
+                                            onclick="openBillHistory({{ $customer->id }}, {{ Js::from($customer->name) }}, {{ Js::from($customer->customer_id) }}); event.preventDefault();"
+                                            class="bg-violet-600/20 hover:bg-violet-500/30 text-violet-400 border border-violet-500/30 p-2 rounded-xl transition-all duration-300 flex items-center justify-center shrink-0"
+                                            title="View Bill History">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
                                         </button>
                                     </div>
@@ -153,6 +162,95 @@
             @endforelse
         </div>
     </div>
+
+    {{-- ===== Bill History Modal ===== --}}
+    <div id="billHistoryModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true">
+        {{-- Backdrop --}}
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeBillHistory()"></div>
+
+        {{-- Panel --}}
+        <div class="relative bg-[#0f1722] border border-[#263548] rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.8)] w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden" style="animation: bhSlideUp 0.25s cubic-bezier(0.34,1.56,0.64,1) both;">
+            {{-- Header --}}
+            <div class="flex items-center justify-between px-6 py-5 border-b border-[#263548] bg-[#121a25]/80 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-violet-500/20 rounded-xl border border-violet-500/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold text-base" id="bh-consumer-name">Bill History</h3>
+                        <p class="text-xs text-gray-400" id="bh-consumer-id"></p>
+                    </div>
+                </div>
+                <button onclick="closeBillHistory()" class="text-gray-500 hover:text-rose-400 transition-colors p-1.5 rounded-lg hover:bg-rose-500/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Summary bar --}}
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 px-6 py-3 bg-[#0a1018]/60 border-b border-[#263548] text-xs shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-violet-400"></span>
+                    <span class="text-gray-400">Total: <span id="bh-total-count" class="text-white font-bold">–</span></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                    <span class="text-gray-400">Paid: <span id="bh-paid-count" class="text-emerald-400 font-bold">–</span></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-rose-400 animate-pulse"></span>
+                    <span class="text-gray-400">Pending: <span id="bh-pending-count" class="text-rose-400 font-bold">–</span></span>
+                </div>
+                <div class="flex items-center gap-2 ml-auto">
+                    <span class="text-gray-400">Total Billed: <span id="bh-total-amount" class="text-cyan-400 font-bold">–</span></span>
+                </div>
+            </div>
+
+            {{-- Body --}}
+            <div class="flex-1 overflow-y-auto">
+                {{-- Loading --}}
+                <div id="bh-loading" class="flex flex-col items-center justify-center py-16 gap-4">
+                    <div class="w-10 h-10 border-4 border-violet-500/30 border-t-violet-500 rounded-full animate-spin"></div>
+                    <p class="text-sm text-gray-400">Loading bill history…</p>
+                </div>
+
+                {{-- Empty --}}
+                <div id="bh-empty" class="hidden flex flex-col items-center justify-center py-16 gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <p class="text-gray-400 text-sm">No billing records found for this consumer.</p>
+                </div>
+
+                {{-- Table --}}
+                <div id="bh-table-wrap" class="hidden overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-[#0a1018] text-[#94a3b8] uppercase text-[10px] tracking-wider sticky top-0 z-10">
+                                <th class="px-5 py-3 font-semibold border-b border-[#263548]">Period</th>
+                                <th class="px-5 py-3 font-semibold border-b border-[#263548]">Reading</th>
+                                <th class="px-5 py-3 font-semibold text-center border-b border-[#263548]">Usage</th>
+                                <th class="px-5 py-3 font-semibold border-b border-[#263548]">Amount</th>
+                                <th class="px-5 py-3 font-semibold border-b border-[#263548]">Status</th>
+                                <th class="px-5 py-3 font-semibold text-right border-b border-[#263548]">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bh-tbody" class="divide-y divide-[#263548]"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes bhSlideUp {
+            from { opacity: 0; transform: translateY(24px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
 
     <script>
         const settings = {
@@ -240,5 +338,312 @@
                 }
             });
         }
+
+        // ===== Bill History Modal Logic =====
+        let currentBhCustomerId = null;
+
+        function openBillHistory(customerId, customerName, customerAcctId) {
+            currentBhCustomerId = customerId;
+            document.getElementById('bh-consumer-name').textContent = customerName;
+            document.getElementById('bh-consumer-id').textContent = 'Acct # ' + customerAcctId;
+
+            // Reset states
+            document.getElementById('bh-loading').classList.remove('hidden');
+            document.getElementById('bh-empty').classList.add('hidden');
+            document.getElementById('bh-table-wrap').classList.add('hidden');
+            document.getElementById('bh-tbody').innerHTML = '';
+            ['bh-total-count','bh-paid-count','bh-pending-count','bh-total-amount'].forEach(id => {
+                document.getElementById(id).textContent = '–';
+            });
+
+            // Show modal
+            document.getElementById('billHistoryModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Fetch bill history
+            fetch(`/reader/customers/${customerId}/bills`, {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('bh-loading').classList.add('hidden');
+                const bills = data.bills || [];
+
+                if (bills.length === 0) {
+                    document.getElementById('bh-empty').classList.remove('hidden');
+                    return;
+                }
+
+                // Stats
+                const paid    = bills.filter(b => b.status === 'Paid').length;
+                const pending = bills.length - paid;
+                const totalAmt = bills.reduce((s, b) => s + parseFloat(b.total_amount || 0), 0);
+                document.getElementById('bh-total-count').textContent   = bills.length;
+                document.getElementById('bh-paid-count').textContent    = paid;
+                document.getElementById('bh-pending-count').textContent = pending;
+                document.getElementById('bh-total-amount').textContent  = '₱' + totalAmt.toLocaleString('en-PH', { maximumFractionDigits: 0 });
+
+                // Build rows
+                const tbody = document.getElementById('bh-tbody');
+                bills.forEach(bill => {
+                    const date  = new Date(bill.billing_date);
+                    const month = date.toLocaleString('en-PH', { month: 'long', year: 'numeric' });
+                    const isPaid = bill.status === 'Paid';
+                    const consumption = bill.consumption || 0;
+
+                    let usageBadge;
+                    if (consumption <= 10) {
+                        usageBadge = 'bg-emerald-500/20 text-emerald-400';
+                    } else if (consumption <= 20) {
+                        usageBadge = 'bg-orange-500/20 text-orange-400';
+                    } else {
+                        usageBadge = 'bg-rose-500/20 text-rose-400';
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.id = 'bh-row-' + bill.id;
+                    tr.className = 'hover:bg-[#1b2636]/30 transition duration-150';
+                    tr.innerHTML = `
+                        <td class="px-5 py-3 font-medium text-gray-300 whitespace-nowrap">${month}</td>
+                        <td class="px-5 py-3 font-mono text-xs whitespace-nowrap">
+                            <span class="text-gray-500">${bill.previous_reading ?? 0}</span>
+                            <span class="text-gray-600 mx-1">→</span>
+                            <span class="text-gray-200">${bill.new_reading ?? 0} m³</span>
+                        </td>
+                        <td class="px-5 py-3 text-center">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${usageBadge}">${consumption} m³</span>
+                        </td>
+                        <td class="px-5 py-3 font-bold text-cyan-400 whitespace-nowrap">₱${parseFloat(bill.total_amount || 0).toLocaleString('en-PH', { maximumFractionDigits: 0 })}</td>
+                        <td class="px-5 py-3">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold ${isPaid ? 'text-emerald-400' : 'text-rose-400'}">
+                                <span class="h-1.5 w-1.5 rounded-full ${isPaid ? 'bg-emerald-400' : 'bg-rose-400 animate-pulse'}"></span>
+                                ${bill.status}
+                            </span>
+                        </td>
+                        <td class="px-5 py-3 text-right">
+                            <div class="flex justify-end gap-1.5">
+                                <a href="/reader/bills/${bill.id}/receipt" target="_blank"
+                                   class="p-1.5 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 rounded-lg border border-cyan-500/20 transition"
+                                   title="View Receipt">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                    </svg>
+                                </a>
+                                <button type="button" onclick="deleteBillRow(${bill.id})"
+                                   class="p-1.5 text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg border border-rose-500/20 transition"
+                                   title="Delete Bill">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                document.getElementById('bh-table-wrap').classList.remove('hidden');
+            })
+            .catch(err => {
+                document.getElementById('bh-loading').classList.add('hidden');
+                document.getElementById('bh-empty').classList.remove('hidden');
+                console.error('Failed to load bill history:', err);
+            });
+        }
+
+        function closeBillHistory() {
+            document.getElementById('billHistoryModal').classList.add('hidden');
+            document.body.style.overflow = '';
+            currentBhCustomerId = null;
+        }
+
+        function deleteBillRow(billId) {
+            if (!confirm('Delete this bill? The customer\'s meter reading will be reverted to the previous value.')) return;
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+            fetch(`/reader/bills/${billId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const row = document.getElementById('bh-row-' + billId);
+                    if (row) {
+                        row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        row.style.opacity = '0';
+                        row.style.transform = 'translateX(20px)';
+                        setTimeout(() => {
+                            row.remove();
+                            const tbody = document.getElementById('bh-tbody');
+                            if (!tbody.children.length) {
+                                document.getElementById('bh-table-wrap').classList.add('hidden');
+                                document.getElementById('bh-empty').classList.remove('hidden');
+                                ['bh-total-count','bh-paid-count','bh-pending-count','bh-total-amount'].forEach(id => {
+                                    document.getElementById(id).textContent = '0';
+                                });
+                                return;
+                            }
+                            // Recalculate stats from remaining rows
+                            const rows = Array.from(tbody.querySelectorAll('tr'));
+                            let paid = 0, total = 0;
+                            rows.forEach(r => {
+                                const statusEl = r.querySelector('td:nth-child(5) span');
+                                if (statusEl && statusEl.textContent.trim() === 'Paid') paid++;
+                                const amtEl = r.querySelector('td:nth-child(4)');
+                                if (amtEl) total += parseFloat(amtEl.textContent.replace(/[^\d.]/g, '')) || 0;
+                            });
+                            document.getElementById('bh-total-count').textContent   = rows.length;
+                            document.getElementById('bh-paid-count').textContent    = paid;
+                            document.getElementById('bh-pending-count').textContent = rows.length - paid;
+                            document.getElementById('bh-total-amount').textContent  = '₱' + total.toLocaleString('en-PH', { maximumFractionDigits: 0 });
+                        }, 300);
+                    }
+                } else {
+                    alert('Failed to delete bill. Please try again.');
+                }
+            })
+            .catch(() => alert('Network error. Please try again.'));
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') { closeBillHistory(); }
+        });
+
+        // ===== Duplicate Bill Popup Dialog =====
+        function showDupDialog(message, onConfirm) {
+            document.getElementById('reader-dup-dialog-msg').textContent = message;
+            const dialog = document.getElementById('reader-dup-bill-dialog');
+
+            if (dialog.parentElement !== document.body) {
+                document.body.appendChild(dialog);
+            }
+
+            dialog.style.display = 'flex';
+            if (typeof dialog.showModal === 'function') {
+                try { dialog.showModal(); } catch (e) {}
+            }
+            document.body.style.overflow = 'hidden';
+
+            document.getElementById('reader-dup-dialog-confirm').onclick = function() {
+                hideDupDialog();
+                onConfirm();
+            };
+        }
+
+        function hideDupDialog() {
+            const dialog = document.getElementById('reader-dup-bill-dialog');
+            if (dialog) {
+                if (typeof dialog.close === 'function') {
+                    try { dialog.close(); } catch (e) {}
+                }
+                dialog.style.display = 'none';
+            }
+            document.body.style.overflow = '';
+        }
+
+        // Attach submit interceptors to all reader forms
+        document.addEventListener('DOMContentLoaded', function() {
+            const dialog = document.getElementById('reader-dup-bill-dialog');
+            if (dialog) {
+                dialog.addEventListener('cancel', function(e) {
+                    e.preventDefault(); // Prevent Escape key from closing warning
+                });
+            }
+
+            document.querySelectorAll('.reader-reading-form').forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    const forceInput = form.querySelector('.force-billing-input');
+                    if (forceInput && forceInput.value === '1') return; // already confirmed
+                    
+                    const customerId = form.dataset.customerId;
+                    const customerName = form.dataset.customerName;
+                    
+                    e.preventDefault();
+                    
+                    // AJAX check for existing bill this month
+                    fetch(`/reader/customers/${customerId}/bills`, {
+                        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        const bills = data.bills || [];
+                        const now = new Date();
+                        const duplicate = bills.find(b => {
+                            const d = new Date(b.billing_date);
+                            return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+                        });
+
+                        if (duplicate) {
+                            const monthName = new Date(duplicate.billing_date).toLocaleString('en-PH', { month: 'long', year: 'numeric' });
+                            const amount = parseFloat(duplicate.total_amount || 0).toLocaleString('en-PH', { maximumFractionDigits: 0 });
+                            showDupDialog(
+                                `${customerName} already has a bill of ₱${amount} for ${monthName}. Submitting again will create a second bill for the same month.`,
+                                function() {
+                                    if (forceInput) forceInput.value = '1';
+                                    form.submit();
+                                }
+                            );
+                        } else {
+                            form.submit(); // no duplicate, submit normally
+                        }
+                    })
+                    .catch(function() {
+                        form.submit(); // on error, let server handle it
+                    });
+                });
+            });
+        });
     </script>
+
+    {{-- ===== Duplicate Bill Confirm Dialog (Reader) ===== --}}
+    <dialog id="reader-dup-bill-dialog" class="fixed inset-0 z-[999999] p-4 m-auto bg-transparent border-none outline-none max-w-lg w-full items-center justify-center backdrop:bg-black/85 backdrop:backdrop-blur-md" style="display:none; color: #ffffff !important;">
+        <div class="relative bg-[#0f172a] border-2 border-amber-400 rounded-2xl shadow-[0_0_100px_rgba(245,158,11,0.5),0_30px_60px_rgba(0,0,0,0.95)] w-full max-w-lg overflow-hidden z-10"
+            style="animation: dupDialogIn 0.22s cubic-bezier(0.34,1.4,0.64,1) both; background-color: #0f172a !important; color: #ffffff !important;">
+            <div class="h-1.5 w-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500"></div>
+            <div class="p-6 sm:p-7">
+                <div class="flex items-start gap-4 mb-5">
+                    <div class="shrink-0 rounded-2xl shadow-lg" style="background-color: rgba(245, 158, 11, 0.25) !important; border: 2px solid rgba(251, 191, 36, 0.5) !important; padding: 0.75rem !important;">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #fbbf24 !important; stroke: #fbbf24 !important;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 style="color: #ffffff !important; font-weight: 900 !important; font-size: 1.25rem !important; margin: 0 !important; line-height: 1.2 !important;">Duplicate Bill Warning</h3>
+                        <p style="color: #fbbf24 !important; font-weight: 400 !important; font-size: 0.875rem !important; margin-top: 0.25rem !important; margin-bottom: 0 !important;">A bill already exists for this month</p>
+                    </div>
+                </div>
+                <div style="background-color: #1e1b18 !important; border: 2px solid #f59e0b !important; padding: 1rem !important; border-radius: 0.75rem !important; margin-bottom: 1.25rem !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;">
+                    <p id="reader-dup-dialog-msg" style="color: #ffffff !important; font-weight: 400 !important; font-size: 1rem !important; line-height: 1.5 !important; margin: 0 !important;"></p>
+                </div>
+                <p style="color: #ffffff !important; font-weight: 400 !important; font-size: 0.95rem !important; margin-bottom: 1.5rem !important;">Do you still want to generate a new bill for the same month?</p>
+                <div class="flex gap-3 justify-end">
+                    <button type="button" onclick="hideDupDialog()"
+                        style="background-color: #334155 !important; color: #ffffff !important; border: 2px solid #64748b !important; padding: 0.75rem 1.5rem !important; border-radius: 0.75rem !important; font-weight: 700 !important; font-size: 0.875rem !important; cursor: pointer !important;">
+                        Cancel
+                    </button>
+                    <button type="button" id="reader-dup-dialog-confirm"
+                        style="background-color: #fbbf24 !important; color: #0f172a !important; border: none !important; padding: 0.75rem 1.5rem !important; border-radius: 0.75rem !important; font-weight: 900 !important; font-size: 0.875rem !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; gap: 0.5rem !important; box-shadow: 0 4px 20px rgba(251, 191, 36, 0.5) !important;">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #0f172a !important; stroke: #0f172a !important;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Submit Anyway
+                    </button>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <style>
+        @keyframes dupDialogIn {
+            from { opacity: 0; transform: scale(0.92) translateY(12px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
 </x-layouts::app>

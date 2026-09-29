@@ -29,7 +29,7 @@
 
             <div class="bg-[#1b2636]/40 backdrop-blur-md rounded-2xl border border-[#2d4059]/50 p-6 relative overflow-hidden group hover:border-emerald-400/50 transition-all">
                 <div class="relative z-10">
-                    <p class="text-[11px] font-bold text-emerald-300 uppercase tracking-widest mb-1 drop-shadow-sm">Paid Customers</p>
+                    <p class="text-[11px] font-bold text-emerald-300 uppercase tracking-widest mb-1 drop-shadow-sm">Paid Consumers</p>
                     <h3 class="text-3xl font-black text-white tracking-tight drop-shadow-md">{{ $paidCustomersCount }}</h3>
                 </div>
                 <div class="absolute -right-3 -bottom-3 text-emerald-400/20 transform rotate-6 group-hover:rotate-0 transition-transform duration-500">
@@ -41,7 +41,7 @@
 
             <div class="bg-[#1b2636]/40 backdrop-blur-md rounded-2xl border border-[#2d4059]/50 p-6 relative overflow-hidden group hover:border-orange-500/50 transition-all">
                 <div class="relative z-10">
-                    <p class="text-[11px] font-bold text-orange-300 uppercase tracking-widest mb-1 drop-shadow-sm">Unpaid Customers</p>
+                    <p class="text-[11px] font-bold text-orange-300 uppercase tracking-widest mb-1 drop-shadow-sm">Unpaid Consumers</p>
                     <h3 class="text-3xl font-black text-white tracking-tight drop-shadow-md">{{ $unpaidCustomersCount }}</h3>
                 </div>
                 <div class="absolute -right-3 -bottom-3 text-orange-400/20 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500">
@@ -78,15 +78,29 @@
             </div>
         </div>
 
-        <h2 class="text-lg font-semibold mb-3 text-gray-200">Pending Bills</h2>
+        <div class="flex justify-between items-center mb-3">
+            <h2 class="text-lg font-semibold text-gray-200">Pending Bills</h2>
+            <button type="button" onclick="document.getElementById('printBatchForm').submit()" class="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-semibold transition-all shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                Print Selected
+            </button>
+        </div>
         
+        <form id="printBatchForm" action="{{ route('billing.print-batch') }}" method="POST" target="_blank">
+            @csrf
+        </form>
         <div class="bg-[#121a25]/80 backdrop-blur-md rounded-2xl shadow-sm overflow-x-auto mb-4 border border-[#263548] scrollbar-thin scrollbar-thumb-blue-500/30 scrollbar-track-transparent">
-            <table class="w-full text-left border-collapse min-w-[700px]">
-                <thead>
-                    <tr class="bg-blue-600/90 text-white">
+                <table class="w-full text-left border-collapse min-w-[700px]">
+                    <thead>
+                        <tr class="bg-blue-600/90 text-white">
+                            <th class="px-4 py-3 font-medium w-12">
+                                <input type="checkbox" id="selectAllPending" class="rounded border-blue-400 bg-transparent text-blue-500 focus:ring-blue-500" onclick="document.querySelectorAll('.bill-checkbox').forEach(cb => cb.checked = this.checked)">
+                            </th>
                         <th class="px-4 py-3 font-medium">Period</th>
                         <th class="px-4 py-3 font-medium">Account Number</th>
-                        <th class="px-4 py-3 font-medium">Customer</th>
+                        <th class="px-4 py-3 font-medium">Consumer</th>
                         <th class="px-4 py-3 font-medium">Usage</th>
                         <th class="px-4 py-3 font-medium">Bill</th>
                         <th class="px-4 py-3 font-medium">Action</th>
@@ -95,9 +109,12 @@
                 <tbody class="divide-y divide-blue-100">
                     @forelse($pendingBills as $bill)
                     <tr class="hover:bg-blue-50/50 transition-colors">
+                        <td class="px-4 py-3">
+                            <input type="checkbox" name="bill_ids[]" value="{{ $bill->id }}" class="bill-checkbox rounded border-gray-500 bg-transparent text-blue-500 focus:ring-blue-500" form="printBatchForm">
+                        </td>
                         <td class="px-4 py-3">{{ $bill->billing_date->format('F Y') }}</td>
                         <td class="px-4 py-3">{{ str_replace('CUST', '', $bill->customer?->customer_id ?? 'N/A') }}</td>
-                        <td class="px-4 py-3">{{ str_replace('Dummy Customer ', '', $bill->customer?->name ?? 'Deleted Customer') }}</td>
+                        <td class="px-4 py-3">{{ str_replace('Dummy Consumer ', '', $bill->customer?->name ?? 'Deleted Consumer') }}</td>
                         @php
                             $cType = $bill->customer?->type ?? 'Regular';
                             $greenMax = $thresholds[$cType]['green_max'] ?? 10;
@@ -141,7 +158,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-6 text-center text-gray-200 italic">No pending bills</td>
+                        <td colspan="7" class="px-4 py-6 text-center text-gray-200 italic">No pending bills</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -159,7 +176,7 @@
                     <tr class="bg-blue-600/90 text-white">
                         <th class="px-4 py-3 font-medium">Period</th>
                         <th class="px-4 py-3 font-medium">Account Number</th>
-                        <th class="px-4 py-3 font-medium">Customer</th>
+                        <th class="px-4 py-3 font-medium">Consumer</th>
                         <th class="px-4 py-3 font-medium">Usage</th>
                         <th class="px-4 py-3 font-medium">Bill</th>
                         <th class="px-4 py-3 font-medium">Action</th>
@@ -170,7 +187,7 @@
                     <tr class="hover:bg-blue-50/50 transition-colors">
                         <td class="px-4 py-3">{{ $bill->billing_date->format('F Y') }}</td>
                         <td class="px-4 py-3">{{ str_replace('CUST', '', $bill->customer?->customer_id ?? 'N/A') }}</td>
-                        <td class="px-4 py-3">{{ str_replace('Dummy Customer ', '', $bill->customer?->name ?? 'Deleted Customer') }}</td>
+                        <td class="px-4 py-3">{{ str_replace('Dummy Consumer ', '', $bill->customer?->name ?? 'Deleted Consumer') }}</td>
                         @php
                             $cType = $bill->customer?->type ?? 'Regular';
                             $greenMax = $thresholds[$cType]['green_max'] ?? 10;

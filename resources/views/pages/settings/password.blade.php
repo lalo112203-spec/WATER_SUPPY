@@ -120,15 +120,15 @@ new #[Title('Password settings')] class extends Component {
                 <flux:select wire:model.live="account_type" :label="__('Account to Update')">
                     <option value="admin">My Account (Admin)</option>
                     <option value="reader">Reader Account</option>
-                    <option value="customer">Customer Account</option>
+                    <option value="customer">Consumer Account</option>
                     <option value="system_lock">System Lock</option>
                 </flux:select>
             </div>
 
             @if($account_type === 'customer')
             <div class="mb-6">
-                <flux:select wire:model="selected_customer_id" :label="__('Select Customer')" searchable>
-                    <option value="">Choose a customer...</option>
+                <flux:select wire:model="selected_customer_id" :label="__('Select Consumer')" searchable>
+                    <option value="">Choose a consumer...</option>
                     @foreach($customers as $customerUser)
                         <option value="{{ $customerUser->id }}">
                             {{ $customerUser->customer?->customer_id ?? 'N/A' }} - {{ $customerUser->customer?->name ?? 'Unknown' }}

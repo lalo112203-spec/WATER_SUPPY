@@ -60,7 +60,7 @@
                     <tr class="bg-[#0f1722] text-[#94a3b8] uppercase text-xs tracking-wider">
                         <th class="px-6 py-4 font-semibold border-b border-[#263548]">Registration Code</th>
                         <th class="px-6 py-4 font-semibold border-b border-[#263548]">Status</th>
-                        <th class="px-6 py-4 font-semibold border-b border-[#263548]">Used By (Customer)</th>
+                        <th class="px-6 py-4 font-semibold border-b border-[#263548]">Used By (Consumer)</th>
                         <th class="px-6 py-4 font-semibold border-b border-[#263548]">Created At</th>
                         <th class="px-6 py-4 font-semibold text-right border-b border-[#263548]">Action</th>
                     </tr>
@@ -121,7 +121,7 @@
                                         d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                                 </svg>
                                 <p class="text-lg font-medium text-gray-300">No registration codes generated</p>
-                                <p class="text-sm mt-1 text-gray-200">Generate codes to allow new customers to register.</p>
+                                <p class="text-sm mt-1 text-gray-200">Generate codes to allow new Consumers to register.</p>
                             </td>
                         </tr>
                     @endforelse

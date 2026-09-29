@@ -67,7 +67,7 @@
                     <div>
                         <div x-data="{ selectedType: '{{ $defaultTab }}' }">
                     <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Select Customer Type to Configure</label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Select Consumer Type to Configure</label>
                         <select x-model="selectedType" class="w-full bg-[#1b2636]/40 border border-[#2d4059]/50 focus:border-blue-500/50 text-gray-200 text-sm rounded-xl py-2.5 px-4 outline-none transition-all placeholder:text-gray-600 focus:ring-1 focus:ring-blue-500/20">
                             @foreach($customerTypes as $type)
                                 <option value="{{ $type->id }}">{{ $type->name }}</option>
@@ -107,7 +107,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
-                                Add New Customer Type
+                                Add New Consumer Type
                             </button>
                         </div>
                         @endif
@@ -221,7 +221,7 @@
                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                 </svg>
             </button>
-            <h3 class="text-xl font-bold text-white mb-6">Add Customer Type</h3>
+            <h3 class="text-xl font-bold text-white mb-6">Add Consumer Type</h3>
             <form action="{{ route('settings.customer-type.store') }}" method="POST" class="space-y-4">
                 @csrf
                 <div>
@@ -248,7 +248,7 @@
                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                 </svg>
             </button>
-            <h3 class="text-xl font-bold text-white mb-6">Delete Customer Type</h3>
+            <h3 class="text-xl font-bold text-white mb-6">Delete Consumer Type</h3>
             <form id="deleteTypeForm" method="POST" class="space-y-4">
                 @csrf
                 @method('DELETE')

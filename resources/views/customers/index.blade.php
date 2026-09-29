@@ -1,4 +1,4 @@
-<x-layouts::app title="Customers">
+<x-layouts::app title="Consumers">
     <style>
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
@@ -8,8 +8,13 @@
             animation: fadeIn 0.3s ease-out forwards;
         }
         select:invalid {
-            color: #9ca3af !important; /* Tailwind gray-400 to match placeholder */
+            color: #9ca3af !important;
         }
+        @keyframes dupDialogIn {
+            from { opacity: 0; transform: scale(0.92) translateY(12px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .dup-dialog-panel { animation: dupDialogIn 0.22s cubic-bezier(0.34,1.4,0.64,1) both; }
     </style>
     <div class="px-4 py-2 bg-transparent min-h-[calc(100vh-4rem)] font-sans text-gray-200 relative z-10">
 
@@ -21,7 +26,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
-                    <span>Customers</span>
+                    <span>Consumers</span>
                 </h1>
             </div>
 
@@ -65,7 +70,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                             </svg>
-                            Register New Customer
+                            Register New Consumer
                         </button>
 
                         <div class="relative flex items-center bg-[#1b2636]/60 backdrop-blur-md border border-[#2d4059]/50 rounded-2xl overflow-hidden group focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-300 w-full h-11 shadow-inner">
@@ -103,7 +108,7 @@
                     </div>
                     <div class="relative z-10">
                         <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wider mb-2 drop-shadow-sm">Total Active
-                            Customers</h3>
+                            Consumers</h3>
                         <div
                             class="text-blue-600 dark:text-blue-400 flex items-center justify-center gap-3 drop-shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-500/30" fill="none"
@@ -134,7 +139,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                         </svg>
-                        Customer Growth Trend
+                        Consumer Growth Trend
                     </h3>
                     <div class="p-4 pt-0 flex-1 relative min-h-[160px] z-10">
                         <canvas id="customerChart"></canvas>
@@ -150,7 +155,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
-            Customer Directory
+            Consumer Directory
         </h2>
 
         <div
@@ -169,7 +174,7 @@
                 </thead>
                 <tbody class="divide-y divide-[#263548]">
                     @php $lastBarangay = null; @endphp
-                    @forelse($customers as $customer)
+                    @forelse($Consumers as $customer)
                         {{-- Only show barangay separator if we are NOT filtering by a specific barangay --}}
                         @if(!request('barangay') && $customer->barangay !== $lastBarangay)
                             <tr class="bg-[#1b2636]/60 text-[#94a3b8] uppercase text-[10px] tracking-widest">
@@ -236,18 +241,18 @@
                                     <button type="button" 
                                         onclick="openEditCustomerModal('{{ $customer->id }}', {{ Js::from($customer) }}); event.stopPropagation();"
                                         class="p-2 text-blue-400 bg-blue-900/20 hover:bg-blue-600/30 rounded-lg transition duration-300 border border-blue-700/30 shadow-sm"
-                                        title="Edit Customer">
+                                        title="Edit Consumer">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                         </svg>
                                     </button>
                                     <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="inline"
-                                        onsubmit="return confirm('Are you sure you want to delete this customer?');">
+                                        onsubmit="return confirm('Are you sure you want to delete this consumer?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" onclick="event.stopPropagation()"
                                             class="p-2 text-rose-400 bg-rose-900/20 hover:bg-rose-600/30 rounded-lg transition duration-300 border border-rose-700/30 shadow-sm"
-                                            title="Delete Customer">
+                                            title="Delete Consumer">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -271,7 +276,7 @@
                                             </span>
                                         </div>
                                         <div class="flex flex-col gap-1">
-                                            <span class="text-[10px] uppercase tracking-widest text-white font-bold">Customer Type</span>
+                                            <span class="text-[10px] uppercase tracking-widest text-white font-bold">Consumer Type</span>
                                             <span class="text-sm text-white font-medium">{{ $customer->type }}</span>
                                         </div>
                                     </div>
@@ -417,12 +422,12 @@
                                         class="inline-block mt-4 text-cyan-400 hover:text-cyan-300 transition text-sm font-medium">Clear
                                         search</a>
                                 @else
-                                    <p class="text-lg font-medium text-gray-300">No customers found</p>
+                                    <p class="text-lg font-medium text-gray-300">No Consumers found</p>
                                     <p class="text-sm mt-1 text-gray-200">Start by registering your first user to the water
                                         system.</p>
                                     <button type="button" onclick="window.Flux.modal('create-customer-modal').show()"
                                         class="inline-block mt-4 bg-cyan-600/80 border border-cyan-400/50 text-white px-5 py-2 rounded-xl text-sm hover:bg-cyan-500 transition shadow-[0_0_15px_rgba(6,182,212,0.3)] backdrop-blur-sm">Register
-                                        Customer</button>
+                                        Consumer</button>
                                 @endif
                             </td>
                         </tr>
@@ -433,7 +438,7 @@
 
         <!-- Pagination Links -->
         <div class="mt-4">
-            {{ $customers->links() }}
+            {{ $Consumers->links() }}
         </div>
     </div>
 
@@ -441,7 +446,7 @@
     <flux:modal name="quick-bill-modal" class="md:w-[500px] !bg-[#121a25] !border !border-[#2d4059] !text-gray-200">
         <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar">
             <flux:heading size="lg" class="mb-2 !text-white">Quick Add Reading</flux:heading>
-            <flux:subheading id="modal-customer-name" class="mb-6 !text-gray-400">Customer Name</flux:subheading>
+            <flux:subheading id="modal-customer-name" class="mb-6 !text-gray-400">Consumer Name</flux:subheading>
 
             <form action="{{ route('billing.store') }}" method="POST" id="quick-bill-form">
                 @csrf
@@ -449,6 +454,7 @@
                 <input type="hidden" name="billing_date" value="{{ now()->format('Y-m-d') }}">
                 <input type="hidden" name="due_date" value="{{ now()->addDays(30)->format('Y-m-d') }}">
                 <input type="hidden" name="consumption" id="modal_consumption_hidden">
+                <input type="hidden" name="force_billing" id="modal_force_billing" value="0">
 
                 <div class="space-y-4 sm:space-y-6">
                     <div class="bg-[#1b2636]/40 p-4 rounded-xl border border-[#2d4059]/50">
@@ -499,7 +505,7 @@
     <flux:modal name="create-customer-modal" class="md:w-[800px] !bg-[#121a25] !border !border-[#2d4059] !text-gray-200">
         <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar">
             <div class="flex items-center justify-between mb-4 border-b border-[#263548] pb-2">
-                <flux:heading size="lg" class="!text-white">Register New Customer</flux:heading>
+                <flux:heading size="lg" class="!text-white">Register New Consumer</flux:heading>
             </div>
             <form method="POST" action="{{ route('customers.store') }}">
                 @csrf
@@ -512,7 +518,7 @@
                         @if(old('form_type') === 'create') @error('customer_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
                     </div>
                     <div class="md:col-span-3">
-                        <label class="block text-gray-200 mb-2 text-xs font-bold uppercase tracking-wider text-cyan-500">Customer Name</label>
+                        <label class="block text-gray-200 mb-2 text-xs font-bold uppercase tracking-wider text-cyan-500">Consumer Name</label>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-gray-200 mb-1 text-[10px] font-medium">Surname <span class="text-red-500">*</span></label>
@@ -535,7 +541,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label class="block text-gray-200 mb-1 text-xs font-medium">Customer Type <span class="text-red-500">*</span></label>
+                        <label class="block text-gray-200 mb-1 text-xs font-medium">Consumer Type <span class="text-red-500">*</span></label>
                         <select name="customer_type_id" onchange="handleCustomerTypeColor(this)" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
                             <option value="" disabled selected hidden>Select Type</option>
                             @foreach($customerTypes as $type)
@@ -569,7 +575,7 @@
                 <div class="mb-4 bg-[#1a2432]/50 p-4 border border-[#263548] rounded">
                     <label class="flex items-center space-x-3 text-gray-300 font-medium mb-3 cursor-pointer">
                         <input type="checkbox" name="create_account" id="create_account" value="1" class="rounded text-[#42a5f5] focus:ring-[#42a5f5] bg-[#0f151e] border-[#263548] w-5 h-5 cursor-pointer" {{ (old('form_type') === 'create' && old('create_account')) ? 'checked' : '' }}>
-                        <span class="text-sm">Also Create Login Account for this Customer</span>
+                        <span class="text-sm">Also Create Login Account for this Consumer</span>
                     </label>
                     <div id="password_field" style="{{ (old('form_type') === 'create' && old('create_account')) ? 'display: block;' : 'display: none;' }}">
                         <label class="block text-gray-200 mb-1 text-xs font-medium">Password <span class="text-red-500">*</span></label>
@@ -583,7 +589,7 @@
                     <flux:modal.close>
                         <flux:button variant="ghost" class="px-6 !border !border-[#2d4059] !text-gray-300 hover:!bg-[#1b2636] hover:!text-white">Cancel</flux:button>
                     </flux:modal.close>
-                    <flux:button type="submit" variant="primary" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 transition-all font-bold text-white">Save Customer</flux:button>
+                    <flux:button type="submit" variant="primary" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 transition-all font-bold text-white">Save Consumer</flux:button>
                 </div>
             </form>
         </div>
@@ -593,7 +599,7 @@
     <flux:modal name="edit-customer-modal" class="md:w-[800px] !bg-[#121a25] !border !border-[#2d4059] !text-gray-200">
         <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar">
             <div class="flex items-center justify-between mb-4 border-b border-[#263548] pb-2">
-                <flux:heading size="lg" class="!text-white">Edit Customer</flux:heading>
+                <flux:heading size="lg" class="!text-white">Edit Consumer</flux:heading>
             </div>
             <form method="POST" id="edit-customer-form" action="{{ old('form_type') === 'edit' && old('customer_db_id') ? route('customers.update', old('customer_db_id')) : '' }}">
                 @csrf
@@ -608,7 +614,7 @@
                         @if(old('form_type') === 'edit') @error('customer_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror @endif
                     </div>
                     <div class="md:col-span-3">
-                        <label class="block text-gray-200 mb-2 text-xs font-bold uppercase tracking-wider text-cyan-500">Customer Name</label>
+                        <label class="block text-gray-200 mb-2 text-xs font-bold uppercase tracking-wider text-cyan-500">Consumer Name</label>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-gray-200 mb-1 text-[10px] font-medium">Surname <span class="text-red-500">*</span></label>
@@ -631,7 +637,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label class="block text-gray-200 mb-1 text-xs font-medium">Customer Type <span class="text-red-500">*</span></label>
+                        <label class="block text-gray-200 mb-1 text-xs font-medium">Consumer Type <span class="text-red-500">*</span></label>
                         <select name="customer_type_id" id="edit_customer_type_id" onchange="handleCustomerTypeColor(this)" required class="w-full px-3 py-2 border border-[#263548] rounded focus:outline-none focus:border-[#42a5f5] text-gray-200 bg-[#0f151e] shadow-sm">
                             <option value="" disabled selected hidden>Select Type</option>
                             @foreach($customerTypes as $type)
@@ -664,7 +670,7 @@
                     <flux:modal.close>
                         <flux:button variant="ghost" class="px-6 !border !border-[#2d4059] !text-gray-300 hover:!bg-[#1b2636] hover:!text-white">Cancel</flux:button>
                     </flux:modal.close>
-                    <flux:button type="submit" variant="primary" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 transition-all font-bold text-white">Update Customer</flux:button>
+                    <flux:button type="submit" variant="primary" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 transition-all font-bold text-white">Update Consumer</flux:button>
                 </div>
             </form>
         </div>
@@ -686,7 +692,7 @@
             document.getElementById('edit_meter_post').value = customer.meter_post || '';
             document.getElementById('edit_barangay').value = customer.barangay || '';
             
-            document.getElementById('edit-customer-form').action = `/customers/${id}`;
+            document.getElementById('edit-customer-form').action = `/Consumers/${id}`;
             window.Flux.modal('edit-customer-modal').show();
         }
 
@@ -746,6 +752,13 @@
             document.getElementById('modal_calc_breakdown').textContent = '';
             document.getElementById('modal_base_charge').value = 0;
             document.getElementById('modal_usage_charge').value = 0;
+
+            // Reset duplicate warning
+            document.getElementById('modal-duplicate-warning').classList.add('hidden');
+            document.getElementById('modal-duplicate-warning-text').textContent = '';
+            document.getElementById('modal_force_billing').value = '0';
+            const forceCb = document.getElementById('modal-force-checkbox');
+            if (forceCb) forceCb.checked = false;
             
             quickCustomerType = type;
             quickPrevReading = parseFloat(prevReading);
@@ -758,6 +771,32 @@
             setTimeout(() => {
                 document.getElementById('modal_present_reading').focus();
             }, 100);
+
+            // Reset duplicate state
+            window._quickBillDuplicate = false;
+            window._quickBillDuplicateMsg = '';
+            document.getElementById('modal_force_billing').value = '0';
+
+            // AJAX check: does this customer already have a bill this month?
+            const _now = new Date();
+            fetch(`/api/customers/${id}/readings`, {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                const readings = data.readings || [];
+                const duplicate = readings.find(bill => {
+                    const d = new Date(bill.billing_date);
+                    return d.getFullYear() === _now.getFullYear() && d.getMonth() === _now.getMonth();
+                });
+                if (duplicate) {
+                    const monthName = new Date(duplicate.billing_date).toLocaleString('en-PH', { month: 'long', year: 'numeric' });
+                    const amount = parseFloat(duplicate.total_amount || 0).toLocaleString('en-PH', { maximumFractionDigits: 0 });
+                    window._quickBillDuplicate = true;
+                    window._quickBillDuplicateMsg = `A bill of ₱${amount} was already recorded for ${monthName}. Submitting again will create a second bill for the same month.`;
+                }
+            })
+            .catch(() => {}); // silently fail — server-side check is the safety net
         }
 
         const systemSettings = {!! json_encode($settings) !!};
@@ -871,7 +910,7 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Total Customers',
+                            label: 'Total Consumers',
                             data: data,
                             borderColor: '#2563eb',
                             backgroundColor: 'rgba(37, 99, 235, 0.1)',
@@ -930,7 +969,7 @@
         // Debounced search auto-submit
         let searchTimeout;
         const searchInput = document.querySelector('input[name="search"]');
-        if (searchInput && searchInput.form && searchInput.form.action.includes('customers')) {
+        if (searchInput && searchInput.form && searchInput.form.action.includes('Consumers')) {
             searchInput.addEventListener('input', function() {
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => {
@@ -977,5 +1016,108 @@
                 handleCustomerTypeColor(document.getElementById('edit_customer_type_id'));
             };
         }
+    </script>
+
+    {{-- ===== Duplicate Bill Confirm Dialog ===== --}}
+    <dialog id="dup-bill-dialog" class="fixed inset-0 z-[999999] p-4 m-auto bg-transparent border-none outline-none max-w-lg w-full items-center justify-center backdrop:bg-black/85 backdrop:backdrop-blur-md" style="display:none; color: #ffffff !important;">
+        <div class="dup-dialog-panel relative bg-[#0f172a] border-2 border-amber-400 shadow-[0_0_100px_rgba(245,158,11,0.5),0_30px_60px_rgba(0,0,0,0.95)] w-full overflow-hidden rounded-2xl z-10" style="background-color: #0f172a !important; color: #ffffff !important;">
+            {{-- Top accent bar --}}
+            <div class="h-1.5 w-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500"></div>
+            <div class="p-6 sm:p-7">
+                {{-- Icon + Title --}}
+                <div class="flex items-start gap-4 mb-5">
+                    <div class="shrink-0 rounded-2xl shadow-lg" style="background-color: rgba(245, 158, 11, 0.25) !important; border: 2px solid rgba(251, 191, 36, 0.5) !important; padding: 0.75rem !important;">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #fbbf24 !important; stroke: #fbbf24 !important;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 style="color: #ffffff !important; font-weight: 900 !important; font-size: 1.25rem !important; margin: 0 !important; line-height: 1.2 !important;">Duplicate Bill Warning</h3>
+                        <p style="color: #fbbf24 !important; font-weight: 400 !important; font-size: 0.875rem !important; margin-top: 0.25rem !important; margin-bottom: 0 !important;">A bill already exists for this month</p>
+                    </div>
+                </div>
+
+                {{-- Message --}}
+                <div style="background-color: #1e1b18 !important; border: 2px solid #f59e0b !important; padding: 1rem !important; border-radius: 0.75rem !important; margin-bottom: 1.25rem !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;">
+                    <p id="dup-dialog-msg" style="color: #ffffff !important; font-weight: 400 !important; font-size: 1rem !important; line-height: 1.5 !important; margin: 0 !important;"></p>
+                </div>
+
+                {{-- Question --}}
+                <p style="color: #ffffff !important; font-weight: 400 !important; font-size: 0.95rem !important; margin-bottom: 1.5rem !important;">Do you still want to generate a new bill for the same month?</p>
+
+                {{-- Buttons --}}
+                <div class="flex gap-3 justify-end">
+                    <button type="button" onclick="hideDupDialog()"
+                        style="background-color: #334155 !important; color: #ffffff !important; border: 2px solid #64748b !important; padding: 0.75rem 1.5rem !important; border-radius: 0.75rem !important; font-weight: 700 !important; font-size: 0.875rem !important; cursor: pointer !important;">
+                        Cancel
+                    </button>
+                    <button type="button" id="dup-dialog-confirm"
+                        style="background-color: #fbbf24 !important; color: #0f172a !important; border: none !important; padding: 0.75rem 1.5rem !important; border-radius: 0.75rem !important; font-weight: 900 !important; font-size: 0.875rem !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; gap: 0.5rem !important; box-shadow: 0 4px 20px rgba(251, 191, 36, 0.5) !important;">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #0f172a !important; stroke: #0f172a !important;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Submit Anyway
+                    </button>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <script>
+        // ===== Duplicate Bill Dialog Helpers =====
+        function showDupDialog(message, onConfirm) {
+            document.getElementById('dup-dialog-msg').textContent = message;
+            const dialog = document.getElementById('dup-bill-dialog');
+            
+            if (dialog.parentElement !== document.body) {
+                document.body.appendChild(dialog);
+            }
+
+            dialog.style.display = 'flex';
+            if (typeof dialog.showModal === 'function') {
+                try { dialog.showModal(); } catch (e) {}
+            }
+            document.body.style.overflow = 'hidden';
+
+            document.getElementById('dup-dialog-confirm').onclick = function() {
+                hideDupDialog();
+                onConfirm();
+            };
+        }
+
+        function hideDupDialog() {
+            const dialog = document.getElementById('dup-bill-dialog');
+            if (dialog) {
+                if (typeof dialog.close === 'function') {
+                    try { dialog.close(); } catch (e) {}
+                }
+                dialog.style.display = 'none';
+            }
+            document.body.style.overflow = '';
+        }
+
+        // Intercept quick-bill-form submit to run duplicate check
+        document.addEventListener('DOMContentLoaded', function() {
+            const dialog = document.getElementById('dup-bill-dialog');
+            if (dialog) {
+                dialog.addEventListener('cancel', function(e) {
+                    e.preventDefault(); // Prevent Escape key from closing warning
+                });
+            }
+
+            const quickForm = document.getElementById('quick-bill-form');
+            if (quickForm) {
+                quickForm.addEventListener('submit', function(e) {
+                    if (document.getElementById('modal_force_billing').value === '1') return; // already confirmed
+                    if (!window._quickBillDuplicate) return; // no duplicate found
+                    e.preventDefault();
+                    showDupDialog(window._quickBillDuplicateMsg, function() {
+                        document.getElementById('modal_force_billing').value = '1';
+                        quickForm.submit();
+                    });
+                });
+            }
+        });
     </script>
 </x-layouts::app>

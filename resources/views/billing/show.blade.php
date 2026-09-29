@@ -8,7 +8,7 @@
         <flux:card class="mb-6">
             <div class="grid grid-cols-2 gap-6 mb-6">
                 <div>
-                    <flux:text class="text-zinc-500 dark:text-zinc-400 text-sm">Customer</flux:text>
+                    <flux:text class="text-zinc-500 dark:text-zinc-400 text-sm">Consumer</flux:text>
                     <flux:heading size="sm" class="mt-1">{{ $bill->customer->name }}</flux:heading>
                     <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">{{ $bill->customer->customer_id }}</flux:text>
                     <flux:text class="text-sm text-zinc-600 dark:text-zinc-400">{{ $bill->customer->meter_post ?? 'N/A' }}</flux:text>
@@ -153,7 +153,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-200 mb-1">Customer</label>
+                            <label class="block text-sm font-medium text-gray-200 mb-1">Consumer</label>
                             <input type="text" readonly value="{{ $bill->customer->name }} ({{ $bill->customer->customer_id }})" 
                                 class="w-full bg-[#1b2636]/40 border border-[#2d4059] text-gray-200 text-sm rounded-xl py-2 px-3 outline-none">
                         </div>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
@@ -96,8 +96,25 @@
             width: calc(100% - 32px) !important;
             box-sizing: border-box !important;
         }
-        
 
+        /* Message Icon Dot (Make it Red) */
+        .message-has-unread > div > div.absolute > div.rounded-full {
+            background-color: #ef4444 !important; /* red-500 */
+        }
+        
+        /* Force text color and background for badge */
+        .message-has-unread [data-flux-navlist-badge] {
+            background-color: #ef4444 !important; /* red-500 */
+            color: #ffffff !important;
+        }
+
+        /* Also target any badge element on the messages nav item */
+        [data-flux-sidebar-item].message-has-unread [data-flux-badge],
+        [data-flux-sidebar-item].message-has-unread span[class*="badge"],
+        [data-flux-navlist-item].message-has-unread [data-flux-navlist-badge] {
+            background-color: #ef4444 !important;
+            color: #ffffff !important;
+        }
 
         /* Default System Background (Wavy Blue) applied only to main content */
         html body {
@@ -425,8 +442,8 @@
 
                 @if(auth()->user()->role === 'admin')
                     <flux:sidebar.item icon="users" :href="route('customers.index')"
-                        :current="request()->routeIs('customers.*')" wire:navigate>
-                        <span>{{ __('Customers') }}</span>
+                        :current="request()->routeIs('Consumers.*')" wire:navigate>
+                        <span>{{ __('Consumers') }}</span>
                     </flux:sidebar.item>
 
                     <flux:sidebar.item icon="list-bullet" :href="route('billing.index')"
@@ -449,23 +466,27 @@
                     $unreadCount = \App\Models\Message::where('receiver_id', auth()->id())->whereNull('read_at')->count();
                 @endphp
                 <flux:sidebar.item icon="chat-bubble-left" :href="route('messages.index')"
-                    :current="request()->routeIs('messages.*')" wire:navigate>
-                    <div class="flex items-center justify-between w-full">
-                        @if(auth()->user()->role === 'admin')
-                            <span>{{ __('Message & Posting') }}</span>
-                        @else
-                            <span>{{ __('Messages') }}</span>
-                        @endif
-                        @if($unreadCount > 0)
-                            <span
-                                class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $unreadCount }}</span>
-                        @endif
-                    </div>
+                    :current="request()->routeIs('messages.*')" wire:navigate
+                    :badge="$unreadCount > 0 ? $unreadCount : null"
+                    badge-color="red"
+                    class="{{ $unreadCount > 0 ? 'message-has-unread' : '' }}"
+                >
+                    @if(auth()->user()->role === 'admin')
+                        {{ __('Message & Posting') }}
+                    @else
+                        {{ __('Messages') }}
+                    @endif
                 </flux:sidebar.item>
 
                 @if(auth()->user()->role === 'consumer')
+                    @php
+                        $announcementCount = \App\Models\Post::count();
+                    @endphp
                     <flux:sidebar.item icon="megaphone" :href="route('consumer.announcements')"
-                        :current="request()->routeIs('consumer.announcements')" wire:navigate>
+                        :current="request()->routeIs('consumer.announcements')" wire:navigate
+                        :badge="$announcementCount > 0 ? $announcementCount : null"
+                        badge-color="red"
+                    >
                         <span>{{ __('Announcements') }}</span>
                     </flux:sidebar.item>
                 @endif

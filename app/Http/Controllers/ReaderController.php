@@ -57,6 +57,25 @@ class ReaderController extends Controller
             return redirect()->back()->withErrors(['reading' => "No water used. Bill cannot be generated for zero consumption."]);
         }
 
+        // Check for existing bill in the same month
+        $today = now();
+        $existingBill = Bill::where('customer_id', $customer->id)
+            ->whereYear('billing_date', $today->year)
+            ->whereMonth('billing_date', $today->month)
+            ->first();
+
+        if ($existingBill && !$request->boolean('force_billing')) {
+            return redirect()->back()
+                ->with('billing_warning', [
+                    'customer_id'   => $customer->id,
+                    'customer_name' => $customer->name,
+                    'month'         => $existingBill->billing_date->format('F Y'),
+                    'amount'        => number_format($existingBill->total_amount, 2),
+                    'bill_id'       => $existingBill->id,
+                    'prefill_reading' => $currentReading,
+                ]);
+        }
+
         $customerType = $customer->customerType;
         if (!$customerType) {
             $baseLimit = 10;
@@ -112,5 +131,49 @@ class ReaderController extends Controller
 
         return redirect()->route('reader.dashboard')
             ->with('success', 'Reading successfully submitted and bill generated for ' . $customer->name);
+    }
+
+    public function getBillHistory(Customer $customer)
+    {
+        $bills = Bill::where('customer_id', $customer->id)
+            ->orderBy('billing_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->get(['id', 'billing_date', 'previous_reading', 'new_reading', 'usage_units', 'consumption', 'total_amount', 'status', 'due_date', 'paid_date']);
+
+        return response()->json([
+            'customer' => [
+                'id'          => $customer->id,
+                'name'        => $customer->name,
+                'customer_id' => $customer->customer_id,
+                'type'        => $customer->type,
+            ],
+            'bills' => $bills,
+        ]);
+    }
+
+    public function viewReceipt(Bill $bill)
+    {
+        return view('billing.receipt', compact('bill'));
+    }
+
+    public function deleteBill(Bill $bill)
+    {
+        $customerId = $bill->customer_id;
+        $bill->delete();
+
+        // Revert customer meter reading to the latest remaining bill
+        $latestBill = Bill::where('customer_id', $customerId)
+            ->orderBy('billing_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $customer = Customer::find($customerId);
+        if ($customer) {
+            $customer->update([
+                'meter_reading' => $latestBill ? $latestBill->new_reading : 0
+            ]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Bill deleted successfully.']);
     }
 }

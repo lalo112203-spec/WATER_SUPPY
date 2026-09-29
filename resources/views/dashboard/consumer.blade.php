@@ -67,11 +67,23 @@
                         <svg class="w-6 h-6 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         Billing Overview
                     </h2>
+                    <button type="button" onclick="document.getElementById('printBatchForm').submit()" class="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] sm:text-sm font-semibold transition-all shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        Print Selected
+                    </button>
                 </div>
+                <form id="printBatchForm" action="{{ route('billing.print-batch') }}" method="POST" target="_blank">
+                    @csrf
+                </form>
                 <div class="overflow-x-auto w-full">
                     <table class="w-full text-left border-collapse min-w-full">
                         <thead class="bg-[#0f1722]/80 text-[10px] sm:text-[12px]">
                             <tr>
+                                <th class="px-2 sm:px-4 py-3 font-medium w-12 border-b border-[#263548]">
+                                    <input type="checkbox" class="rounded border-blue-400 bg-transparent text-blue-500 focus:ring-blue-500" onclick="document.querySelectorAll('.bill-checkbox').forEach(cb => cb.checked = this.checked)">
+                                </th>
                                 <th class="px-1 sm:px-6 py-3 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Date</th>
                                 <th class="px-1 sm:px-6 py-3 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Usage</th>
                                 <th class="px-1 sm:px-6 py-3 font-bold text-gray-200 uppercase tracking-widest border-b border-[#263548]">Total</th>
@@ -83,6 +95,9 @@
                             @if(isset($customer) && $customer->bills->count() > 0)
                                 @foreach($customer->bills as $bill)
                                     <tr class="hover:bg-blue-50/30 transition-colors">
+                                        <td class="px-2 sm:px-4 py-4 whitespace-nowrap">
+                                            <input type="checkbox" name="bill_ids[]" value="{{ $bill->id }}" class="bill-checkbox rounded border-gray-500 bg-transparent text-blue-500 focus:ring-blue-500" form="printBatchForm">
+                                        </td>
                                         <td class="px-1 sm:px-6 py-4 whitespace-nowrap text-[11px] sm:text-[15px] font-semibold text-gray-200 tracking-tight">{{ \Carbon\Carbon::parse($bill->billing_date)->format('M d, y') }}</td>
                                         <td class="px-1 sm:px-6 py-4 whitespace-nowrap text-[11px] sm:text-[15px] font-medium text-gray-200">{{ $bill->usage_units }} <span class="text-[9px] sm:text-xs">m³</span></td>
                                         <td class="px-1 sm:px-6 py-4 whitespace-nowrap text-[11px] sm:text-[15px] font-bold text-gray-100">₱{{ number_format($bill->total_amount, 0) }}</td>
@@ -112,7 +127,7 @@
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center">
+                                    <td colspan="6" class="px-6 py-12 text-center">
                                         <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#0f1722] mb-3 border border-[#263548]">
                                             <svg class="w-6 h-6 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                         </div>

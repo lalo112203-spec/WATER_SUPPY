@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Report - {{ $monthName }}</title>
+    <title>Consumer Report - {{ $monthName }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
@@ -22,10 +22,10 @@
         <!-- Header -->
         <div class="flex justify-between items-start border-b-2 border-white/20 pb-8 mb-8">
             <div>
-                <h1 class="text-3xl font-black text-white uppercase">Customer Directory Backup</h1>
+                <h1 class="text-3xl font-black text-white uppercase">Consumer Directory Backup</h1>
                 <p class="text-gray-200 font-medium">As of end of {{ $monthName }}</p>
                 <div class="mt-4 flex gap-6 text-sm text-gray-600">
-                    <div><span class="font-bold text-gray-800">Total Records:</span> {{ $customers->count() }}</div>
+                    <div><span class="font-bold text-gray-800">Total Records:</span> {{ $Consumers->count() }}</div>
                     <div><span class="font-bold text-gray-800">Generated:</span> {{ now()->format('M d, Y h:i A') }}</div>
                 </div>
             </div>
@@ -50,7 +50,7 @@
             <thead>
                 <tr class="bg-gray-50">
                     <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700">Account Number</th>
-                    <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700">Customer Name</th>
+                    <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700">Consumer Name</th>
                     <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700">Type</th>
                     <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700">Barangay</th>
                     <th class="py-4 px-3 border border-gray-200 font-bold text-gray-700 text-center">Present Reading (m³)</th>
@@ -59,7 +59,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($customers as $customer)
+                @forelse($Consumers as $customer)
                     <tr class="odd:bg-white/10 even:bg-gray-50/50">
                         <td class="px-3 py-3 border border-gray-200 font-mono font-bold">{{ $customer->customer_id }}</td>
                         <td class="px-3 py-3 border border-gray-200 uppercase font-medium">{{ $customer->name }}</td>

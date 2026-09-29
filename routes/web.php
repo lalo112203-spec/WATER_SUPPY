@@ -17,6 +17,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Reader
     Route::get('reader/dashboard', [\App\Http\Controllers\ReaderController::class, 'index'])->name('reader.dashboard');
     Route::post('reader/reading', [\App\Http\Controllers\ReaderController::class, 'storeReading'])->name('reader.storeReading');
+    Route::get('reader/customers/{customer}/bills', [\App\Http\Controllers\ReaderController::class, 'getBillHistory'])->name('reader.billHistory');
+    Route::get('reader/bills/{bill}/receipt', [\App\Http\Controllers\ReaderController::class, 'viewReceipt'])->name('reader.receipt');
+    Route::delete('reader/bills/{bill}', [\App\Http\Controllers\ReaderController::class, 'deleteBill'])->name('reader.deleteBill');
 
     Route::middleware([\App\Http\Middleware\PreventReaderAccess::class])->group(function () {
         Route::get('/consumer/announcements', [DashboardController::class, 'consumerAnnouncements'])->name('consumer.announcements');
@@ -44,6 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::put('billing/{bill}', [BillingController::class, 'update'])->name('billing.update');
     Route::get('billing/{bill}/receipt', [BillingController::class, 'receipt'])->name('billing.receipt');
+    Route::post('billing/print-batch', [BillingController::class, 'printBatch'])->name('billing.print-batch');
     Route::patch('billing/{bill}/mark-paid', [BillingController::class, 'markAsPaid'])->name('billing.mark-paid');
     Route::delete('billing/{bill}', [BillingController::class, 'destroy'])->name('billing.destroy');
 
