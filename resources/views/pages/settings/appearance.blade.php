@@ -40,9 +40,11 @@ new #[Title('Appearance settings')] class extends Component {
         }
         $path = $this->background_image->store('backgrounds', 'public');
         $user->background_image = $path;
+        $user->background_url = null;
         $user->save();
+        $this->background_url = '';
         $this->background_image = null; // Clear from temporary component state
-        session()->flash('status', 'Background image updated successfully.');
+        session()->flash('status', 'Background image uploaded successfully.');
         $this->redirectIntended(route('appearance.edit'));
     }
 
@@ -53,7 +55,9 @@ new #[Title('Appearance settings')] class extends Component {
         }
         $path = $this->messenger_background->store('messenger_backgrounds', 'public');
         $user->messenger_background = $path;
+        $user->messenger_background_url = null;
         $user->save();
+        $this->messenger_background_url = '';
         $this->messenger_background = null;
         session()->flash('status', 'Messenger background updated successfully.');
         $this->redirectIntended(route('appearance.edit'));
@@ -61,6 +65,9 @@ new #[Title('Appearance settings')] class extends Component {
 
     public function updatedBackgroundUrl() {
         $user = auth()->user();
+        if (trim($this->background_url) !== '') {
+            $user->background_image = null;
+        }
         $user->background_url = $this->background_url;
         $user->save();
         session()->flash('status', 'Background URL updated successfully.');
@@ -69,6 +76,9 @@ new #[Title('Appearance settings')] class extends Component {
 
     public function updatedMessengerBackgroundUrl() {
         $user = auth()->user();
+        if (trim($this->messenger_background_url) !== '') {
+            $user->messenger_background = null;
+        }
         $user->messenger_background_url = $this->messenger_background_url;
         $user->save();
         session()->flash('status', 'Messenger background URL updated successfully.');

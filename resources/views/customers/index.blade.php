@@ -777,7 +777,16 @@
             
             document.getElementById('modal_present_reading').min = quickPrevReading;
             
-            window.Flux.modal('quick-bill-modal').show();
+            if (window.Flux && typeof window.Flux.modal === 'function') {
+                window.Flux.modal('quick-bill-modal').show();
+            } else {
+                const modalEl = document.querySelector('[name="quick-bill-modal"]');
+                if (modalEl && typeof modalEl.showModal === 'function') {
+                    modalEl.showModal();
+                } else if (modalEl) {
+                    modalEl.classList.remove('hidden');
+                }
+            }
             
             // Focus input after modal is shown
             setTimeout(() => {
