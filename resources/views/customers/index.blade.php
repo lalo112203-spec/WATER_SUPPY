@@ -474,14 +474,14 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <flux:field>
-                            <flux:label class="!text-gray-300">Base Charge</flux:label>
-                            <flux:input name="base_charge" id="modal_base_charge" type="number" step="0.01" oninput="updateQuickTotal()" class="!bg-[#0f1722] !border-[#2d4059] !text-gray-200 opacity-70 cursor-not-allowed" readonly />
-                        </flux:field>
-                        <flux:field>
-                            <flux:label class="!text-gray-300">Usage Charge</flux:label>
-                            <flux:input name="usage_charge" id="modal_usage_charge" type="number" step="0.01" oninput="updateQuickTotal()" class="!bg-[#0f1722] !border-[#2d4059] !text-gray-200 opacity-70 cursor-not-allowed" readonly />
-                        </flux:field>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-1">Base Charge (₱)</label>
+                            <input type="number" step="0.01" name="base_charge" id="modal_base_charge" oninput="updateQuickTotal()" class="w-full bg-[#0f1722] border border-[#2d4059] text-gray-200 px-3 py-2 rounded-xl text-sm outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-1">Usage Charge (₱)</label>
+                            <input type="number" step="0.01" name="usage_charge" id="modal_usage_charge" oninput="updateQuickTotal()" class="w-full bg-[#0f1722] border border-[#2d4059] text-gray-200 px-3 py-2 rounded-xl text-sm outline-none focus:border-emerald-500">
+                        </div>
                     </div>
 
                     <div class="bg-emerald-500/10 p-4 rounded-2xl border border-emerald-500/30 flex justify-between items-center px-6">

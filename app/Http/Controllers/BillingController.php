@@ -111,16 +111,19 @@ class BillingController extends Controller
     {
         $validated = $request->validate([
             'customer_id' => 'required|exists:customers,id',
-            'billing_date' => 'required|date',
+            'billing_date' => 'nullable|date',
             'new_reading' => 'required|numeric|min:0',
-            'consumption' => 'required|numeric|min:0',
-            'base_charge' => 'required|numeric',
-            'usage_charge' => 'required|numeric',
+            'consumption' => 'nullable|numeric|min:0',
+            'base_charge' => 'nullable|numeric',
+            'usage_charge' => 'nullable|numeric',
             'additional_charge_amount' => 'nullable|numeric|min:0',
             'additional_charge_note' => 'nullable|string',
-            'due_date' => 'required|date|after:billing_date',
+            'due_date' => 'nullable|date',
         ]);
- 
+
+        $validated['billing_date'] = $validated['billing_date'] ?? now()->format('Y-m-d');
+        $validated['due_date'] = $validated['due_date'] ?? \Carbon\Carbon::parse($validated['billing_date'])->addDays(30)->format('Y-m-d');
+
         // Check for an existing bill in the same month
         $billingDate = \Carbon\Carbon::parse($validated['billing_date']);
         $existingBill = Bill::where('customer_id', $validated['customer_id'])
@@ -145,19 +148,40 @@ class BillingController extends Controller
 
         $customer = Customer::find($validated['customer_id']);
         $previousReading = $customer ? ($customer->meter_reading ?? 0) : 0;
-        $newReading = $validated['new_reading'];
-        $usage = $newReading - $previousReading;
+        $newReading = (float) $validated['new_reading'];
+        $usage = max(0, $newReading - $previousReading);
+
+        // Fetch customer type rates dynamically if charges are not passed
+        $customerType = $customer ? $customer->customerType : null;
+        if (!$customerType && $customer) {
+            $customerType = \App\Models\CustomerType::where('name', $customer->type)->first();
+        }
+
+        $baseRate = $customerType ? $customerType->base_rate : 150;
+        $usageRate = $customerType ? $customerType->usage_rate : 15;
+        $baseLimit = $customerType ? $customerType->base_limit : 10;
+
+        $baseCharge = (isset($validated['base_charge']) && is_numeric($validated['base_charge'])) ? (float)$validated['base_charge'] : $baseRate;
+        
+        if (isset($validated['usage_charge']) && is_numeric($validated['usage_charge'])) {
+            $usageCharge = (float)$validated['usage_charge'];
+        } else {
+            $billableUsage = max(0, $usage - $baseLimit);
+            $usageCharge = $billableUsage * $usageRate;
+        }
 
         $validated['previous_reading'] = $previousReading;
         $validated['new_reading'] = $newReading;
-        $validated['usage_units'] = max(0, $usage);
-        $validated['consumption'] = max(0, $usage);
+        $validated['usage_units'] = $usage;
+        $validated['consumption'] = $usage;
+        $validated['base_charge'] = $baseCharge;
+        $validated['usage_charge'] = $usageCharge;
         $validated['applied_additional_charges'] = $globalAdditionalCharges;
-        $validated['total_amount'] = ($validated['base_charge'] + $validated['usage_charge']) + (($validated['additional_charge_amount'] ?? 0) + $globalAdditionalChargeTotal);
+        $validated['total_amount'] = ($baseCharge + $usageCharge) + (($validated['additional_charge_amount'] ?? 0) + $globalAdditionalChargeTotal);
         $validated['status'] = 'Pending';
- 
+
         $bill = Bill::create($validated);
- 
+
         if ($customer) {
             $customer->update([
                 'meter_reading' => $newReading
@@ -170,10 +194,14 @@ class BillingController extends Controller
                     'message' => 'A new bill for the amount of ' . number_format($validated['total_amount'], 2) . ' has been generated. Due date is ' . \Carbon\Carbon::parse($validated['due_date'])->format('M d, Y') . '.',
                 ]);
                 
-                $customer->user->notify(new \App\Notifications\NewBillPushNotification($validated['total_amount'], \Carbon\Carbon::parse($validated['due_date'])->format('M d, Y')));
+                try {
+                    $customer->user->notify(new \App\Notifications\NewBillPushNotification($validated['total_amount'], \Carbon\Carbon::parse($validated['due_date'])->format('M d, Y')));
+                } catch (\Throwable $e) {
+                    // Ignore push notification errors to avoid breaking bill generation
+                }
             }
         }
- 
+
         return redirect()->back()
             ->with('success', 'Bill created successfully');
     }
