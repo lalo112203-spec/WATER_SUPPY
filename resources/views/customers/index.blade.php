@@ -705,7 +705,22 @@
             document.getElementById('edit_barangay').value = customer.barangay || '';
             
             document.getElementById('edit-customer-form').action = `/Consumers/${id}`;
-            window.Flux.modal('edit-customer-modal').show();
+            safeShowModal('edit-customer-modal');
+        }
+
+        function safeShowModal(name) {
+            if (window.Flux && typeof window.Flux.modal === 'function') {
+                try {
+                    window.Flux.modal(name).show();
+                    return;
+                } catch (e) {}
+            }
+            const modalEl = document.querySelector(`[name="${name}"], #${name}`);
+            if (modalEl && typeof modalEl.showModal === 'function') {
+                modalEl.showModal();
+            } else if (modalEl) {
+                modalEl.classList.remove('hidden');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -726,9 +741,9 @@
 
             @if($errors->any())
                 @if(old('form_type') === 'create')
-                    setTimeout(() => window.Flux.modal('create-customer-modal').show(), 100);
+                    setTimeout(() => safeShowModal('create-customer-modal'), 100);
                 @elseif(old('form_type') === 'edit')
-                    setTimeout(() => window.Flux.modal('edit-customer-modal').show(), 100);
+                    setTimeout(() => safeShowModal('edit-customer-modal'), 100);
                 @endif
             @endif
         });
@@ -777,16 +792,7 @@
             
             document.getElementById('modal_present_reading').min = quickPrevReading;
             
-            if (window.Flux && typeof window.Flux.modal === 'function') {
-                window.Flux.modal('quick-bill-modal').show();
-            } else {
-                const modalEl = document.querySelector('[name="quick-bill-modal"]');
-                if (modalEl && typeof modalEl.showModal === 'function') {
-                    modalEl.showModal();
-                } else if (modalEl) {
-                    modalEl.classList.remove('hidden');
-                }
-            }
+            safeShowModal('quick-bill-modal');
             
             // Focus input after modal is shown
             setTimeout(() => {
