@@ -39,8 +39,14 @@
                 placeholder="Enter your address"
             />
 
-            <!-- Registration Code (Only appears if override is needed or duplicate detected) -->
-            <div x-data="{ showCode: {{ $errors->has('registration_code') || $errors->has('account_number') ? 'true' : 'false' }} }">
+            <!-- Registration Code -->
+            <div x-data="{ showCode: {{ $errors->has('registration_code') || $errors->has('account_number') || old('registration_code') ? 'true' : 'false' }} }">
+                <div class="mb-2 text-right">
+                    <button type="button" @click="showCode = !showCode" class="text-xs text-blue-500 hover:text-blue-400 font-medium underline focus:outline-none">
+                        <span x-show="!showCode">+ Have a Registration Code?</span>
+                        <span x-show="showCode">- Hide Registration Code Field</span>
+                    </button>
+                </div>
                 <div x-show="showCode" x-transition class="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl mb-4">
                     <flux:input
                         name="registration_code"
@@ -50,8 +56,8 @@
                         maxlength="8"
                         placeholder="Enter 8-digit code"
                     />
-                    <p class="mt-2 text-[11px] text-yellow-500/70 italic leading-snug">
-                        An account already exists for this customer. Please provide a registration code from the **D.W.S.S. Office** to confirm your identity and override the existing account.
+                    <p class="mt-2 text-[11px] text-yellow-500/80 italic leading-snug">
+                        Provide an 8-digit registration code from the **D.W.S.S. Office** if you are overriding an existing account or verifying identity.
                     </p>
                 </div>
             </div>

@@ -17,10 +17,22 @@
 
                 <form method="POST" action="{{ route('settings.authorize') }}" class="w-full space-y-5">
                     @csrf
-                    <div class="space-y-1">
-                        <input name="password" type="password" required autofocus
-                            placeholder="Enter Master Password"
-                            class="w-full bg-[#1b2636]/60 border border-[#2d4059] focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 text-white text-center py-4 px-4 rounded-2xl outline-none transition-all placeholder:text-gray-600 font-mono tracking-widest">
+                    <div class="space-y-1" x-data="{ show: false }">
+                        <div class="relative">
+                            <input name="password" :type="show ? 'text' : 'password'" required autofocus
+                                placeholder="Enter Master Password"
+                                class="w-full bg-[#1b2636]/60 border border-[#2d4059] focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 text-white text-center py-4 pl-4 pr-12 rounded-2xl outline-none transition-all placeholder:text-gray-600 font-mono tracking-widest">
+                            <button type="button" @click="show = !show" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors focus:outline-none">
+                                <svg x-show="!show" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <svg x-show="show" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.025 10.025 0 0110.665 4.937c-1.274 4.057-5.064 7-9.542 7-1.07 0-2.1-.17-3.064-.486m-2.868-2.868A8.966 8.966 0 013 12c.5-1.278 1.258-2.42 2.215-3.375" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
+                                </svg>
+                            </button>
+                        </div>
                         
                         @if ($errors->any())
                             <p class="text-rose-500 text-xs mt-2 font-bold animate-pulse">

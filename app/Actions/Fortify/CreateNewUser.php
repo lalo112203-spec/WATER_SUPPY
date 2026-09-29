@@ -27,14 +27,14 @@ class CreateNewUser implements CreatesNewUsers
             'address' => ['required', 'string'],
             'registration_code' => ['nullable', 'string', 'size:8'],
         ])->after(function ($validator) use ($input) {
-            $customerByNumber = Customer::where('customer_id', $input['account_number'])->first();
+            $customerByNumber = Customer::where('customer_id', trim($input['account_number']))->first();
 
             if (!$customerByNumber) {
                 $validator->errors()->add('account_number', 'This account number could not be found in our system.');
             } else {
-                $customerMatch = Customer::where('customer_id', $input['account_number'])
-                    ->whereRaw('LOWER(name) = ?', [strtolower($input['name'])])
-                    ->whereRaw('LOWER(address) LIKE ?', ['%' . strtolower($input['address']) . '%'])
+                $customerMatch = Customer::where('customer_id', trim($input['account_number']))
+                    ->whereRaw('LOWER(name) = ?', [strtolower(trim($input['name']))])
+                    ->whereRaw('LOWER(address) LIKE ?', ['%' . strtolower(trim($input['address'])) . '%'])
                     ->first();
 
                 if (!$customerMatch) {
@@ -43,28 +43,27 @@ class CreateNewUser implements CreatesNewUsers
                 } else {
                     // Check if user already exists for this customer
                     $existingUser = User::where('customer_id', $customerMatch->id)->first();
-                    if ($existingUser) {
-                        // If account exists, require a registration code to proceed
-                        if (empty($input['registration_code'])) {
-                            $validator->errors()->add('account_number', 'An account has already been created for this customer. Please provide a registration code to override and create a new one.');
-                        } else {
-                            // Validate the provided code
-                            $code = \App\Models\RegistrationCode::where('code', $input['registration_code'])
-                                ->where('is_used', false)
-                                ->first();
+                    if ($existingUser && empty($input['registration_code'])) {
+                        $validator->errors()->add('account_number', 'An account has already been created for this customer. Please provide a registration code to override and create a new one.');
+                    }
 
-                            if (!$code) {
-                                $validator->errors()->add('registration_code', 'The registration code is invalid or has already been used.');
-                            }
+                    // If a registration code is provided, validate it
+                    if (!empty($input['registration_code'])) {
+                        $code = \App\Models\RegistrationCode::where('code', strtoupper(trim($input['registration_code'])))
+                            ->where('is_used', false)
+                            ->first();
+
+                        if (!$code) {
+                            $validator->errors()->add('registration_code', 'The registration code is invalid or has already been used.');
                         }
                     }
                 }
             }
         })->validate();
 
-        $customer = Customer::where('customer_id', $input['account_number'])->first();
+        $customer = Customer::where('customer_id', trim($input['account_number']))->first();
 
-        // If an override is happening, delete the old user first
+        // If an override is happening with valid registration code, delete old user
         if (!empty($input['registration_code'])) {
             $existingUser = User::where('customer_id', $customer->id)->first();
             if ($existingUser) {
@@ -83,7 +82,7 @@ class CreateNewUser implements CreatesNewUsers
 
         // Mark code as used if provided
         if (!empty($input['registration_code'])) {
-            $code = \App\Models\RegistrationCode::where('code', $input['registration_code'])->first();
+            $code = \App\Models\RegistrationCode::where('code', strtoupper(trim($input['registration_code'])))->first();
             if ($code) {
                 $code->update([
                     'is_used' => true,
