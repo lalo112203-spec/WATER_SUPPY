@@ -80,7 +80,7 @@
 
         <div class="flex justify-between items-center mb-3">
             <h2 class="text-lg font-semibold text-gray-200">Pending Bills</h2>
-            <button type="button" onclick="document.getElementById('printBatchForm').submit()" class="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-semibold transition-all shadow-sm">
+            <button type="button" onclick="submitPrintBatch()" class="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-semibold transition-all shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                 </svg>
@@ -234,6 +234,24 @@
         </div>
     </div>
     <script>
+        function submitPrintBatch() {
+            const checked = document.querySelectorAll('.bill-checkbox:checked');
+            if (checked.length === 0) {
+                alert('Please select at least one pending bill to print.');
+                return;
+            }
+            const form = document.getElementById('printBatchForm');
+            form.innerHTML = '{{ csrf_field() }}';
+            checked.forEach(cb => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'bill_ids[]';
+                input.value = cb.value;
+                form.appendChild(input);
+            });
+            form.submit();
+        }
+
         // Debounced search auto-submit
         let searchTimeout;
         const searchInput = document.querySelector('input[name="search"]');
