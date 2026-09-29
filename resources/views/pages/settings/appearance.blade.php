@@ -59,7 +59,21 @@ new #[Title('Appearance settings')] class extends Component {
         $this->redirectIntended(route('appearance.edit'));
     }
 
+    public function updatedBackgroundUrl() {
+        $user = auth()->user();
+        $user->background_url = $this->background_url;
+        $user->save();
+        session()->flash('status', 'Background URL updated successfully.');
+        $this->redirectIntended(route('appearance.edit'));
+    }
 
+    public function updatedMessengerBackgroundUrl() {
+        $user = auth()->user();
+        $user->messenger_background_url = $this->messenger_background_url;
+        $user->save();
+        session()->flash('status', 'Messenger background URL updated successfully.');
+        $this->redirectIntended(route('appearance.edit'));
+    }
 
     public function updatedTextSize() {
         $user = auth()->user();

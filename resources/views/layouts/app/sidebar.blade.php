@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
@@ -128,20 +128,30 @@
         flux\:main {
             @if(auth()->check() && auth()->user()->background_url)
                 background-image: url("{{ auth()->user()->background_url }}") !important;
+                background-size: cover !important;
+                background-attachment: fixed !important;
+                background-position: center !important;
             @elseif(auth()->check() && auth()->user()->background_image)
                 background-image: url("{{ asset('storage/' . auth()->user()->background_image) }}") !important;
+                background-size: cover !important;
+                background-attachment: fixed !important;
+                background-position: center !important;
+            @elseif(auth()->check() && auth()->user()->background_color)
+                background: {{ auth()->user()->background_color }} !important;
+                background-image: none !important;
             @else
                 background-image: url("{{ asset('images/system_bg.png') }}") !important;
+                background-size: cover !important;
+                background-attachment: fixed !important;
+                background-position: center !important;
             @endif
-            background-size: cover !important;
-            background-attachment: fixed !important;
-            background-position: center !important;
             min-height: 100vh;
         }
 
         /* Custom Theme Overrides (Fully implemented for internet-wide support) */
         @if(auth()->check() && (auth()->user()->background_image || auth()->user()->background_url || auth()->user()->background_color || auth()->user()->font_family))
-            html.custom-theme body {
+            html body,
+            html main {
                 @if(auth()->user()->background_url)
                     background-image: url("{{ auth()->user()->background_url }}") !important;
                     background-size: cover !important;
@@ -153,7 +163,8 @@
                     background-attachment: fixed !important;
                     background-position: center !important;
                 @elseif(auth()->user()->background_color)
-                    background-color: {{ auth()->user()->background_color }} !important;
+                    background: {{ auth()->user()->background_color }} !important;
+                    background-image: none !important;
                 @endif
 
                 @if(auth()->user()->font_family)
