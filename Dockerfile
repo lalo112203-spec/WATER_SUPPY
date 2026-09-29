@@ -36,8 +36,9 @@ RUN composer install --no-interaction --optimize-autoloader
 # Generate app key
 RUN php artisan key:generate
 
-# Run migrations (for SQLite)
+# Run migrations (for SQLite) and create storage link
 RUN php artisan migrate --force
+RUN php artisan storage:link || true
 
 # Install Node dependencies and build assets
 RUN npm install && npm run build

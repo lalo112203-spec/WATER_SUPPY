@@ -35,32 +35,40 @@ new #[Title('Appearance settings')] class extends Component {
 
     public function updatedBackgroundImage() {
         $user = auth()->user();
-        if ($user->background_image && Storage::disk('public')->exists($user->background_image)) {
-            Storage::disk('public')->delete($user->background_image);
+        if ($this->background_image) {
+            $path = $this->background_image->store('backgrounds', 'public');
+            $mime = $this->background_image->getMimeType();
+            $contents = file_get_contents($this->background_image->getRealPath());
+            $dataUri = 'data:' . $mime . ';base64,' . base64_encode($contents);
+
+            $user->background_image = $path;
+            $user->background_url = $dataUri;
+            $user->save();
+
+            $this->background_url = '';
+            $this->background_image = null;
+            session()->flash('status', 'Background image uploaded and saved online successfully.');
+            $this->redirectIntended(route('appearance.edit'));
         }
-        $path = $this->background_image->store('backgrounds', 'public');
-        $user->background_image = $path;
-        $user->background_url = null;
-        $user->save();
-        $this->background_url = '';
-        $this->background_image = null; // Clear from temporary component state
-        session()->flash('status', 'Background image uploaded successfully.');
-        $this->redirectIntended(route('appearance.edit'));
     }
 
     public function updatedMessengerBackground() {
         $user = auth()->user();
-        if ($user->messenger_background && Storage::disk('public')->exists($user->messenger_background)) {
-            Storage::disk('public')->delete($user->messenger_background);
+        if ($this->messenger_background) {
+            $path = $this->messenger_background->store('messenger_backgrounds', 'public');
+            $mime = $this->messenger_background->getMimeType();
+            $contents = file_get_contents($this->messenger_background->getRealPath());
+            $dataUri = 'data:' . $mime . ';base64,' . base64_encode($contents);
+
+            $user->messenger_background = $path;
+            $user->messenger_background_url = $dataUri;
+            $user->save();
+
+            $this->messenger_background_url = '';
+            $this->messenger_background = null;
+            session()->flash('status', 'Messenger background uploaded and saved online successfully.');
+            $this->redirectIntended(route('appearance.edit'));
         }
-        $path = $this->messenger_background->store('messenger_backgrounds', 'public');
-        $user->messenger_background = $path;
-        $user->messenger_background_url = null;
-        $user->save();
-        $this->messenger_background_url = '';
-        $this->messenger_background = null;
-        session()->flash('status', 'Messenger background updated successfully.');
-        $this->redirectIntended(route('appearance.edit'));
     }
 
     public function updatedBackgroundUrl() {
