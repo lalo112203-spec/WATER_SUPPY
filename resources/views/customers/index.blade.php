@@ -245,7 +245,12 @@
                                     </button>
                                     <button type="button" 
                                         data-id="{{ $customer->id }}"
-                                        data-customer="{{ json_encode($customer) }}"
+                                        data-customer-id="{{ $customer->customer_id }}"
+                                        data-name="{{ $customer->name }}"
+                                        data-type-id="{{ $customer->customer_type_id }}"
+                                        data-phone="{{ $customer->phone_number }}"
+                                        data-meter-post="{{ $customer->meter_post }}"
+                                        data-barangay="{{ $customer->barangay }}"
                                         onclick="handleEditCustomer(this, event)"
                                         class="p-2 text-blue-400 bg-blue-900/20 hover:bg-blue-600/30 rounded-lg transition duration-300 border border-blue-700/30 shadow-sm"
                                         title="Edit Consumer">
@@ -698,15 +703,19 @@
     <script>
         function openEditCustomerModal(id, customer) {
             document.getElementById('edit_customer_db_id').value = id;
-            document.getElementById('edit_customer_id').value = customer.customer_id;
+            document.getElementById('edit_customer_id').value = customer.customer_id || '';
             
-            let parts = customer.name.split(',');
+            let parts = (customer.name || '').split(',');
             document.getElementById('edit_last_name').value = parts[0] ? parts[0].trim() : '';
             let firstMiddle = parts.length > 1 ? parts[1].trim().split(' ') : [];
             document.getElementById('edit_first_name').value = firstMiddle[0] || '';
             document.getElementById('edit_middle_name').value = firstMiddle.slice(1).join(' ') || '';
             
-            document.getElementById('edit_customer_type_id').value = customer.customer_type_id;
+            const typeSelect = document.getElementById('edit_customer_type_id');
+            if (typeSelect) {
+                typeSelect.value = customer.customer_type_id || '';
+                handleCustomerTypeColor(typeSelect);
+            }
             document.getElementById('edit_phone_number').value = customer.phone_number || '';
             document.getElementById('edit_meter_post').value = customer.meter_post || '';
             document.getElementById('edit_barangay').value = customer.barangay || '';
@@ -716,17 +725,22 @@
         }
 
         function safeShowModal(name) {
-            if (window.Flux && typeof window.Flux.modal === 'function') {
+            if (typeof window.Flux !== 'undefined' && typeof window.Flux.modal === 'function') {
                 try {
                     window.Flux.modal(name).show();
                     return;
-                } catch (e) {}
+                } catch (e) {
+                    console.warn("Flux modal show error:", e);
+                }
             }
+            document.dispatchEvent(new CustomEvent('modal-show', { detail: { name: name } }));
             const modalEl = document.querySelector(`[name="${name}"], #${name}`);
-            if (modalEl && typeof modalEl.showModal === 'function') {
-                modalEl.showModal();
-            } else if (modalEl) {
-                modalEl.classList.remove('hidden');
+            if (modalEl) {
+                if (typeof modalEl.showModal === 'function') {
+                    try { modalEl.showModal(); } catch (e) {}
+                } else {
+                    modalEl.classList.remove('hidden');
+                }
             }
         }
 
@@ -768,13 +782,15 @@
         function handleEditCustomer(btn, event) {
             if (event) event.stopPropagation();
             const id = btn.getAttribute('data-id');
-            const raw = btn.getAttribute('data-customer');
-            let customer = {};
-            try {
-                customer = JSON.parse(raw);
-            } catch (e) {
-                console.error("Failed to parse customer data:", e);
-            }
+            const customer = {
+                id: id,
+                customer_id: btn.getAttribute('data-customer-id') || '',
+                name: btn.getAttribute('data-name') || '',
+                customer_type_id: btn.getAttribute('data-type-id') || '',
+                phone_number: btn.getAttribute('data-phone') || '',
+                meter_post: btn.getAttribute('data-meter-post') || '',
+                barangay: btn.getAttribute('data-barangay') || ''
+            };
             openEditCustomerModal(id, customer);
         }
 
@@ -783,19 +799,25 @@
             const mainRow = document.getElementById('row-' + id);
             const chevron = document.getElementById('chevron-' + id);
             
+            if (!detailsRow) return;
+
             if (detailsRow.classList.contains('hidden')) {
-                // Close any other open rows first (optional, but cleaner)
-                // document.querySelectorAll('[id^="details-"]').forEach(el => el.classList.add('hidden'));
-                
                 detailsRow.classList.remove('hidden');
-                mainRow.classList.add('bg-[#1b2636]/60', 'border-cyan-500/30');
+                if (mainRow) mainRow.classList.add('bg-[#1b2636]/60', 'border-cyan-500/30');
                 if (chevron) chevron.style.transform = 'rotate(180deg)';
             } else {
                 detailsRow.classList.add('hidden');
-                mainRow.classList.remove('bg-[#1b2636]/60', 'border-cyan-500/30');
+                if (mainRow) mainRow.classList.remove('bg-[#1b2636]/60', 'border-cyan-500/30');
                 if (chevron) chevron.style.transform = 'rotate(0deg)';
             }
         }
+
+        window.openEditCustomerModal = openEditCustomerModal;
+        window.openQuickBillModal = openQuickBillModal;
+        window.toggleDetails = toggleDetails;
+        window.handleQuickBill = handleQuickBill;
+        window.handleEditCustomer = handleEditCustomer;
+        window.safeShowModal = safeShowModal;
 
         let quickCustomerType = 'Regular';
         let quickPrevReading = 0;
@@ -811,8 +833,10 @@
             document.getElementById('modal_usage_charge').value = 0;
 
             // Reset duplicate warning
-            document.getElementById('modal-duplicate-warning').classList.add('hidden');
-            document.getElementById('modal-duplicate-warning-text').textContent = '';
+            const dupWarn = document.getElementById('modal-duplicate-warning');
+            if (dupWarn) dupWarn.classList.add('hidden');
+            const dupWarnText = document.getElementById('modal-duplicate-warning-text');
+            if (dupWarnText) dupWarnText.textContent = '';
             document.getElementById('modal_force_billing').value = '0';
             const forceCb = document.getElementById('modal-force-checkbox');
             if (forceCb) forceCb.checked = false;
@@ -1052,15 +1076,6 @@
                 handleCustomerTypeColor(select);
             });
         });
-        
-        // Also update when edit modal opens
-        const originalOpenEditCustomerModal = window.openEditCustomerModal;
-        if (originalOpenEditCustomerModal) {
-            window.openEditCustomerModal = function(id, customer) {
-                originalOpenEditCustomerModal(id, customer);
-                handleCustomerTypeColor(document.getElementById('edit_customer_type_id'));
-            };
-        }
     </script>
 
     {{-- ===== Duplicate Bill Confirm Dialog ===== --}}
