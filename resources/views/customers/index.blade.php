@@ -858,21 +858,9 @@
                 hiddenConsumption.value = 0;
                 updateQuickTotal();
                 return;
-            } else if (presentReading === quickPrevReading) {
-                breakdown.textContent = `No water used. Bill cannot be generated.`;
-                breakdown.className = 'text-xs mt-1 text-zinc-400 font-bold';
-                document.getElementById('modal_submit_btn').disabled = true;
-                document.getElementById('modal_submit_btn').classList.add('opacity-50', 'cursor-not-allowed');
-                baseInput.value = 0;
-                usageInput.value = 0;
-                hiddenConsumption.value = 0;
-                updateQuickTotal();
-                return;
-            }
-            
             document.getElementById('modal_submit_btn').disabled = false;
             document.getElementById('modal_submit_btn').classList.remove('opacity-50', 'cursor-not-allowed');
-            const consumption = presentReading - quickPrevReading;
+            const consumption = Math.max(0, presentReading - quickPrevReading);
             
             hiddenConsumption.value = consumption.toFixed(0);
 
