@@ -174,7 +174,7 @@
                 </thead>
                 <tbody class="divide-y divide-[#263548]">
                     @php $lastBarangay = null; @endphp
-                    @forelse($Consumers as $customer)
+                    @forelse(($Consumers ?? $customers) as $customer)
                         {{-- Only show barangay separator if we are NOT filtering by a specific barangay --}}
                         @if(!request('barangay') && $customer->barangay !== $lastBarangay)
                             <tr class="bg-[#1b2636]/60 text-[#94a3b8] uppercase text-[10px] tracking-widest">
@@ -438,7 +438,7 @@
 
         <!-- Pagination Links -->
         <div class="mt-4">
-            {{ $Consumers->links() }}
+            {{ ($Consumers ?? $customers)->links() }}
         </div>
     </div>
 

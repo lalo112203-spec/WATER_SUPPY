@@ -100,6 +100,7 @@ class CustomerController extends Controller
 
         return view('customers.index', [
             'customers' => $customers,
+            'Consumers' => $customers,
             'totalCustomers' => $totalCustomers,
             'activeCustomers' => $activeCustomers,
             'customerGrowth' => $customerGrowth,
@@ -129,7 +130,11 @@ class CustomerController extends Controller
 
         $monthName = $endOfPeriod->format('F Y');
 
-        return view('customers.report', compact('customers', 'monthName'));
+        return view('customers.report', [
+            'customers' => $customers,
+            'Consumers' => $customers,
+            'monthName' => $monthName
+        ]);
     }
 
 

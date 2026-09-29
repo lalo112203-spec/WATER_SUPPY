@@ -25,7 +25,7 @@
                 <h1 class="text-3xl font-black text-white uppercase">Consumer Directory Backup</h1>
                 <p class="text-gray-200 font-medium">As of end of {{ $monthName }}</p>
                 <div class="mt-4 flex gap-6 text-sm text-gray-600">
-                    <div><span class="font-bold text-gray-800">Total Records:</span> {{ $Consumers->count() }}</div>
+                    <div><span class="font-bold text-gray-800">Total Records:</span> {{ ($Consumers ?? $customers)->count() }}</div>
                     <div><span class="font-bold text-gray-800">Generated:</span> {{ now()->format('M d, Y h:i A') }}</div>
                 </div>
             </div>
@@ -59,7 +59,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($Consumers as $customer)
+                @forelse(($Consumers ?? $customers) as $customer)
                     <tr class="odd:bg-white/10 even:bg-gray-50/50">
                         <td class="px-3 py-3 border border-gray-200 font-mono font-bold">{{ $customer->customer_id }}</td>
                         <td class="px-3 py-3 border border-gray-200 uppercase font-medium">{{ $customer->name }}</td>
