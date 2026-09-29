@@ -229,7 +229,12 @@
                                         </svg>
                                     </button>
                                     <button type="button" 
-                                        onclick="openQuickBillModal('{{ $customer->id }}', {{ Js::from($customer->name) }}, '{{ $customer->customer_id }}', '{{ $customer->type }}', {{ $customer->meter_reading ?? 0 }}); event.stopPropagation();"
+                                        data-id="{{ $customer->id }}"
+                                        data-name="{{ $customer->name }}"
+                                        data-customer-id="{{ $customer->customer_id }}"
+                                        data-type="{{ $customer->type }}"
+                                        data-prev-reading="{{ $customer->meter_reading ?? 0 }}"
+                                        onclick="handleQuickBill(this, event)"
                                         class="p-2 text-emerald-400 bg-emerald-900/20 hover:bg-emerald-600/30 rounded-lg transition duration-300 border border-emerald-700/30 shadow-sm"
                                         title="Quick Add Reading">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
@@ -239,7 +244,9 @@
                                         </svg>
                                     </button>
                                     <button type="button" 
-                                        onclick="openEditCustomerModal('{{ $customer->id }}', {{ Js::from($customer) }}); event.stopPropagation();"
+                                        data-id="{{ $customer->id }}"
+                                        data-customer="{{ json_encode($customer) }}"
+                                        onclick="handleEditCustomer(this, event)"
                                         class="p-2 text-blue-400 bg-blue-900/20 hover:bg-blue-600/30 rounded-lg transition duration-300 border border-blue-700/30 shadow-sm"
                                         title="Edit Consumer">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -747,6 +754,29 @@
                 @endif
             @endif
         });
+
+        function handleQuickBill(btn, event) {
+            if (event) event.stopPropagation();
+            const id = btn.getAttribute('data-id');
+            const name = btn.getAttribute('data-name');
+            const customerId = btn.getAttribute('data-customer-id');
+            const type = btn.getAttribute('data-type');
+            const prevReading = btn.getAttribute('data-prev-reading');
+            openQuickBillModal(id, name, customerId, type, prevReading);
+        }
+
+        function handleEditCustomer(btn, event) {
+            if (event) event.stopPropagation();
+            const id = btn.getAttribute('data-id');
+            const raw = btn.getAttribute('data-customer');
+            let customer = {};
+            try {
+                customer = JSON.parse(raw);
+            } catch (e) {
+                console.error("Failed to parse customer data:", e);
+            }
+            openEditCustomerModal(id, customer);
+        }
 
         function toggleDetails(id) {
             const detailsRow = document.getElementById('details-' + id);
