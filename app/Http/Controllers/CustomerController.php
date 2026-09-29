@@ -159,10 +159,7 @@ class CustomerController extends Controller
         $validated['name'] = preg_replace('/\s+/', ' ', $fullName);
 
         $validated['barangay'] = strtoupper($validated['barangay']);
-        $meterPostPart = isset($validated['meter_post']) && trim($validated['meter_post']) !== '' 
-            ? trim($validated['meter_post']) . ', ' 
-            : '';
-        $validated['address'] = $meterPostPart . $validated['barangay'] . ' DOLORES EASTERN SAMAR';
+        $validated['address'] = $validated['barangay'] . ' DOLORES EASTERN SAMAR';
 
         if ($request->filled('customer_id')) {
             $validated['customer_id'] = $request->customer_id;
@@ -240,10 +237,7 @@ class CustomerController extends Controller
         $validated['name'] = preg_replace('/\s+/', ' ', $fullName);
 
         $validated['barangay'] = strtoupper($validated['barangay']);
-        $meterPostPart = isset($validated['meter_post']) && trim($validated['meter_post']) !== '' 
-            ? trim($validated['meter_post']) . ', ' 
-            : '';
-        $validated['address'] = $meterPostPart . $validated['barangay'] . ' DOLORES EASTERN SAMAR';
+        $validated['address'] = $validated['barangay'] . ' DOLORES EASTERN SAMAR';
 
         // Keep existing email, just update others
         $customer->update([
