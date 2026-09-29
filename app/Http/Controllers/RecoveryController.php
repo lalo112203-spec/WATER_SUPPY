@@ -10,6 +10,10 @@ class RecoveryController extends Controller
 {
     public function index()
     {
+        if (auth()->user()->role !== 'admin') {
+            return redirect()->route('dashboard');
+        }
+
         // Get all trashed customers
         $deletedCustomers = Customer::onlyTrashed()->get();
         // Get all trashed bills with their (possibly trashed) customers

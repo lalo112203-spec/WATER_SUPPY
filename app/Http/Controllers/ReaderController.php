@@ -10,8 +10,11 @@ use Illuminate\View\View;
 
 class ReaderController extends Controller
 {
-    public function index(): View
+    public function index(): View|\Illuminate\Http\RedirectResponse
     {
+        if (auth()->user()->role === 'consumer') {
+            return redirect()->route('dashboard');
+        }
         // For a meter reader, we can fetch all active customers or customers assigned to specific admin
         // Assuming they can see all active customers for now.
         $groupedCustomers = Customer::whereIn('status', ['active', 'Active', 'ACTIVE'])
@@ -39,6 +42,10 @@ class ReaderController extends Controller
 
     public function storeReading(Request $request)
     {
+        if (auth()->user()->role === 'consumer') {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'reading' => 'required|numeric|min:0',
@@ -126,7 +133,11 @@ class ReaderController extends Controller
                 'message' => 'A new bill for the amount of ' . number_format($totalAmount, 2) . ' has been generated. Due date is ' . \Carbon\Carbon::parse($dueDate)->format('M d, Y') . '.',
             ]);
             
-            $customer->user->notify(new \App\Notifications\NewBillPushNotification($totalAmount, \Carbon\Carbon::parse($dueDate)->format('M d, Y')));
+            try {
+                $customer->user->notify(new \App\Notifications\NewBillPushNotification($totalAmount, \Carbon\Carbon::parse($dueDate)->format('M d, Y')));
+            } catch (\Throwable $e) {
+                // Ignore push notification errors to avoid breaking bill generation
+            }
         }
 
         return redirect()->route('reader.dashboard')
@@ -158,6 +169,10 @@ class ReaderController extends Controller
 
     public function deleteBill(Bill $bill)
     {
+        if (auth()->user()->role === 'consumer') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+        }
+
         $customerId = $bill->customer_id;
         $bill->delete();
 

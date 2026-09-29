@@ -32,6 +32,6 @@ class BillPaidPushNotification extends Notification
             ->icon('/images/system_bg.png') // Fallback icon, could use actual app logo
             ->body('Your bill for ' . number_format($this->amount, 2) . ' on ' . $this->date . ' has been successfully paid.')
             ->action('View Bills', 'view_bills')
-            ->data(['url' => url('/billing')]);
+            ->data(['url' => ($notifiable->role === 'consumer' ? url('/dashboard') : url('/billing'))]);
     }
 }

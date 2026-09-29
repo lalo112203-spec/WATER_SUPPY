@@ -10,8 +10,12 @@ use Illuminate\Http\Request;
  
 class BillingController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|\Illuminate\Http\RedirectResponse
     {
+        if (auth()->user()->role === 'consumer') {
+            return redirect()->route('dashboard');
+        }
+
         $adminId = auth()->id();
         $search = $request->input('search');
         $myCustomerIds = Customer::where('admin_id', $adminId)->pluck('id')->toArray();
@@ -157,7 +161,7 @@ class BillingController extends Controller
             $customerType = \App\Models\CustomerType::where('name', $customer->type)->first();
         }
 
-        $baseRate = $customerType ? $customerType->base_rate : 150;
+        $baseRate = $customerType ? $customerType->base_charge : 150;
         $usageRate = $customerType ? $customerType->usage_rate : 15;
         $baseLimit = $customerType ? $customerType->base_limit : 10;
 
@@ -268,7 +272,11 @@ class BillingController extends Controller
             ]);
             
             // Dispatch Web Push Notification
-            $bill->customer->user->notify(new \App\Notifications\BillPaidPushNotification($bill->total_amount, $bill->billing_date->format('M d, Y')));
+            try {
+                $bill->customer->user->notify(new \App\Notifications\BillPaidPushNotification($bill->total_amount, $bill->billing_date->format('M d, Y')));
+            } catch (\Throwable $e) {
+                // Ignore push notification errors
+            }
         }
  
         return redirect()->route('billing.index')
@@ -320,7 +328,7 @@ class BillingController extends Controller
             'usage_charge' => 'required|numeric',
             'additional_charge_amount' => 'nullable|numeric|min:0',
             'additional_charge_note' => 'nullable|string',
-            'due_date' => 'required|date|after:billing_date',
+            'due_date' => 'required|date|after_or_equal:billing_date',
         ]);
  
         $globalAdditionalChargeTotal = collect($bill->applied_additional_charges ?? [])->sum('amount');

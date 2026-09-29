@@ -102,6 +102,7 @@ class DashboardController extends Controller
         $revenueByType = Bill::where('bills.status', 'Paid')
             ->whereIn('bills.customer_id', $myCustomerIds)
             ->join('customers', 'bills.customer_id', '=', 'customers.id')
+            ->whereNull('customers.deleted_at')
             ->selectRaw('customers.type, SUM(bills.total_amount) as total')
             ->groupBy('customers.type')
             ->get();
@@ -198,12 +199,16 @@ class DashboardController extends Controller
         ]);
         
         \App\Models\Message::create([
-            'sender_id' => collect(\App\Models\User::where('role', 'admin')->get())->first()->id ?? $user->id,
+            'sender_id' => \App\Models\User::where('role', 'admin')->first()?->id ?? $user->id,
             'receiver_id' => $user->id,
             'message' => 'You have submitted a new reading. A new bill for the amount of ' . number_format($totalAmount, 2) . ' has been generated. Due date is ' . \Carbon\Carbon::parse($dueDate)->format('M d, Y') . '.',
         ]);
         
-        $user->notify(new \App\Notifications\NewBillPushNotification($totalAmount, \Carbon\Carbon::parse($dueDate)->format('M d, Y')));
+        try {
+            $user->notify(new \App\Notifications\NewBillPushNotification($totalAmount, \Carbon\Carbon::parse($dueDate)->format('M d, Y')));
+        } catch (\Throwable $e) {
+            // Ignore push notification errors to avoid breaking reading submission
+        }
 
         return redirect()->route('dashboard')
             ->with('success', 'Reading successfully submitted and bill generated.');

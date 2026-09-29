@@ -98,6 +98,41 @@
             </div>
         </div>
 
+        @if(session('success'))
+            <div class="mb-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 px-5 py-3 rounded-2xl flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <span class="text-sm font-semibold">{{ session('success') }}</span>
+                </div>
+                <button type="button" onclick="this.parentElement.remove()" class="text-emerald-400 hover:text-emerald-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-4 bg-rose-500/10 border border-rose-500/30 text-rose-300 px-5 py-3 rounded-2xl flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="text-sm font-semibold">{{ session('error') }}</span>
+                </div>
+                <button type="button" onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        @endif
+
+        @if(session('billing_warning'))
+            @php $bWarn = session('billing_warning'); @endphp
+            <div class="mb-4 bg-amber-500/10 border border-amber-500/30 text-amber-300 px-5 py-3 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span class="text-sm">A bill of <strong>₱{{ $bWarn['amount'] }}</strong> already exists for <strong>{{ $bWarn['customer_name'] }}</strong> for <strong>{{ $bWarn['month'] }}</strong>.</span>
+                </div>
+                <button type="button" onclick="this.closest('.mb-4').remove()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 px-3 py-1.5 rounded-lg border border-amber-500/30 transition">Dismiss</button>
+            </div>
+        @endif
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
             <!-- Stats -->
             <div class="col-span-1 flex flex-col gap-4">
@@ -720,7 +755,7 @@
             document.getElementById('edit_meter_post').value = customer.meter_post || '';
             document.getElementById('edit_barangay').value = customer.barangay || '';
             
-            document.getElementById('edit-customer-form').action = `/Consumers/${id}`;
+            document.getElementById('edit-customer-form').action = `/customers/${id}`;
             safeShowModal('edit-customer-modal');
         }
 
@@ -757,9 +792,10 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        function initCustomerPage() {
             const createAcc = document.getElementById('create_account');
-            if (createAcc) {
+            if (createAcc && !createAcc._listenerAttached) {
+                createAcc._listenerAttached = true;
                 createAcc.addEventListener('change', function () {
                     const passField = document.getElementById('password_field');
                     const passInput = document.getElementById('password');
@@ -780,7 +816,10 @@
                     setTimeout(() => safeShowModal('edit-customer-modal'), 100);
                 @endif
             @endif
-        });
+        }
+
+        document.addEventListener('DOMContentLoaded', initCustomerPage);
+        document.addEventListener('livewire:navigated', initCustomerPage);
 
         function handleQuickBill(btn, event) {
             if (event) event.stopPropagation();
@@ -876,6 +915,12 @@
                 const forceCb = document.getElementById('modal-force-checkbox');
                 if (forceCb) forceCb.checked = false;
                 
+                const submitBtn = document.getElementById('modal_submit_btn');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+
                 quickCustomerType = type || 'Regular';
                 quickPrevReading = prevReadingNum;
 
@@ -941,18 +986,26 @@
 
             const presentReading = parseFloat(input.value) || 0;
             
+            const submitBtn = document.getElementById('modal_submit_btn');
+
             if (presentReading < quickPrevReading) {
                 breakdown.textContent = `Invalid: Reading cannot be lower than previous (${quickPrevReading})`;
                 breakdown.className = 'text-xs mt-1 text-rose-500 font-bold';
-                document.getElementById('modal_submit_btn').disabled = true;
-                document.getElementById('modal_submit_btn').classList.add('opacity-50', 'cursor-not-allowed');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
                 baseInput.value = 0;
                 usageInput.value = 0;
                 hiddenConsumption.value = 0;
                 updateQuickTotal();
                 return;
-            document.getElementById('modal_submit_btn').disabled = false;
-            document.getElementById('modal_submit_btn').classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
             const consumption = Math.max(0, presentReading - quickPrevReading);
             
             hiddenConsumption.value = consumption.toFixed(0);

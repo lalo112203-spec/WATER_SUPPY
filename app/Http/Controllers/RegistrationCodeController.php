@@ -9,6 +9,10 @@ class RegistrationCodeController extends Controller
 {
     public function index(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            return redirect()->route('dashboard');
+        }
+
         $search = $request->input('search');
         $query = RegistrationCode::with('user');
 

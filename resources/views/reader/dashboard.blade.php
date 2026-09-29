@@ -37,6 +37,31 @@
             </div>
         @endif
 
+        @if(session('billing_warning'))
+            @php $rWarn = session('billing_warning'); @endphp
+            <div class="mb-6 bg-amber-500/10 border border-amber-500/30 text-amber-300 px-6 py-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-[0_0_20px_rgba(245,158,11,0.1)]">
+                <div class="flex items-center gap-3">
+                    <svg class="w-6 h-6 shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <div>
+                        <span class="font-bold">Duplicate Bill Warning:</span>
+                        <p class="text-sm text-amber-200/90 mt-0.5">A bill of ₱{{ $rWarn['amount'] }} was already generated for <strong>{{ $rWarn['customer_name'] }}</strong> in {{ $rWarn['month'] }}.</p>
+                    </div>
+                </div>
+                <form method="POST" action="{{ route('reader.storeReading') }}" class="flex items-center gap-2 shrink-0">
+                    @csrf
+                    <input type="hidden" name="customer_id" value="{{ $rWarn['customer_id'] }}">
+                    <input type="hidden" name="reading" value="{{ $rWarn['prefill_reading'] ?? '' }}">
+                    <input type="hidden" name="force_billing" value="1">
+                    <button type="submit" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs rounded-xl transition">
+                        Proceed Anyway
+                    </button>
+                    <button type="button" onclick="this.closest('.mb-6').remove()" class="px-3 py-2 bg-transparent text-gray-400 hover:text-white text-xs">
+                        Dismiss
+                    </button>
+                </form>
+            </div>
+        @endif
+
         @if($errors->any())
             <div class="mb-6 bg-rose-500/10 border border-rose-500/30 text-rose-400 px-6 py-4 rounded-2xl flex items-start gap-3 shadow-[0_0_20px_rgba(244,63,94,0.1)]">
                 <svg class="w-6 h-6 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>

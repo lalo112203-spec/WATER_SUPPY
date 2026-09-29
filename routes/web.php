@@ -21,6 +21,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reader/bills/{bill}/receipt', [\App\Http\Controllers\ReaderController::class, 'viewReceipt'])->name('reader.receipt');
     Route::delete('reader/bills/{bill}', [\App\Http\Controllers\ReaderController::class, 'deleteBill'])->name('reader.deleteBill');
 
+    // Push Subscription
+    Route::post('push-subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'store'])->name('push.subscribe');
+
     Route::middleware([\App\Http\Middleware\PreventReaderAccess::class])->group(function () {
         Route::get('/consumer/announcements', [DashboardController::class, 'consumerAnnouncements'])->name('consumer.announcements');
         Route::post('/consumer/reading', [DashboardController::class, 'storeReading'])->name('consumer.storeReading');
@@ -73,7 +76,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // API Routes for AJAX
         Route::get('api/customers/{customer}/readings', [BillingController::class, 'getCustomerReadings']);
-        Route::post('push-subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'store'])->name('push.subscribe');
     });
 });
 

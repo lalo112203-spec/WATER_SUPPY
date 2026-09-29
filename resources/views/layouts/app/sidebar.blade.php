@@ -406,7 +406,7 @@
         document.addEventListener('livewire:navigated', () => {
             enforceCustomTheme();
             // Re-patch flux if Livewire restored the page
-            if (window.Flux && !window.Flux.applyAppearance.isPatched) {
+            if (window.Flux && window.Flux.applyAppearance && !window.Flux.applyAppearance.isPatched) {
                 const originalApply = window.Flux.applyAppearance;
                 window.Flux.applyAppearance = function (appearance) {
                     if (appearance === 'custom') {
@@ -437,8 +437,16 @@
 
 <body class="min-h-screen text-gray-300 antialiased selection:bg-cyan-500/30">
     @if(auth()->check() && auth()->user()->role !== 'reader')
-    <flux:sidebar collapsible {{ auth()->user()->role === 'consumer' ? 'collapsed' : '' }}
-        class="dark border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl {{ auth()->user()->role === 'consumer' ? '!w-56' : '' }}">
+    @php
+        $isConsumer = auth()->user()->role === 'consumer';
+    @endphp
+    @if($isConsumer)
+    <flux:sidebar collapsible collapsed
+        class="dark border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl !w-56">
+    @else
+    <flux:sidebar collapsible
+        class="dark border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
+    @endif
         <flux:sidebar.header>
             <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
             <flux:sidebar.collapse />
@@ -453,7 +461,7 @@
 
                 @if(auth()->user()->role === 'admin')
                     <flux:sidebar.item icon="users" :href="route('customers.index')"
-                        :current="request()->routeIs('Consumers.*')" wire:navigate>
+                        :current="request()->routeIs('customers.*')" wire:navigate>
                         <span>{{ __('Consumers') }}</span>
                     </flux:sidebar.item>
 

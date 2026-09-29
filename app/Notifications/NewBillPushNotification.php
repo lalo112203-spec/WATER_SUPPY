@@ -32,6 +32,6 @@ class NewBillPushNotification extends Notification
             ->icon('/images/system_bg.png')
             ->body('A new bill of ' . number_format($this->amount, 2) . ' has been issued. Due on ' . $this->dueDate . '.')
             ->action('View Bills', 'view_bills')
-            ->data(['url' => url('/billing')]);
+            ->data(['url' => ($notifiable->role === 'consumer' ? url('/dashboard') : url('/billing'))]);
     }
 }

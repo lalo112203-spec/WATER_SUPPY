@@ -8,8 +8,12 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|\Illuminate\Http\RedirectResponse
     {
+        if (auth()->user()->role === 'consumer') {
+            return redirect()->route('dashboard');
+        }
+
         $adminId = auth()->id();
         $barangay = $request->input('barangay');
 
@@ -116,6 +120,10 @@ class CustomerController extends Controller
 
     public function report(Request $request)
     {
+        if (auth()->user()->role === 'consumer') {
+            return redirect()->route('dashboard');
+        }
+
         $adminId = auth()->id();
         // Default to current month if no month is specified
         $date = $request->filled('month') ? \Carbon\Carbon::parse($request->month) : now();
@@ -239,9 +247,11 @@ class CustomerController extends Controller
         $validated['barangay'] = strtoupper($validated['barangay']);
         $validated['address'] = $validated['barangay'] . ' DOLORES EASTERN SAMAR';
 
-        // Keep existing email, just update others
+        $newEmail = $validated['customer_id'] . '@system.local';
+
         $customer->update([
             'customer_id' => $validated['customer_id'],
+            'email' => $newEmail,
             'name' => $validated['name'],
             'type' => $customerType->name,
             'customer_type_id' => $validated['customer_type_id'],
@@ -250,6 +260,13 @@ class CustomerController extends Controller
             'address' => $validated['address'],
             'barangay' => $validated['barangay'],
         ]);
+
+        if ($customer->user) {
+            $customer->user->update([
+                'name' => $validated['name'],
+                'email' => $newEmail,
+            ]);
+        }
 
         return redirect()->route('customers.index')
             ->with('success', 'Customer updated successfully');
