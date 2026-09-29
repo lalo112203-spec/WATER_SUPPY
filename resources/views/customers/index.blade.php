@@ -234,10 +234,10 @@
                                         data-customer-id="{{ $customer->customer_id }}"
                                         data-type="{{ $customer->type }}"
                                         data-prev-reading="{{ $customer->meter_reading ?? 0 }}"
-                                        onclick="handleQuickBill(this, event)"
+                                        onclick="handleQuickBill(this, event); return false;"
                                         class="p-2 text-emerald-400 bg-emerald-900/20 hover:bg-emerald-600/30 rounded-lg transition duration-300 border border-emerald-700/30 shadow-sm"
                                         title="Quick Add Reading">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 pointer-events-none" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -455,7 +455,7 @@
     </div>
 
     <!-- Quick Bill Modal -->
-    <flux:modal name="quick-bill-modal" class="md:w-[500px] !bg-[#121a25] !border !border-[#2d4059] !text-gray-200">
+    <flux:modal id="quick-bill-modal" name="quick-bill-modal" class="md:w-[500px] !bg-[#121a25] !border !border-[#2d4059] !text-gray-200">
         <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar">
             <flux:heading size="lg" class="mb-2 !text-white">Quick Add Reading</flux:heading>
             <flux:subheading id="modal-customer-name" class="mb-6 !text-gray-400">Consumer Name</flux:subheading>
@@ -620,7 +620,7 @@
     </flux:modal>
 
     <!-- Edit Customer Modal -->
-    <flux:modal name="edit-customer-modal" class="md:w-[800px] !bg-[#121a25] !border !border-[#2d4059] !text-gray-200">
+    <flux:modal id="edit-customer-modal" name="edit-customer-modal" class="md:w-[800px] !bg-[#121a25] !border !border-[#2d4059] !text-gray-200">
         <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar">
             <div class="flex items-center justify-between mb-4 border-b border-[#263548] pb-2">
                 <flux:heading size="lg" class="!text-white">Edit Consumer</flux:heading>
@@ -725,22 +725,35 @@
         }
 
         function safeShowModal(name) {
-            if (typeof window.Flux !== 'undefined' && typeof window.Flux.modal === 'function') {
-                try {
+            // 1. Try Flux API
+            try {
+                if (typeof window.Flux !== 'undefined' && typeof window.Flux.modal === 'function') {
                     window.Flux.modal(name).show();
-                    return;
-                } catch (e) {
-                    console.warn("Flux modal show error:", e);
                 }
+            } catch (e) {
+                console.warn("window.Flux.modal error:", e);
             }
-            document.dispatchEvent(new CustomEvent('modal-show', { detail: { name: name } }));
-            const modalEl = document.querySelector(`[name="${name}"], #${name}`);
-            if (modalEl) {
-                if (typeof modalEl.showModal === 'function') {
-                    try { modalEl.showModal(); } catch (e) {}
-                } else {
-                    modalEl.classList.remove('hidden');
+
+            // 2. Dispatch modal-show event on document (Flux listener)
+            try {
+                document.dispatchEvent(new CustomEvent('modal-show', { detail: { name: name } }));
+            } catch (e) {}
+
+            // 3. Direct HTML5 dialog fallback
+            try {
+                const dialog = document.querySelector(`dialog[data-modal="${name}"], [data-modal="${name}"], #${name}, [name="${name}"]`);
+                if (dialog) {
+                    if (typeof dialog.showModal === 'function') {
+                        if (!dialog.open) {
+                            dialog.showModal();
+                        }
+                    } else {
+                        dialog.classList.remove('hidden');
+                        dialog.style.display = 'block';
+                    }
                 }
+            } catch (e) {
+                console.warn("Direct showModal fallback error:", e);
             }
         }
 
@@ -823,62 +836,88 @@
         let quickPrevReading = 0;
 
         function openQuickBillModal(id, name, customerId, type, prevReading) {
-            document.getElementById('modal_customer_id').value = id;
-            document.getElementById('modal-customer-name').textContent = `${name} (${customerId}) - ${type}`;
-            document.getElementById('modal_prev_reading').textContent = parseFloat(prevReading).toLocaleString(undefined, { maximumFractionDigits: 0 });
-            document.getElementById('modal_present_reading').value = '';
-            document.getElementById('modal_total_display').textContent = '0';
-            document.getElementById('modal_calc_breakdown').textContent = '';
-            document.getElementById('modal_base_charge').value = 0;
-            document.getElementById('modal_usage_charge').value = 0;
-
-            // Reset duplicate warning
-            const dupWarn = document.getElementById('modal-duplicate-warning');
-            if (dupWarn) dupWarn.classList.add('hidden');
-            const dupWarnText = document.getElementById('modal-duplicate-warning-text');
-            if (dupWarnText) dupWarnText.textContent = '';
-            document.getElementById('modal_force_billing').value = '0';
-            const forceCb = document.getElementById('modal-force-checkbox');
-            if (forceCb) forceCb.checked = false;
-            
-            quickCustomerType = type;
-            quickPrevReading = parseFloat(prevReading);
-            
-            document.getElementById('modal_present_reading').min = quickPrevReading;
-            
-            safeShowModal('quick-bill-modal');
-            
-            // Focus input after modal is shown
-            setTimeout(() => {
-                document.getElementById('modal_present_reading').focus();
-            }, 100);
-
-            // Reset duplicate state
-            window._quickBillDuplicate = false;
-            window._quickBillDuplicateMsg = '';
-            document.getElementById('modal_force_billing').value = '0';
-
-            // AJAX check: does this customer already have a bill this month?
-            const _now = new Date();
-            fetch(`/api/customers/${id}/readings`, {
-                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(r => r.json())
-            .then(data => {
-                const readings = data.readings || [];
-                const duplicate = readings.find(bill => {
-                    const d = new Date(bill.billing_date);
-                    return d.getFullYear() === _now.getFullYear() && d.getMonth() === _now.getMonth();
-                });
-                if (duplicate) {
-                    const monthName = new Date(duplicate.billing_date).toLocaleString('en-PH', { month: 'long', year: 'numeric' });
-                    const amount = parseFloat(duplicate.total_amount || 0).toLocaleString('en-PH', { maximumFractionDigits: 0 });
-                    window._quickBillDuplicate = true;
-                    window._quickBillDuplicateMsg = `A bill of ₱${amount} was already recorded for ${monthName}. Submitting again will create a second bill for the same month.`;
+            try {
+                const idEl = document.getElementById('modal_customer_id');
+                if (idEl) idEl.value = id || '';
+                
+                const nameEl = document.getElementById('modal-customer-name');
+                if (nameEl) nameEl.textContent = `${name || ''} (${customerId || ''}) - ${type || ''}`;
+                
+                const prevReadingNum = parseFloat(prevReading) || 0;
+                const prevReadingEl = document.getElementById('modal_prev_reading');
+                if (prevReadingEl) prevReadingEl.textContent = prevReadingNum.toLocaleString(undefined, { maximumFractionDigits: 0 });
+                
+                const presentReadingEl = document.getElementById('modal_present_reading');
+                if (presentReadingEl) {
+                    presentReadingEl.value = '';
+                    presentReadingEl.min = prevReadingNum;
                 }
-            })
-            .catch(() => {}); // silently fail — server-side check is the safety net
+                
+                const totalDisplayEl = document.getElementById('modal_total_display');
+                if (totalDisplayEl) totalDisplayEl.textContent = '0';
+                
+                const calcBreakdownEl = document.getElementById('modal_calc_breakdown');
+                if (calcBreakdownEl) calcBreakdownEl.textContent = '';
+                
+                const baseChargeEl = document.getElementById('modal_base_charge');
+                if (baseChargeEl) baseChargeEl.value = 0;
+                
+                const usageChargeEl = document.getElementById('modal_usage_charge');
+                if (usageChargeEl) usageChargeEl.value = 0;
+
+                const dupWarn = document.getElementById('modal-duplicate-warning');
+                if (dupWarn) dupWarn.classList.add('hidden');
+                const dupWarnText = document.getElementById('modal-duplicate-warning-text');
+                if (dupWarnText) dupWarnText.textContent = '';
+                
+                const forceBillingEl = document.getElementById('modal_force_billing');
+                if (forceBillingEl) forceBillingEl.value = '0';
+                
+                const forceCb = document.getElementById('modal-force-checkbox');
+                if (forceCb) forceCb.checked = false;
+                
+                quickCustomerType = type || 'Regular';
+                quickPrevReading = prevReadingNum;
+
+                window._quickBillDuplicate = false;
+                window._quickBillDuplicateMsg = '';
+
+                // Trigger modal show
+                safeShowModal('quick-bill-modal');
+
+                setTimeout(() => {
+                    const pr = document.getElementById('modal_present_reading');
+                    if (pr) pr.focus();
+                }, 100);
+
+                if (id) {
+                    fetch(`/api/customers/${id}/readings`, {
+                        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        const _now = new Date();
+                        const readings = data.readings || [];
+                        const duplicate = readings.find(bill => {
+                            const d = new Date(bill.billing_date);
+                            return d.getFullYear() === _now.getFullYear() && d.getMonth() === _now.getMonth();
+                        });
+                        if (duplicate) {
+                            const monthName = new Date(duplicate.billing_date).toLocaleString('en-PH', { month: 'long', year: 'numeric' });
+                            const amount = parseFloat(duplicate.total_amount || 0).toLocaleString('en-PH', { maximumFractionDigits: 0 });
+                            window._quickBillDuplicate = true;
+                            window._quickBillDuplicateMsg = `A bill of ₱${amount} was already recorded for ${monthName}. Submitting again will create a second bill for the same month.`;
+                        }
+                    })
+                    .catch(() => {});
+                }
+            } catch (err) {
+                console.error("openQuickBillModal error:", err);
+                safeShowModal('quick-bill-modal');
+            }
         }
+
+        window.openQuickBillModal = openQuickBillModal;
 
         const systemSettings = {!! json_encode($settings) !!};
         const globalAdditionalChargeTotal = {{ $globalAdditionalChargeTotal ?? 0 }};
