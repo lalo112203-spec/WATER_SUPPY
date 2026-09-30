@@ -90,7 +90,7 @@ class CustomerController extends Controller
             ]);
         }
 
-        $allIds = Customer::pluck('customer_id')->map(fn($val) => (int) $val)->toArray();
+        $allIds = Customer::withTrashed()->pluck('customer_id')->map(fn($val) => (int) $val)->toArray();
         $nextId = (count($allIds) > 0 ? max($allIds) : 1000) + 1;
 
         $customerTypes = \App\Models\CustomerType::all();
@@ -149,6 +149,10 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
+        if (auth()->user()->role === 'consumer') {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'customer_id' => 'nullable|string|unique:customers,customer_id',
             'last_name' => 'required|string',
@@ -172,8 +176,8 @@ class CustomerController extends Controller
         if ($request->filled('customer_id')) {
             $validated['customer_id'] = $request->customer_id;
         } else {
-            // Auto-generate customer ID if not provided. Use max existing customer_id integer.
-            $allIds = Customer::pluck('customer_id')->map(fn($val) => (int) $val)->toArray();
+            // Auto-generate customer ID if not provided. Use max existing customer_id integer (including trashed).
+            $allIds = Customer::withTrashed()->pluck('customer_id')->map(fn($val) => (int) $val)->toArray();
             $nextId = (count($allIds) > 0 ? max($allIds) : 1000) + 1;
             $validated['customer_id'] = sprintf('%d', $nextId);
         }
@@ -228,6 +232,10 @@ class CustomerController extends Controller
 
     public function update(Request $request, Customer $customer)
     {
+        if (auth()->user()->role === 'consumer') {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'customer_id' => 'required|string|unique:customers,customer_id,' . $customer->id,
             'last_name' => 'required|string',
@@ -274,6 +282,10 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
+        if (auth()->user()->role === 'consumer') {
+            abort(403);
+        }
+
         // Also delete the associated user account if it exists
         if ($customer->user) {
             $customer->user->delete();
@@ -291,6 +303,10 @@ class CustomerController extends Controller
 
     public function createAccount(Customer $customer)
     {
+        if (auth()->user()->role === 'consumer') {
+            abort(403);
+        }
+
         if ($customer->user) {
             return back()->with('error', 'Account already exists.');
         }
@@ -328,6 +344,10 @@ class CustomerController extends Controller
 
     public function updatePassword(Request $request, Customer $customer)
     {
+        if (auth()->user()->role === 'consumer') {
+            abort(403);
+        }
+
         $request->validate([
             'password' => 'required|string|min:8|confirmed',
         ]);

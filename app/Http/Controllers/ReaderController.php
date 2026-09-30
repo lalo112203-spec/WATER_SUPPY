@@ -60,8 +60,6 @@ class ReaderController extends Controller
 
         if ($usage < 0) {
             return redirect()->back()->withErrors(['reading' => "New reading ({$currentReading}) cannot be lower than the previous reading ({$previousReading})."]);
-        } elseif ($usage === 0) {
-            return redirect()->back()->withErrors(['reading' => "No water used. Bill cannot be generated for zero consumption."]);
         }
 
         // Check for existing bill in the same month
@@ -174,9 +172,10 @@ class ReaderController extends Controller
         }
 
         $customerId = $bill->customer_id;
+        $previousReading = $bill->previous_reading;
         $bill->delete();
 
-        // Revert customer meter reading to the latest remaining bill
+        // Revert customer meter reading to the latest remaining bill, or back to the bill's previous reading
         $latestBill = Bill::where('customer_id', $customerId)
             ->orderBy('billing_date', 'desc')
             ->orderBy('id', 'desc')
@@ -185,7 +184,7 @@ class ReaderController extends Controller
         $customer = Customer::find($customerId);
         if ($customer) {
             $customer->update([
-                'meter_reading' => $latestBill ? $latestBill->new_reading : 0
+                'meter_reading' => $latestBill ? $latestBill->new_reading : ($previousReading ?? 0)
             ]);
         }
 

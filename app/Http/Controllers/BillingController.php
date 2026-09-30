@@ -113,6 +113,10 @@ class BillingController extends Controller
  
     public function store(Request $request)
     {
+        if (auth()->user()->role === 'consumer') {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'billing_date' => 'nullable|date',
@@ -218,6 +222,10 @@ class BillingController extends Controller
  
     public function show(Bill $bill): View
     {
+        if (auth()->user()->role === 'consumer' && auth()->user()->customer_id !== $bill->customer_id) {
+            abort(403);
+        }
+
         $customerTypes = \App\Models\CustomerType::all();
         $settings = [];
         
@@ -264,6 +272,10 @@ class BillingController extends Controller
  
     public function markAsPaid(Bill $bill)
     {
+        if (auth()->user()->role === 'consumer') {
+            abort(403);
+        }
+
         $bill->update([
             'status' => 'Paid',
             'paid_date' => now(),
@@ -291,10 +303,16 @@ class BillingController extends Controller
  
     public function destroy(Bill $bill)
     {
+        if (auth()->user()->role === 'consumer') {
+            abort(403);
+        }
+
         $customerId = $bill->customer_id;
+        $previousReading = $bill->previous_reading;
         $bill->delete();
 
-        // Update customer's current meter reading to the latest remaining bill's new reading
+        // Update customer's current meter reading to the latest remaining bill's new reading,
+        // or revert to the deleted bill's previous reading if no other bills remain
         $latestBill = Bill::where('customer_id', $customerId)
             ->orderBy('billing_date', 'desc')
             ->orderBy('id', 'desc')
@@ -303,7 +321,7 @@ class BillingController extends Controller
         $customer = Customer::find($customerId);
         if ($customer) {
             $customer->update([
-                'meter_reading' => $latestBill ? $latestBill->new_reading : 0
+                'meter_reading' => $latestBill ? $latestBill->new_reading : ($previousReading ?? 0)
             ]);
         }
 
@@ -326,6 +344,10 @@ class BillingController extends Controller
  
     public function update(Request $request, Bill $bill)
     {
+        if (auth()->user()->role === 'consumer') {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'billing_date' => 'required|date',
             'new_reading' => 'required|numeric|min:0',

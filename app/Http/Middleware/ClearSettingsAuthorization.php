@@ -16,7 +16,7 @@ class ClearSettingsAuthorization
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!$request->is('settings*') && !$request->is('livewire*')) {
+        if (!$request->is('settings*') && !$request->is('livewire*') && !$request->ajax() && !$request->is('api*')) {
             if ($request->session()->has('settings_authorized')) {
                 $request->session()->forget('settings_authorized');
             }

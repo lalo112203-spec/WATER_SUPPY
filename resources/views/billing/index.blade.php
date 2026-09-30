@@ -300,17 +300,6 @@
             <flux:heading size="lg" class="mb-2 !text-white">Generate Consumer Bill</flux:heading>
             <flux:subheading class="mb-4 !text-gray-400">Record a new meter reading and calculate charges</flux:subheading>
 
-            <div id="billing-modal-duplicate-warning" class="hidden mb-4 bg-amber-500/10 border border-amber-500/30 text-amber-300 p-3.5 rounded-xl text-xs flex flex-col gap-2">
-                <div class="flex items-start gap-2">
-                    <svg class="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    <span id="billing-modal-duplicate-warning-text"></span>
-                </div>
-                <label class="flex items-center gap-2 cursor-pointer pt-2 border-t border-amber-500/20 text-amber-200 font-semibold">
-                    <input type="checkbox" id="billing-modal-force-checkbox" onchange="document.getElementById('billing_modal_force_billing').value = this.checked ? '1' : '0'" class="rounded border-amber-500 bg-[#0f1722] text-amber-500 focus:ring-amber-500">
-                    <span>Generate another bill for this month anyway</span>
-                </label>
-            </div>
-
             <form action="{{ route('billing.store') }}" method="POST" id="billing-create-form">
                 @csrf
                 <input type="hidden" name="force_billing" id="billing_modal_force_billing" value="0">
@@ -436,10 +425,6 @@
             document.getElementById('billing_modal_total_display').textContent = '0';
             document.getElementById('billing_modal_calc_breakdown').textContent = '';
             
-            const dupWarn = document.getElementById('billing-modal-duplicate-warning');
-            if (dupWarn) dupWarn.classList.add('hidden');
-            const forceCb = document.getElementById('billing-modal-force-checkbox');
-            if (forceCb) forceCb.checked = false;
             document.getElementById('billing_modal_force_billing').value = '0';
             window._billingDuplicate = false;
             window._billingDuplicateMsg = '';
@@ -460,13 +445,6 @@
                     const amount = parseFloat(duplicate.total_amount || 0).toLocaleString('en-PH', { maximumFractionDigits: 0 });
                     window._billingDuplicate = true;
                     window._billingDuplicateMsg = `A bill of ₱${amount} was already recorded for ${monthName}. Submitting again will create a second bill for the same month.`;
-                    
-                    const dupWarn = document.getElementById('billing-modal-duplicate-warning');
-                    const dupWarnText = document.getElementById('billing-modal-duplicate-warning-text');
-                    if (dupWarn && dupWarnText) {
-                        dupWarnText.textContent = window._billingDuplicateMsg;
-                        dupWarn.classList.remove('hidden');
-                    }
                 }
             })
             .catch(() => {});
@@ -540,19 +518,43 @@
             document.getElementById('billing_modal_total_display').textContent = total.toLocaleString(undefined, { maximumFractionDigits: 0 });
         }
 
+        function showBillingDupDialog(message, onConfirm) {
+            document.getElementById('billing-dup-dialog-msg').textContent = message;
+            const dialog = document.getElementById('billing-dup-bill-dialog');
+            if (dialog.parentElement !== document.body) {
+                document.body.appendChild(dialog);
+            }
+            dialog.style.display = 'flex';
+            if (typeof dialog.showModal === 'function') {
+                try { dialog.showModal(); } catch (e) {}
+            }
+            document.body.style.overflow = 'hidden';
+            document.getElementById('billing-dup-dialog-confirm').onclick = function() {
+                hideBillingDupDialog();
+                onConfirm();
+            };
+        }
+
+        function hideBillingDupDialog() {
+            const dialog = document.getElementById('billing-dup-bill-dialog');
+            if (dialog) {
+                if (typeof dialog.close === 'function') {
+                    try { dialog.close(); } catch (e) {}
+                }
+                dialog.style.display = 'none';
+            }
+            document.body.style.overflow = '';
+        }
+
         const billingCreateForm = document.getElementById('billing-create-form');
         if (billingCreateForm) {
             billingCreateForm.addEventListener('submit', function (e) {
                 if (window._billingDuplicate && document.getElementById('billing_modal_force_billing').value !== '1') {
-                    const forceCb = document.getElementById('billing-modal-force-checkbox');
-                    const dupWarn = document.getElementById('billing-modal-duplicate-warning');
-                    if (dupWarn) dupWarn.classList.remove('hidden');
-                    if (forceCb && !forceCb.checked) {
-                        e.preventDefault();
-                        forceCb.focus();
-                        alert((window._billingDuplicateMsg || 'A bill already exists for this consumer in this month.') + "\n\nPlease check 'Generate another bill for this month anyway' to confirm.");
-                        return false;
-                    }
+                    e.preventDefault();
+                    showBillingDupDialog(window._billingDuplicateMsg || 'A bill already exists for this consumer in this month.', function() {
+                        document.getElementById('billing_modal_force_billing').value = '1';
+                        billingCreateForm.submit();
+                    });
                 }
             });
         }
@@ -587,5 +589,40 @@
             });
         }
     </script>
+
+    {{-- ===== Duplicate Bill Confirm Dialog (Billing) ===== --}}
+    <dialog id="billing-dup-bill-dialog" class="fixed inset-0 z-[999999] p-4 m-auto bg-transparent border-none outline-none max-w-lg w-full items-center justify-center backdrop:bg-black/85 backdrop:backdrop-blur-md" style="display:none; color: #ffffff !important;">
+        <div class="dup-dialog-panel relative bg-[#0f172a] border-2 border-amber-400 shadow-[0_0_100px_rgba(245,158,11,0.5),0_30px_60px_rgba(0,0,0,0.95)] w-full overflow-hidden rounded-2xl z-10" style="background-color: #0f172a !important; color: #ffffff !important;">
+            <div class="h-1.5 w-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500"></div>
+            <div class="p-6 sm:p-7">
+                <div class="flex items-start gap-4 mb-5">
+                    <div class="shrink-0 rounded-2xl shadow-lg" style="background-color: rgba(245, 158, 11, 0.25) !important; border: 2px solid rgba(251, 191, 36, 0.5) !important; padding: 0.75rem !important;">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #fbbf24 !important; stroke: #fbbf24 !important;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 style="color: #ffffff !important; font-weight: 900 !important; font-size: 1.25rem !important; margin: 0 !important; line-height: 1.2 !important;">Duplicate Bill Warning</h3>
+                        <p style="color: #fbbf24 !important; font-weight: 400 !important; font-size: 0.875rem !important; margin-top: 0.25rem !important; margin-bottom: 0 !important;">A bill already exists for this month</p>
+                    </div>
+                </div>
+                <div style="background-color: #1e1b18 !important; border: 2px solid #f59e0b !important; padding: 1rem !important; border-radius: 0.75rem !important; margin-bottom: 1.25rem !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;">
+                    <p id="billing-dup-dialog-msg" style="color: #ffffff !important; font-weight: 400 !important; font-size: 1rem !important; line-height: 1.5 !important; margin: 0 !important;"></p>
+                </div>
+                <p style="color: #ffffff !important; font-weight: 400 !important; font-size: 0.95rem !important; margin-bottom: 1.5rem !important;">Do you still want to generate a new bill for the same month?</p>
+                <div class="flex gap-3 justify-end">
+                    <button type="button" onclick="hideBillingDupDialog()" style="background-color: #334155 !important; color: #ffffff !important; border: 2px solid #64748b !important; padding: 0.75rem 1.5rem !important; border-radius: 0.75rem !important; font-weight: 700 !important; font-size: 0.875rem !important; cursor: pointer !important;">
+                        Cancel
+                    </button>
+                    <button type="button" id="billing-dup-dialog-confirm" style="background-color: #fbbf24 !important; color: #0f172a !important; border: none !important; padding: 0.75rem 1.5rem !important; border-radius: 0.75rem !important; font-weight: 900 !important; font-size: 0.875rem !important; cursor: pointer !important; display: inline-flex !important; align-items: center !important; gap: 0.5rem !important; box-shadow: 0 4px 20px rgba(251, 191, 36, 0.5) !important;">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #0f172a !important; stroke: #0f172a !important;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Submit Anyway
+                    </button>
+                </div>
+            </div>
+        </div>
+    </dialog>
 </x-layouts::app>
 

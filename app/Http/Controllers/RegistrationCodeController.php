@@ -36,6 +36,10 @@ class RegistrationCodeController extends Controller
 
     public function store(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+
         // Generate a random 8-digit numeric code
         do {
             $code = str_pad(mt_rand(0, 99999999), 8, '0', STR_PAD_LEFT);
@@ -51,6 +55,10 @@ class RegistrationCodeController extends Controller
 
     public function destroy(RegistrationCode $registrationCode)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+
         $registrationCode->delete();
         return back()->with('status', 'Code deleted.');
     }

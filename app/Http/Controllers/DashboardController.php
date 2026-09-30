@@ -21,14 +21,23 @@ class DashboardController extends Controller
                 'bills' => function ($q) {
                     $q->orderBy('billing_date', 'desc');
                 },
-                'waterUsages'
+                'waterUsages',
+                'customerType'
             ])->find($user->customer_id);
             
             $settings = \App\Models\SystemSetting::pluck('value', 'key')->toArray();
+            $customerTypes = \App\Models\CustomerType::all();
+            foreach ($customerTypes as $type) {
+                $lowerName = strtolower($type->name);
+                $settings[$lowerName.'_base_charge'] = $type->base_charge;
+                $settings[$lowerName.'_usage_rate'] = $type->usage_rate;
+                $settings[$lowerName.'_base_limit'] = $type->base_limit;
+            }
+
             $globalAdditionalCharges = json_decode(\App\Models\SystemSetting::get('global_additional_charges', '[]'), true);
             $globalAdditionalChargeTotal = collect($globalAdditionalCharges)->sum('amount');
 
-            return view('dashboard.consumer', compact('customer', 'settings', 'globalAdditionalCharges', 'globalAdditionalChargeTotal'));
+            return view('dashboard.consumer', compact('customer', 'settings', 'customerTypes', 'globalAdditionalCharges', 'globalAdditionalChargeTotal'));
         }
 
         $adminId = auth()->id();
@@ -152,8 +161,6 @@ class DashboardController extends Controller
 
         if ($usage < 0) {
             return redirect()->back()->withErrors(['reading' => "New reading ({$currentReading}) cannot be lower than the previous reading ({$previousReading})."]);
-        } elseif ($usage === 0) {
-            return redirect()->back()->withErrors(['reading' => "No water used. Bill cannot be generated for zero consumption."]);
         }
 
         $customerType = $customer->customerType;

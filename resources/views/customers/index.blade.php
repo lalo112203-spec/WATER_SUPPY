@@ -511,18 +511,6 @@
         <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar">
             <flux:heading size="lg" class="mb-2 !text-white">Quick Add Reading</flux:heading>
             <flux:subheading id="modal-customer-name" class="mb-4 !text-gray-400">Consumer Name</flux:subheading>
-
-            <div id="modal-duplicate-warning" class="hidden mb-4 bg-amber-500/10 border border-amber-500/30 text-amber-300 p-3.5 rounded-xl text-xs flex flex-col gap-2">
-                <div class="flex items-start gap-2">
-                    <svg class="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    <span id="modal-duplicate-warning-text"></span>
-                </div>
-                <label class="flex items-center gap-2 cursor-pointer pt-2 border-t border-amber-500/20 text-amber-200 font-semibold">
-                    <input type="checkbox" id="modal-force-checkbox" onchange="document.getElementById('modal_force_billing').value = this.checked ? '1' : '0'" class="rounded border-amber-500 bg-[#0f1722] text-amber-500 focus:ring-amber-500">
-                    <span>Generate another bill for this month anyway</span>
-                </label>
-            </div>
-
             <form action="{{ route('billing.store') }}" method="POST" id="quick-bill-form">
                 @csrf
                 <input type="hidden" name="customer_id" id="modal_customer_id">
@@ -837,24 +825,6 @@
                 });
             }
 
-            const quickForm = document.getElementById('quick-bill-form');
-            if (quickForm && !quickForm._listenerAttached) {
-                quickForm._listenerAttached = true;
-                quickForm.addEventListener('submit', function (e) {
-                    if (window._quickBillDuplicate && document.getElementById('modal_force_billing').value !== '1') {
-                        const forceCb = document.getElementById('modal-force-checkbox');
-                        const dupWarn = document.getElementById('modal-duplicate-warning');
-                        if (dupWarn) dupWarn.classList.remove('hidden');
-                        if (forceCb && !forceCb.checked) {
-                            e.preventDefault();
-                            forceCb.focus();
-                            alert((window._quickBillDuplicateMsg || 'A bill already exists for this consumer in this month.') + "\n\nPlease check 'Generate another bill for this month anyway' to confirm.");
-                            return false;
-                        }
-                    }
-                });
-            }
-
             @if($errors->any())
                 @if(old('form_type') === 'create')
                     setTimeout(() => safeShowModal('create-customer-modal'), 100);
@@ -950,16 +920,8 @@
                 const usageChargeEl = document.getElementById('modal_usage_charge');
                 if (usageChargeEl) usageChargeEl.value = 0;
 
-                const dupWarn = document.getElementById('modal-duplicate-warning');
-                if (dupWarn) dupWarn.classList.add('hidden');
-                const dupWarnText = document.getElementById('modal-duplicate-warning-text');
-                if (dupWarnText) dupWarnText.textContent = '';
-                
                 const forceBillingEl = document.getElementById('modal_force_billing');
                 if (forceBillingEl) forceBillingEl.value = '0';
-                
-                const forceCb = document.getElementById('modal-force-checkbox');
-                if (forceCb) forceCb.checked = false;
                 
                 const submitBtn = document.getElementById('modal_submit_btn');
                 if (submitBtn) {
@@ -998,13 +960,6 @@
                             const amount = parseFloat(duplicate.total_amount || 0).toLocaleString('en-PH', { maximumFractionDigits: 0 });
                             window._quickBillDuplicate = true;
                             window._quickBillDuplicateMsg = `A bill of ₱${amount} was already recorded for ${monthName}. Submitting again will create a second bill for the same month.`;
-                            
-                            const dupWarn = document.getElementById('modal-duplicate-warning');
-                            const dupWarnText = document.getElementById('modal-duplicate-warning-text');
-                            if (dupWarn && dupWarnText) {
-                                dupWarnText.textContent = window._quickBillDuplicateMsg;
-                                dupWarn.classList.remove('hidden');
-                            }
                         }
                     })
                     .catch(() => {});

@@ -66,6 +66,10 @@ class RecoveryController extends Controller
         $bill = Bill::onlyTrashed()->findOrFail($id);
         $bill->restore();
 
+        if ($bill->customer && $bill->new_reading > $bill->customer->meter_reading) {
+            $bill->customer->update(['meter_reading' => $bill->new_reading]);
+        }
+
         return redirect()->route('recovery.index')->with('success', 'Bill restored successfully.');
     }
 
