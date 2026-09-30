@@ -129,7 +129,24 @@
                     <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                     <span class="text-sm">A bill of <strong>₱{{ $bWarn['amount'] }}</strong> already exists for <strong>{{ $bWarn['customer_name'] }}</strong> for <strong>{{ $bWarn['month'] }}</strong>.</span>
                 </div>
-                <button type="button" onclick="this.closest('.mb-4').remove()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 px-3 py-1.5 rounded-lg border border-amber-500/30 transition">Dismiss</button>
+                <div class="flex items-center gap-2 shrink-0">
+                    @if(!empty($bWarn['customer_id']) && isset($bWarn['new_reading']))
+                        <form method="POST" action="{{ route('billing.store') }}" class="inline">
+                            @csrf
+                            <input type="hidden" name="customer_id" value="{{ $bWarn['customer_id'] }}">
+                            <input type="hidden" name="new_reading" value="{{ $bWarn['new_reading'] }}">
+                            <input type="hidden" name="consumption" value="{{ $bWarn['consumption'] ?? '' }}">
+                            <input type="hidden" name="base_charge" value="{{ $bWarn['base_charge'] ?? '' }}">
+                            <input type="hidden" name="usage_charge" value="{{ $bWarn['usage_charge'] ?? '' }}">
+                            <input type="hidden" name="additional_charge_amount" value="{{ $bWarn['additional_charge_amount'] ?? '' }}">
+                            <input type="hidden" name="force_billing" value="1">
+                            <button type="submit" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs rounded-xl transition shadow-sm">
+                                Proceed Anyway
+                            </button>
+                        </form>
+                    @endif
+                    <button type="button" onclick="this.closest('.mb-4').remove()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 px-3 py-1.5 rounded-lg border border-amber-500/30 transition">Dismiss</button>
+                </div>
             </div>
         @endif
 
@@ -493,7 +510,18 @@
     <flux:modal id="quick-bill-modal" name="quick-bill-modal" class="md:w-[500px] !bg-[#121a25] !border !border-[#2d4059] !text-gray-200">
         <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar">
             <flux:heading size="lg" class="mb-2 !text-white">Quick Add Reading</flux:heading>
-            <flux:subheading id="modal-customer-name" class="mb-6 !text-gray-400">Consumer Name</flux:subheading>
+            <flux:subheading id="modal-customer-name" class="mb-4 !text-gray-400">Consumer Name</flux:subheading>
+
+            <div id="modal-duplicate-warning" class="hidden mb-4 bg-amber-500/10 border border-amber-500/30 text-amber-300 p-3.5 rounded-xl text-xs flex flex-col gap-2">
+                <div class="flex items-start gap-2">
+                    <svg class="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span id="modal-duplicate-warning-text"></span>
+                </div>
+                <label class="flex items-center gap-2 cursor-pointer pt-2 border-t border-amber-500/20 text-amber-200 font-semibold">
+                    <input type="checkbox" id="modal-force-checkbox" onchange="document.getElementById('modal_force_billing').value = this.checked ? '1' : '0'" class="rounded border-amber-500 bg-[#0f1722] text-amber-500 focus:ring-amber-500">
+                    <span>Generate another bill for this month anyway</span>
+                </label>
+            </div>
 
             <form action="{{ route('billing.store') }}" method="POST" id="quick-bill-form">
                 @csrf
@@ -512,7 +540,7 @@
                         
                         <div class="space-y-2">
                             <label for="modal_present_reading" class="block text-sm font-medium text-gray-300">Present Reading (m³)</label>
-                            <input type="number" step="1" id="modal_present_reading" name="new_reading" required
+                            <input type="number" step="any" id="modal_present_reading" name="new_reading" required
                                 oninput="calculateQuickCharges()" placeholder="Enter reading..."
                                 class="w-full bg-[#0f1722]/80 border border-[#2d4059] focus:border-emerald-500/50 text-emerald-400 placeholder-gray-500 text-2xl font-black rounded-xl py-3 px-4 outline-none transition-all duration-300 shadow-inner">
                         </div>
@@ -539,7 +567,7 @@
                     </div>
 
                     <div class="flex gap-3 pt-4">
-                        <flux:button type="submit" id="modal_submit_btn" variant="primary" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 transition-all font-bold">Generate Bill</flux:button>
+                        <button type="submit" id="modal_submit_btn" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-all font-bold shadow-lg shadow-emerald-600/20 flex items-center justify-center">Generate Bill</button>
                         <flux:modal.close>
                             <flux:button variant="ghost" class="px-6 !border !border-[#2d4059] !text-gray-300 hover:!bg-[#1b2636] hover:!text-white">Cancel</flux:button>
                         </flux:modal.close>
@@ -809,6 +837,24 @@
                 });
             }
 
+            const quickForm = document.getElementById('quick-bill-form');
+            if (quickForm && !quickForm._listenerAttached) {
+                quickForm._listenerAttached = true;
+                quickForm.addEventListener('submit', function (e) {
+                    if (window._quickBillDuplicate && document.getElementById('modal_force_billing').value !== '1') {
+                        const forceCb = document.getElementById('modal-force-checkbox');
+                        const dupWarn = document.getElementById('modal-duplicate-warning');
+                        if (dupWarn) dupWarn.classList.remove('hidden');
+                        if (forceCb && !forceCb.checked) {
+                            e.preventDefault();
+                            forceCb.focus();
+                            alert((window._quickBillDuplicateMsg || 'A bill already exists for this consumer in this month.') + "\n\nPlease check 'Generate another bill for this month anyway' to confirm.");
+                            return false;
+                        }
+                    }
+                });
+            }
+
             @if($errors->any())
                 @if(old('form_type') === 'create')
                     setTimeout(() => safeShowModal('create-customer-modal'), 100);
@@ -952,6 +998,13 @@
                             const amount = parseFloat(duplicate.total_amount || 0).toLocaleString('en-PH', { maximumFractionDigits: 0 });
                             window._quickBillDuplicate = true;
                             window._quickBillDuplicateMsg = `A bill of ₱${amount} was already recorded for ${monthName}. Submitting again will create a second bill for the same month.`;
+                            
+                            const dupWarn = document.getElementById('modal-duplicate-warning');
+                            const dupWarnText = document.getElementById('modal-duplicate-warning-text');
+                            if (dupWarn && dupWarnText) {
+                                dupWarnText.textContent = window._quickBillDuplicateMsg;
+                                dupWarn.classList.remove('hidden');
+                            }
                         }
                     })
                     .catch(() => {});

@@ -34,7 +34,24 @@
                     <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                     <span class="text-sm">A bill of <strong>₱{{ $bWarn['amount'] }}</strong> already exists for <strong>{{ $bWarn['customer_name'] }}</strong> for <strong>{{ $bWarn['month'] }}</strong>.</span>
                 </div>
-                <button type="button" onclick="this.closest('.mb-6').remove()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 px-3 py-1.5 rounded-lg border border-amber-500/30 transition">Dismiss</button>
+                <div class="flex items-center gap-2 shrink-0">
+                    @if(!empty($bWarn['customer_id']) && isset($bWarn['new_reading']))
+                        <form method="POST" action="{{ route('billing.store') }}" class="inline">
+                            @csrf
+                            <input type="hidden" name="customer_id" value="{{ $bWarn['customer_id'] }}">
+                            <input type="hidden" name="new_reading" value="{{ $bWarn['new_reading'] }}">
+                            <input type="hidden" name="consumption" value="{{ $bWarn['consumption'] ?? '' }}">
+                            <input type="hidden" name="base_charge" value="{{ $bWarn['base_charge'] ?? '' }}">
+                            <input type="hidden" name="usage_charge" value="{{ $bWarn['usage_charge'] ?? '' }}">
+                            <input type="hidden" name="additional_charge_amount" value="{{ $bWarn['additional_charge_amount'] ?? '' }}">
+                            <input type="hidden" name="force_billing" value="1">
+                            <button type="submit" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs rounded-xl transition shadow-sm">
+                                Proceed Anyway
+                            </button>
+                        </form>
+                    @endif
+                    <button type="button" onclick="this.closest('.mb-6').remove()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 px-3 py-1.5 rounded-lg border border-amber-500/30 transition">Dismiss</button>
+                </div>
             </div>
         @endif
 
@@ -116,12 +133,20 @@
 
         <div class="flex justify-between items-center mb-3">
             <h2 class="text-lg font-semibold text-gray-200">Pending Bills</h2>
-            <button type="button" onclick="submitPrintBatch()" class="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-semibold transition-all shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                </svg>
-                Print Selected
-            </button>
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="safeShowModal('create-bill-modal')" class="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-semibold transition-all shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Generate Bill
+                </button>
+                <button type="button" onclick="submitPrintBatch()" class="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-semibold transition-all shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    Print Selected
+                </button>
+            </div>
         </div>
         
         <form id="printBatchForm" action="{{ route('billing.print-batch') }}" method="POST" target="_blank">
@@ -269,7 +294,269 @@
             {{ $paidBills->links() }}
         </div>
     </div>
+    <!-- Create Bill Modal -->
+    <flux:modal id="create-bill-modal" name="create-bill-modal" class="md:w-[520px] !bg-[#121a25] !border !border-[#2d4059] !text-gray-200">
+        <div class="p-4 bg-[#121a25] text-gray-200 rounded-xl max-h-[85vh] overflow-y-auto custom-scrollbar">
+            <flux:heading size="lg" class="mb-2 !text-white">Generate Consumer Bill</flux:heading>
+            <flux:subheading class="mb-4 !text-gray-400">Record a new meter reading and calculate charges</flux:subheading>
+
+            <div id="billing-modal-duplicate-warning" class="hidden mb-4 bg-amber-500/10 border border-amber-500/30 text-amber-300 p-3.5 rounded-xl text-xs flex flex-col gap-2">
+                <div class="flex items-start gap-2">
+                    <svg class="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span id="billing-modal-duplicate-warning-text"></span>
+                </div>
+                <label class="flex items-center gap-2 cursor-pointer pt-2 border-t border-amber-500/20 text-amber-200 font-semibold">
+                    <input type="checkbox" id="billing-modal-force-checkbox" onchange="document.getElementById('billing_modal_force_billing').value = this.checked ? '1' : '0'" class="rounded border-amber-500 bg-[#0f1722] text-amber-500 focus:ring-amber-500">
+                    <span>Generate another bill for this month anyway</span>
+                </label>
+            </div>
+
+            <form action="{{ route('billing.store') }}" method="POST" id="billing-create-form">
+                @csrf
+                <input type="hidden" name="force_billing" id="billing_modal_force_billing" value="0">
+                <input type="hidden" name="consumption" id="billing_modal_consumption_hidden">
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-300 mb-1">Select Consumer <span class="text-red-500">*</span></label>
+                        <select name="customer_id" id="billing_modal_customer_id" required onchange="onBillingCustomerChange()" class="w-full bg-[#0f1722] border border-[#2d4059] text-gray-200 px-3 py-2.5 rounded-xl text-sm outline-none focus:border-emerald-500">
+                            <option value="" disabled selected>-- Select an active consumer --</option>
+                            @foreach($customers as $c)
+                                <option value="{{ $c->id }}" data-name="{{ $c->name }}" data-type="{{ $c->type }}" data-reading="{{ $c->meter_reading ?? 0 }}">
+                                    {{ $c->customer_id }} - {{ $c->name }} ({{ $c->type }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="bg-[#1b2636]/40 p-4 rounded-xl border border-[#2d4059]/50">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-sm font-medium text-gray-300">Previous Reading:</span>
+                            <span id="billing_modal_prev_reading" class="font-mono font-bold text-gray-200 text-lg">0</span>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="billing_modal_present_reading" class="block text-sm font-medium text-gray-300">Present Reading (m³) <span class="text-red-500">*</span></label>
+                            <input type="number" step="any" id="billing_modal_present_reading" name="new_reading" required
+                                oninput="calculateBillingCharges()" placeholder="Enter reading..."
+                                class="w-full bg-[#0f1722]/80 border border-[#2d4059] focus:border-emerald-500/50 text-emerald-400 placeholder-gray-500 text-2xl font-black rounded-xl py-3 px-4 outline-none transition-all duration-300 shadow-inner">
+                        </div>
+
+                        <div id="billing_modal_calc_breakdown" class="text-xs mt-3 min-h-[1.25rem] text-zinc-500"></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-1">Base Charge (₱)</label>
+                            <input type="number" step="0.01" name="base_charge" id="billing_modal_base_charge" oninput="updateBillingTotal()" class="w-full bg-[#0f1722] border border-[#2d4059] text-gray-200 px-3 py-2 rounded-xl text-sm outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-1">Usage Charge (₱)</label>
+                            <input type="number" step="0.01" name="usage_charge" id="billing_modal_usage_charge" oninput="updateBillingTotal()" class="w-full bg-[#0f1722] border border-[#2d4059] text-gray-200 px-3 py-2 rounded-xl text-sm outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-1">Billing Date</label>
+                            <input type="date" name="billing_date" value="{{ now()->format('Y-m-d') }}" class="w-full bg-[#0f1722] border border-[#2d4059] text-gray-200 px-3 py-2 rounded-xl text-sm outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-1">Due Date</label>
+                            <input type="date" name="due_date" value="{{ now()->addDays(30)->format('Y-m-d') }}" class="w-full bg-[#0f1722] border border-[#2d4059] text-gray-200 px-3 py-2 rounded-xl text-sm outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
+
+                    <div class="bg-emerald-500/10 p-4 rounded-2xl border border-emerald-500/30 flex justify-between items-center px-6">
+                        <span class="text-emerald-500 font-bold uppercase tracking-widest text-sm">Total Bill</span>
+                        <div class="text-right">
+                            <span class="text-emerald-400 font-bold text-3xl">₱<span id="billing_modal_total_display">0</span></span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 pt-4">
+                        <button type="submit" id="billing_modal_submit_btn" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-all font-bold shadow-lg shadow-emerald-600/20 flex items-center justify-center">Generate Bill</button>
+                        <flux:modal.close>
+                            <flux:button variant="ghost" class="px-6 !border !border-[#2d4059] !text-gray-300 hover:!bg-[#1b2636] hover:!text-white">Cancel</flux:button>
+                        </flux:modal.close>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </flux:modal>
+
     <script>
+        function safeShowModal(name) {
+            try {
+                if (typeof window.Flux !== 'undefined' && typeof window.Flux.modal === 'function') {
+                    window.Flux.modal(name).show();
+                }
+            } catch (e) {}
+
+            try {
+                document.dispatchEvent(new CustomEvent('modal-show', { detail: { name: name } }));
+            } catch (e) {}
+
+            try {
+                const dialog = document.querySelector(`dialog[data-modal="${name}"], [data-modal="${name}"], #${name}, [name="${name}"]`);
+                if (dialog) {
+                    if (typeof dialog.showModal === 'function') {
+                        if (!dialog.open) dialog.showModal();
+                    } else {
+                        dialog.classList.remove('hidden');
+                        dialog.style.display = 'block';
+                    }
+                }
+            } catch (e) {}
+        }
+
+        const billingSettings = {!! json_encode($settings) !!};
+        const billingGlobalAdditional = {{ $globalAdditionalChargeTotal ?? 0 }};
+        let billingPrevReading = 0;
+        let billingCustomerType = 'Regular';
+        window._billingDuplicate = false;
+        window._billingDuplicateMsg = '';
+
+        function onBillingCustomerChange() {
+            const select = document.getElementById('billing_modal_customer_id');
+            const opt = select.options[select.selectedIndex];
+            if (!opt || !opt.value) return;
+
+            billingPrevReading = parseFloat(opt.getAttribute('data-reading')) || 0;
+            billingCustomerType = opt.getAttribute('data-type') || 'Regular';
+
+            document.getElementById('billing_modal_prev_reading').textContent = billingPrevReading.toLocaleString(undefined, { maximumFractionDigits: 0 });
+            
+            const pr = document.getElementById('billing_modal_present_reading');
+            pr.value = '';
+            pr.min = billingPrevReading;
+            
+            document.getElementById('billing_modal_base_charge').value = 0;
+            document.getElementById('billing_modal_usage_charge').value = 0;
+            document.getElementById('billing_modal_total_display').textContent = '0';
+            document.getElementById('billing_modal_calc_breakdown').textContent = '';
+            
+            const dupWarn = document.getElementById('billing-modal-duplicate-warning');
+            if (dupWarn) dupWarn.classList.add('hidden');
+            const forceCb = document.getElementById('billing-modal-force-checkbox');
+            if (forceCb) forceCb.checked = false;
+            document.getElementById('billing_modal_force_billing').value = '0';
+            window._billingDuplicate = false;
+            window._billingDuplicateMsg = '';
+
+            fetch(`/api/customers/${opt.value}/readings`, {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                const _now = new Date();
+                const readings = data.readings || [];
+                const duplicate = readings.find(bill => {
+                    const d = new Date(bill.billing_date);
+                    return d.getFullYear() === _now.getFullYear() && d.getMonth() === _now.getMonth();
+                });
+                if (duplicate) {
+                    const monthName = new Date(duplicate.billing_date).toLocaleString('en-PH', { month: 'long', year: 'numeric' });
+                    const amount = parseFloat(duplicate.total_amount || 0).toLocaleString('en-PH', { maximumFractionDigits: 0 });
+                    window._billingDuplicate = true;
+                    window._billingDuplicateMsg = `A bill of ₱${amount} was already recorded for ${monthName}. Submitting again will create a second bill for the same month.`;
+                    
+                    const dupWarn = document.getElementById('billing-modal-duplicate-warning');
+                    const dupWarnText = document.getElementById('billing-modal-duplicate-warning-text');
+                    if (dupWarn && dupWarnText) {
+                        dupWarnText.textContent = window._billingDuplicateMsg;
+                        dupWarn.classList.remove('hidden');
+                    }
+                }
+            })
+            .catch(() => {});
+        }
+
+        function calculateBillingCharges() {
+            const input = document.getElementById('billing_modal_present_reading');
+            const baseInput = document.getElementById('billing_modal_base_charge');
+            const usageInput = document.getElementById('billing_modal_usage_charge');
+            const breakdown = document.getElementById('billing_modal_calc_breakdown');
+            const hiddenConsumption = document.getElementById('billing_modal_consumption_hidden');
+            const submitBtn = document.getElementById('billing_modal_submit_btn');
+
+            if (input.value === '') {
+                baseInput.value = 0;
+                usageInput.value = 0;
+                hiddenConsumption.value = 0;
+                updateBillingTotal();
+                breakdown.textContent = '';
+                return;
+            }
+
+            const presentReading = parseFloat(input.value) || 0;
+
+            if (presentReading < billingPrevReading) {
+                breakdown.textContent = `Invalid: Reading cannot be lower than previous (${billingPrevReading})`;
+                breakdown.className = 'text-xs mt-1 text-rose-500 font-bold';
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+                baseInput.value = 0;
+                usageInput.value = 0;
+                hiddenConsumption.value = 0;
+                updateBillingTotal();
+                return;
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            const consumption = Math.max(0, presentReading - billingPrevReading);
+            hiddenConsumption.value = consumption.toFixed(0);
+
+            let typeKey = billingCustomerType.toLowerCase();
+            let baseCharge = parseFloat(billingSettings[typeKey + '_base_charge']) || 100;
+            let rate = parseFloat(billingSettings[typeKey + '_usage_rate']) || 15;
+            let baseLimit = parseFloat(billingSettings[typeKey + '_base_limit']) || 10;
+
+            const billableUsage = Math.max(consumption - baseLimit, 0);
+            const usageCharge = billableUsage * rate;
+
+            baseInput.value = baseCharge.toFixed(0);
+            usageInput.value = usageCharge.toFixed(0);
+            updateBillingTotal();
+
+            let breakdownText = `Consumption: ${consumption.toFixed(0)}m³ | (${consumption.toFixed(0)} - ${baseLimit}) × ₱${rate} = ₱${usageCharge.toFixed(0)}`;
+            if (billingGlobalAdditional > 0) {
+                breakdownText += ` + ₱${billingGlobalAdditional.toFixed(0)} (Additional Charges)`;
+            }
+            breakdown.textContent = breakdownText;
+            breakdown.className = 'text-xs mt-1 text-emerald-400';
+        }
+
+        function updateBillingTotal() {
+            const base = parseFloat(document.getElementById('billing_modal_base_charge').value) || 0;
+            const usage = parseFloat(document.getElementById('billing_modal_usage_charge').value) || 0;
+            const total = base + usage + billingGlobalAdditional;
+            document.getElementById('billing_modal_total_display').textContent = total.toLocaleString(undefined, { maximumFractionDigits: 0 });
+        }
+
+        const billingCreateForm = document.getElementById('billing-create-form');
+        if (billingCreateForm) {
+            billingCreateForm.addEventListener('submit', function (e) {
+                if (window._billingDuplicate && document.getElementById('billing_modal_force_billing').value !== '1') {
+                    const forceCb = document.getElementById('billing-modal-force-checkbox');
+                    const dupWarn = document.getElementById('billing-modal-duplicate-warning');
+                    if (dupWarn) dupWarn.classList.remove('hidden');
+                    if (forceCb && !forceCb.checked) {
+                        e.preventDefault();
+                        forceCb.focus();
+                        alert((window._billingDuplicateMsg || 'A bill already exists for this consumer in this month.') + "\n\nPlease check 'Generate another bill for this month anyway' to confirm.");
+                        return false;
+                    }
+                }
+            });
+        }
+
         function submitPrintBatch() {
             const checked = document.querySelectorAll('.bill-checkbox:checked');
             if (checked.length === 0) {

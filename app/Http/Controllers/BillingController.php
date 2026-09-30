@@ -140,10 +140,16 @@ class BillingController extends Controller
             return redirect()->back()
                 ->withInput()
                 ->with('billing_warning', [
-                    'customer_name' => $customer?->name ?? 'This customer',
-                    'month'         => \Carbon\Carbon::parse($existingBill->billing_date)->format('F Y'),
-                    'amount'        => number_format($existingBill->total_amount, 2),
-                    'bill_id'       => $existingBill->id,
+                    'customer_id'     => $validated['customer_id'],
+                    'customer_name'   => $customer?->name ?? 'This customer',
+                    'new_reading'     => $validated['new_reading'],
+                    'consumption'     => $validated['consumption'] ?? null,
+                    'base_charge'     => $validated['base_charge'] ?? null,
+                    'usage_charge'    => $validated['usage_charge'] ?? null,
+                    'additional_charge_amount' => $validated['additional_charge_amount'] ?? null,
+                    'month'           => \Carbon\Carbon::parse($existingBill->billing_date)->format('F Y'),
+                    'amount'          => number_format($existingBill->total_amount, 2),
+                    'bill_id'         => $existingBill->id,
                 ]);
         }
 
