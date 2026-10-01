@@ -19,10 +19,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('reader/reading', [\App\Http\Controllers\ReaderController::class, 'storeReading'])->name('reader.storeReading');
     Route::get('reader/customers/{customer}/bills', [\App\Http\Controllers\ReaderController::class, 'getBillHistory'])->name('reader.billHistory');
     Route::get('reader/bills/{bill}/receipt', [\App\Http\Controllers\ReaderController::class, 'viewReceipt'])->name('reader.receipt');
+    Route::put('reader/bills/{bill}', [\App\Http\Controllers\ReaderController::class, 'updateBill'])->name('reader.updateBill');
+    Route::put('reader/customers/{customer}/reading', [\App\Http\Controllers\ReaderController::class, 'updateCustomerReading'])->name('reader.updateCustomerReading');
     Route::delete('reader/bills/{bill}', [\App\Http\Controllers\ReaderController::class, 'deleteBill'])->name('reader.deleteBill');
 
     // Push Subscription
     Route::post('push-subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'store'])->name('push.subscribe');
+
+    // Customer Complete Billing History Print (Accessible to Admin, Reader, and Consumer)
+    Route::get('customers/{customer}/billing-history/print', [CustomerController::class, 'printBillingHistory'])->name('customers.billing-history.print');
 
     Route::middleware([\App\Http\Middleware\PreventReaderAccess::class])->group(function () {
         Route::get('/consumer/announcements', [DashboardController::class, 'consumerAnnouncements'])->name('consumer.announcements');
@@ -33,6 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('customers', CustomerController::class)->except(['show', 'create', 'edit']);
     Route::post('customers/{customer}/create-account', [CustomerController::class, 'createAccount'])->name('customers.create-account');
     Route::post('customers/{customer}/update-password', [CustomerController::class, 'updatePassword'])->name('customers.update-password');
+    Route::post('customers/{customer}/send-disconnection-notice', [CustomerController::class, 'sendDisconnectionNotice'])->name('customers.send-disconnection-notice');
 
     // Messaging
     Route::get('messages', [\App\Http\Controllers\MessageController::class, 'index'])->name('messages.index');

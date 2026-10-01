@@ -18,15 +18,101 @@ class BillingController extends Controller
 
         $adminId = auth()->id();
         $search = $request->input('search');
+        $rawMonth = $request->input('month');
+        $selectedYear = $request->input('year');
+        $selectedBarangay = $request->input('barangay');
+        if ($selectedBarangay === 'all' || empty($selectedBarangay)) {
+            $selectedBarangay = null;
+        }
+        $selectedMeterPost = $request->input('meter_post');
+        if ($selectedMeterPost === 'all' || empty($selectedMeterPost)) {
+            $selectedMeterPost = null;
+        }
+        $sort = $request->input('sort', 'latest');
         $myCustomerIds = Customer::where('admin_id', $adminId)->pluck('id')->toArray();
 
+        $availableBarangays = Customer::whereIn('id', $myCustomerIds)
+            ->whereNotNull('barangay')
+            ->where('barangay', '!=', '')
+            ->distinct()
+            ->orderBy('barangay', 'asc')
+            ->pluck('barangay');
+
+        $availableMeterPosts = Customer::whereIn('id', $myCustomerIds)
+            ->whereNotNull('meter_post')
+            ->where('meter_post', '!=', '')
+            ->distinct()
+            ->orderBy('meter_post', 'asc')
+            ->pluck('meter_post');
+
+        $selectedMonth = null;
+        if ($rawMonth && $rawMonth !== 'all') {
+            if (str_contains($rawMonth, '-')) {
+                $parts = explode('-', $rawMonth);
+                if (count($parts) === 2) {
+                    $selectedYear = $selectedYear ?: $parts[0];
+                    $selectedMonth = str_pad($parts[1], 2, '0', STR_PAD_LEFT);
+                }
+            } else {
+                $selectedMonth = str_pad($rawMonth, 2, '0', STR_PAD_LEFT);
+            }
+        }
+
+        if ($selectedYear === 'all' || empty($selectedYear)) {
+            $selectedYear = null;
+        }
+
+        $allMonths = [
+            '01' => 'January',
+            '02' => 'February',
+            '03' => 'March',
+            '04' => 'April',
+            '05' => 'May',
+            '06' => 'June',
+            '07' => 'July',
+            '08' => 'August',
+            '09' => 'September',
+            '10' => 'October',
+            '11' => 'November',
+            '12' => 'December',
+        ];
+
+        // Get list of all available dates from actual bills
+        $allBillsDates = Bill::whereIn('customer_id', $myCustomerIds)
+            ->whereNotNull('billing_date')
+            ->select('billing_date')
+            ->orderBy('billing_date', 'desc')
+            ->get();
+
+        $billYears = $allBillsDates->map(function ($b) {
+            return $b->billing_date ? (int) $b->billing_date->format('Y') : null;
+        })->filter()->unique()->values()->toArray();
+
+        $currentYear = (int) now()->year;
+        $maxYear = 2100;
+        $quickYears = range($currentYear + 4, $currentYear - 6);
+        $extraYears = array_filter([$selectedYear ? (int) $selectedYear : null]);
+        $combinedYears = array_unique(array_merge($billYears, $quickYears, $extraYears));
+        rsort($combinedYears);
+        $availableYears = collect($combinedYears)->values();
+
+        $availableMonths = $allBillsDates->groupBy(function ($b) {
+            return $b->billing_date->format('Y-m');
+        })->map(function ($group, $key) {
+            return [
+                'key' => $key,
+                'label' => $group->first()->billing_date->format('F Y'),
+                'count' => $group->count(),
+            ];
+        })->values();
+
         $pendingQuery = Bill::with(['customer' => function ($query) { $query->withTrashed(); }])
-            ->whereIn('customer_id', $myCustomerIds)
-            ->where('status', '!=', 'Paid');
+            ->whereIn('bills.customer_id', $myCustomerIds)
+            ->where('bills.status', '!=', 'Paid');
 
         $paidQuery = Bill::with(['customer' => function ($query) { $query->withTrashed(); }])
-            ->whereIn('customer_id', $myCustomerIds)
-            ->where('status', 'Paid');
+            ->whereIn('bills.customer_id', $myCustomerIds)
+            ->where('bills.status', 'Paid');
 
         if ($search) {
             $pendingQuery->where(function ($q) use ($search) {
@@ -43,13 +129,104 @@ class BillingController extends Controller
             });
         }
 
-        $pendingBills = $pendingQuery->orderBy('billing_date', 'desc')
-            ->paginate(10, ['*'], 'pending_page')
-            ->withQueryString();
+        if ($selectedYear) {
+            $pendingQuery->whereYear('bills.billing_date', $selectedYear);
+            $paidQuery->whereYear('bills.billing_date', $selectedYear);
+        }
 
-        $paidBills = $paidQuery->orderBy('paid_date', 'desc')
-            ->paginate(10, ['*'], 'paid_page')
-            ->withQueryString();
+        if ($selectedMonth) {
+            $pendingQuery->whereMonth('bills.billing_date', (int)$selectedMonth);
+            $paidQuery->whereMonth('bills.billing_date', (int)$selectedMonth);
+        }
+
+        if ($selectedBarangay) {
+            $pendingQuery->whereHas('customer', function ($q) use ($selectedBarangay) {
+                $q->where('barangay', $selectedBarangay);
+            });
+            $paidQuery->whereHas('customer', function ($q) use ($selectedBarangay) {
+                $q->where('barangay', $selectedBarangay);
+            });
+        }
+
+        if ($selectedMeterPost) {
+            $pendingQuery->whereHas('customer', function ($q) use ($selectedMeterPost) {
+                $q->where('meter_post', $selectedMeterPost);
+            });
+            $paidQuery->whereHas('customer', function ($q) use ($selectedMeterPost) {
+                $q->where('meter_post', $selectedMeterPost);
+            });
+        }
+
+        if ($sort === 'oldest') {
+            $pendingQuery->orderBy('bills.billing_date', 'asc');
+            $paidQuery->orderBy('bills.billing_date', 'asc');
+        } elseif ($sort === 'consumer_asc') {
+            $pendingQuery->join('customers as cp', 'bills.customer_id', '=', 'cp.id')->orderBy('cp.name', 'asc')->select('bills.*');
+            $paidQuery->join('customers as cpd', 'bills.customer_id', '=', 'cpd.id')->orderBy('cpd.name', 'asc')->select('bills.*');
+        } else {
+            $pendingQuery->orderBy('bills.billing_date', 'desc');
+            $paidQuery->orderBy('bills.paid_date', 'desc');
+        }
+
+        $pendingBills = $pendingQuery->paginate(10, ['*'], 'pending_page')->withQueryString();
+        $paidBills = $paidQuery->paginate(10, ['*'], 'paid_page')->withQueryString();
+
+        // Query for monthly consumers list (Item 5)
+        $monthlyQuery = Bill::with(['customer' => function ($query) { $query->withTrashed(); }])
+            ->whereIn('bills.customer_id', $myCustomerIds);
+
+        if ($search) {
+            $monthlyQuery->where(function ($q) use ($search) {
+                $q->whereHas('customer', function ($cq) use ($search) {
+                    $cq->where('name', 'like', "%{$search}%")
+                       ->orWhere('customer_id', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        if ($selectedYear) {
+            $monthlyQuery->whereYear('bills.billing_date', $selectedYear);
+        }
+
+        if ($selectedMonth) {
+            $monthlyQuery->whereMonth('bills.billing_date', (int)$selectedMonth);
+        }
+
+        if ($selectedBarangay) {
+            $monthlyQuery->whereHas('customer', function ($q) use ($selectedBarangay) {
+                $q->where('barangay', $selectedBarangay);
+            });
+        }
+
+        if ($selectedMeterPost) {
+            $monthlyQuery->whereHas('customer', function ($q) use ($selectedMeterPost) {
+                $q->where('meter_post', $selectedMeterPost);
+            });
+        }
+
+        $statusFilter = $request->input('status', 'all');
+        if ($statusFilter && $statusFilter !== 'all') {
+            if (in_array(strtolower($statusFilter), ['unpaid', 'pending'])) {
+                $monthlyQuery->whereNotIn('bills.status', ['Paid', 'paid']);
+            } else {
+                $monthlyQuery->where('bills.status', ucfirst($statusFilter));
+            }
+        }
+
+        if ($sort === 'oldest') {
+            $monthlyQuery->orderBy('bills.billing_date', 'asc');
+        } elseif ($sort === 'consumer_asc') {
+            $monthlyQuery->join('customers as mc', 'bills.customer_id', '=', 'mc.id')
+                ->orderBy('mc.name', 'asc')
+                ->select('bills.*');
+        } else {
+            $monthlyQuery->orderBy('bills.billing_date', 'desc');
+        }
+
+        $monthlyBills = $monthlyQuery->get();
+        $monthlyBillingRecords = $monthlyBills->groupBy(function ($b) {
+            return $b->billing_date->format('F Y');
+        });
 
         $paidCount = Bill::where('status', 'Paid')
             ->whereIn('customer_id', $myCustomerIds)
@@ -88,7 +265,7 @@ class BillingController extends Controller
             $settings[$lowerName.'_base_limit'] = $type->base_limit;
         }
 
-        $customers = Customer::where('admin_id', $adminId)->where('status', 'active')->get();
+        $customers = Customer::where('admin_id', $adminId)->where('status', 'active')->withCount('bills')->get();
 
         $globalAdditionalCharges = json_decode(SystemSetting::get('global_additional_charges', '[]'), true);
         $globalAdditionalChargeTotal = collect($globalAdditionalCharges)->sum('amount');
@@ -105,7 +282,19 @@ class BillingController extends Controller
             'customers' => $customers,
             'settings' => $settings,
             'globalAdditionalCharges' => $globalAdditionalCharges,
-            'globalAdditionalChargeTotal' => $globalAdditionalChargeTotal
+            'globalAdditionalChargeTotal' => $globalAdditionalChargeTotal,
+            'availableMonths' => $availableMonths,
+            'allMonths' => $allMonths,
+            'availableYears' => $availableYears,
+            'maxYear' => $maxYear,
+            'selectedMonth' => $selectedMonth,
+            'selectedYear' => $selectedYear,
+            'selectedBarangay' => $selectedBarangay,
+            'selectedMeterPost' => $selectedMeterPost,
+            'availableBarangays' => $availableBarangays,
+            'availableMeterPosts' => $availableMeterPosts,
+            'sort' => $sort,
+            'monthlyBillingRecords' => $monthlyBillingRecords,
         ]);
     }
  
@@ -177,7 +366,17 @@ class BillingController extends Controller
 
         $baseCharge = (isset($validated['base_charge']) && is_numeric($validated['base_charge'])) ? (float)$validated['base_charge'] : $baseRate;
         
-        if (isset($validated['usage_charge']) && is_numeric($validated['usage_charge'])) {
+        $isFirstReading = !Bill::where('customer_id', $validated['customer_id'])->exists();
+
+        if (!$isFirstReading && $newReading <= $previousReading) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['new_reading' => 'Present reading must be greater than previous reading (' . $previousReading . ' m³).']);
+        }
+
+        if ($isFirstReading) {
+            $usageCharge = 0.0;
+        } elseif (isset($validated['usage_charge']) && is_numeric($validated['usage_charge'])) {
             $usageCharge = (float)$validated['usage_charge'];
         } else {
             $billableUsage = max(0, $usage - $baseLimit);
@@ -270,15 +469,32 @@ class BillingController extends Controller
         return view('billing.receipt-batch', compact('bills'));
     }
  
-    public function markAsPaid(Bill $bill)
+    public function markAsPaid(Request $request, Bill $bill)
     {
         if (auth()->user()->role === 'consumer') {
             abort(403);
         }
 
+        // Additional payment verification process (Item 4)
+        if ($request->has('payment_amount')) {
+            $request->validate([
+                'payment_amount' => 'required|numeric',
+                'or_number' => 'nullable|string|max:50',
+            ]);
+
+            $enteredAmount = (float) $request->input('payment_amount');
+            if (abs($enteredAmount - (float) $bill->total_amount) > 0.01) {
+                return redirect()->back()
+                    ->with('error', 'Payment amount is incorrect. Expected ₱' . number_format($bill->total_amount, 2) . ', but entered ₱' . number_format($enteredAmount, 2) . '.');
+            }
+        }
+
+        $orNumber = $request->input('or_number') ?: ($bill->or_number ?: 'OR-' . str_pad($bill->id, 6, '0', STR_PAD_LEFT));
+
         $bill->update([
             'status' => 'Paid',
             'paid_date' => now(),
+            'or_number' => $orNumber,
         ]);
         
         // Notify the consumer device/account via in-app message
@@ -286,7 +502,7 @@ class BillingController extends Controller
             \App\Models\Message::create([
                 'sender_id' => auth()->id(),
                 'receiver_id' => $bill->customer->user->id,
-                'message' => 'Your bill from ' . $bill->billing_date->format('M d, Y') . ' for the amount of ' . number_format($bill->total_amount, 2) . ' has been successfully marked as paid. Thank you!',
+                'message' => 'Your bill from ' . $bill->billing_date->format('M d, Y') . ' for the amount of ' . number_format($bill->total_amount, 2) . ' has been successfully marked as paid with OR #' . $orNumber . '. Thank you!',
             ]);
             
             // Dispatch Web Push Notification
@@ -298,7 +514,7 @@ class BillingController extends Controller
         }
  
         return redirect()->route('billing.index')
-            ->with('success', 'Bill marked as paid and notification sent.');
+            ->with('success', 'Bill for ' . ($bill->customer?->name ?? 'Consumer') . ' marked as paid with OR #' . $orNumber . '.');
     }
  
     public function destroy(Bill $bill)
@@ -349,28 +565,53 @@ class BillingController extends Controller
         }
 
         $validated = $request->validate([
-            'billing_date' => 'required|date',
             'new_reading' => 'required|numeric|min:0',
-            'consumption' => 'required|numeric|min:0',
-            'base_charge' => 'required|numeric',
-            'usage_charge' => 'required|numeric',
+            'billing_date' => 'nullable|date',
+            'due_date' => 'nullable|date',
             'additional_charge_amount' => 'nullable|numeric|min:0',
             'additional_charge_note' => 'nullable|string',
-            'due_date' => 'required|date|after_or_equal:billing_date',
         ]);
  
-        $globalAdditionalChargeTotal = collect($bill->applied_additional_charges ?? [])->sum('amount');
-        
-        $newReading = $validated['new_reading'];
-        $previousReading = $bill->previous_reading ?? 0;
+        $newReading = (float) $validated['new_reading'];
+        $previousReading = (float) ($bill->previous_reading ?? 0);
+        $isFirstBill = $bill->isFirstBill();
+
+        if (!$isFirstBill && $newReading <= $previousReading) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['new_reading' => 'Present reading must be greater than previous reading (' . $previousReading . ' m³).']);
+        }
+
         $usage = max(0, $newReading - $previousReading);
 
-        $validated['new_reading'] = $newReading;
-        $validated['usage_units'] = $usage;
-        $validated['consumption'] = $usage;
-        $validated['total_amount'] = ($validated['base_charge'] + $validated['usage_charge']) + (($validated['additional_charge_amount'] ?? 0) + $globalAdditionalChargeTotal);
- 
-        $bill->update($validated);
+        $customer = Customer::find($bill->customer_id);
+        $customerType = $customer ? $customer->customerType : null;
+        if (!$customerType && $customer) {
+            $customerType = \App\Models\CustomerType::where('name', $customer->type)->first();
+        }
+        $baseRate = $customerType ? (float)$customerType->base_charge : 150.0;
+        $usageRate = $customerType ? (float)$customerType->usage_rate : 15.0;
+        $baseLimit = $customerType ? (float)$customerType->base_limit : 10.0;
+
+        $baseCharge = $baseRate;
+        $usageCharge = $isFirstBill ? 0.0 : (max(0, $usage - $baseLimit) * $usageRate);
+
+        $globalAdditionalChargeTotal = collect($bill->applied_additional_charges ?? [])->sum('amount');
+        $additionalAmount = isset($validated['additional_charge_amount']) ? (float)$validated['additional_charge_amount'] : (float)($bill->additional_charge_amount ?? 0);
+        $totalAmount = $baseCharge + $usageCharge + $additionalAmount + $globalAdditionalChargeTotal;
+
+        $bill->update([
+            'new_reading' => $newReading,
+            'usage_units' => $usage,
+            'consumption' => $usage,
+            'base_charge' => $baseCharge,
+            'usage_charge' => $usageCharge,
+            'additional_charge_amount' => $additionalAmount,
+            'additional_charge_note' => $validated['additional_charge_note'] ?? $bill->additional_charge_note,
+            'billing_date' => $validated['billing_date'] ?? $bill->billing_date,
+            'due_date' => $validated['due_date'] ?? $bill->due_date,
+            'total_amount' => $totalAmount,
+        ]);
 
         // If this is the latest bill, update customer's current meter reading
         $latestBill = Bill::where('customer_id', $bill->customer_id)

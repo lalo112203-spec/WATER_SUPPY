@@ -50,4 +50,25 @@ class Customer extends Model
     {
         return $this->belongsTo(CustomerType::class);
     }
+
+    public function getUnpaidBillsCountAttribute(): int
+    {
+        return $this->bills()->whereNotIn('status', ['Paid', 'paid'])->count();
+    }
+
+    public function getUnpaidBillsTotalAttribute(): float
+    {
+        return (float) $this->bills()->whereNotIn('status', ['Paid', 'paid'])->sum('total_amount');
+    }
+
+    public function isEligibleForDisconnection(): bool
+    {
+        $threshold = (int) SystemSetting::get('disconnection_unpaid_months', 4);
+        return $this->unpaid_bills_count >= $threshold;
+    }
+
+    public function isFirstReading(): bool
+    {
+        return $this->bills()->count() === 0;
+    }
 }

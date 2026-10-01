@@ -160,54 +160,57 @@
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label for="billing_date" class="block text-sm font-medium text-gray-200 mb-1">Billing Date</label>
-                                <input type="date" id="billing_date" name="billing_date" required
+                                <label for="billing_date" class="block text-sm font-medium text-gray-400 mb-1">Billing Date</label>
+                                <input type="date" id="billing_date" name="billing_date" readonly
                                     value="{{ old('billing_date', $bill->billing_date->format('Y-m-d')) }}"
-                                    class="w-full bg-[#1b2636]/60 border border-[#2d4059] focus:border-emerald-500/50 text-gray-200 text-sm rounded-xl py-2 px-3 outline-none">
+                                    class="w-full bg-[#1b2636]/40 border border-[#2d4059] text-gray-400 text-sm rounded-xl py-2 px-3 outline-none cursor-not-allowed">
                             </div>
                             <div>
-                                <label for="due_date" class="block text-sm font-medium text-gray-200 mb-1">Due Date</label>
-                                <input type="date" id="due_date" name="due_date" required
+                                <label for="due_date" class="block text-sm font-medium text-gray-400 mb-1">Due Date</label>
+                                <input type="date" id="due_date" name="due_date" readonly
                                     value="{{ old('due_date', $bill->due_date->format('Y-m-d')) }}"
-                                    class="w-full bg-[#1b2636]/60 border border-[#2d4059] focus:border-emerald-500/50 text-gray-200 text-sm rounded-xl py-2 px-3 outline-none">
+                                    class="w-full bg-[#1b2636]/40 border border-[#2d4059] text-gray-400 text-sm rounded-xl py-2 px-3 outline-none cursor-not-allowed">
                             </div>
                         </div>
 
-                        <div class="bg-[#1e293b]/40 border border-amber-500/20 p-4 rounded-2xl relative">
-                            <label for="new_reading" class="block text-sm font-medium text-gray-300 mb-1">New Reading (m³) *</label>
-                            <input type="number" step="1" id="new_reading" name="new_reading" required
-                                min="{{ $bill->previous_reading }}"
+                        <div class="bg-[#1e293b]/40 border-2 border-emerald-500/40 p-4 rounded-2xl relative shadow-inner">
+                            <div class="flex items-center justify-between mb-1">
+                                <label for="new_reading" class="block text-sm font-bold text-emerald-400">Present Reading (m³) <span class="text-red-400">*</span></label>
+                                <span class="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider bg-emerald-500/20 px-2 py-0.5 rounded-full">Editable</span>
+                            </div>
+                            <input type="number" step="any" id="new_reading" name="new_reading" required
+                                min="0"
                                 value="{{ old('new_reading', $bill->new_reading) }}" oninput="calculateCharges()" 
-                                class="w-full bg-[#0f1722]/60 border border-[#2d4059] text-gray-100 text-lg font-bold rounded-xl py-2 px-3 outline-none transition-all duration-300">
+                                class="w-full bg-[#0f1722] border-2 border-emerald-500/60 focus:border-emerald-400 text-emerald-300 text-2xl font-black rounded-xl py-2.5 px-3 outline-none transition-all duration-300 shadow-inner">
                             <p id="usage-calculation" class="text-xs mt-2 flex items-center gap-2 min-h-[1rem]"></p>
                         </div>
                     </div>
 
                     <div class="space-y-4 bg-[#0f1722]/40 p-4 rounded-2xl border border-[#263548]">
                         <div>
-                            <label for="calculated_usage_display" class="block text-xs font-medium text-gray-200 mb-1">Calculated Consumption (m³)</label>
+                            <label for="calculated_usage_display" class="block text-xs font-medium text-gray-400 mb-1">Calculated Consumption (m³)</label>
                             <input type="text" id="calculated_usage_display" readonly value="{{ $bill->consumption }}"
-                                class="w-full bg-[#1b2636]/40 border border-[#2d4059] text-gray-300 rounded-xl py-2 px-3 font-mono outline-none">
+                                class="w-full bg-[#1b2636]/40 border border-[#2d4059] text-gray-400 rounded-xl py-2 px-3 font-mono outline-none cursor-not-allowed">
                             <input type="hidden" name="consumption" id="consumption" value="{{ $bill->consumption }}">
                         </div>
 
                         <div>
-                            <label for="base_charge" class="block text-xs font-medium text-gray-200 mb-1">Base Charge</label>
-                            <div class="relative text-gray-300 font-medium">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-200">₱</span>
-                                <input type="number" step="0.01" id="base_charge" name="base_charge" required
-                                    value="{{ old('base_charge', $bill->base_charge) }}" oninput="updateTotal()"
-                                    class="w-full bg-[#1b2636]/40 border border-[#2d4059] py-2 pl-7 pr-3 rounded-xl outline-none">
+                            <label for="base_charge" class="block text-xs font-medium text-gray-400 mb-1">Base Charge (Auto-calculated)</label>
+                            <div class="relative text-gray-400 font-medium">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₱</span>
+                                <input type="number" step="0.01" id="base_charge" name="base_charge" readonly
+                                    value="{{ old('base_charge', $bill->base_charge) }}"
+                                    class="w-full bg-[#1b2636]/40 border border-[#2d4059] py-2 pl-7 pr-3 rounded-xl outline-none text-gray-400 cursor-not-allowed">
                             </div>
                         </div>
 
                         <div>
-                            <label for="usage_charge" class="block text-xs font-medium text-gray-200 mb-1">Usage Charge</label>
-                            <div class="relative text-gray-300 font-medium">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-200">₱</span>
-                                <input type="number" step="0.01" id="usage_charge" name="usage_charge" required
-                                    value="{{ old('usage_charge', $bill->usage_charge) }}" oninput="updateTotal()"
-                                    class="w-full bg-[#1b2636]/40 border border-[#2d4059] py-2 pl-7 pr-3 rounded-xl outline-none">
+                            <label for="usage_charge" class="block text-xs font-medium text-gray-400 mb-1">Usage Charge (Auto-calculated)</label>
+                            <div class="relative text-gray-400 font-medium">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₱</span>
+                                <input type="number" step="0.01" id="usage_charge" name="usage_charge" readonly
+                                    value="{{ old('usage_charge', $bill->usage_charge) }}"
+                                    class="w-full bg-[#1b2636]/40 border border-[#2d4059] py-2 pl-7 pr-3 rounded-xl outline-none text-gray-400 cursor-not-allowed">
                             </div>
                         </div>
 
@@ -228,7 +231,7 @@
                             <div class="relative">
                                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-400 font-bold text-lg">₱</span>
                                 <input type="number" step="0.01" id="total_amount" readonly value="{{ $bill->total_amount }}"
-                                    class="w-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-2xl font-black rounded-xl py-2 pl-8 pr-3 outline-none">
+                                    class="w-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-2xl font-black rounded-xl py-2 pl-8 pr-3 outline-none cursor-not-allowed">
                             </div>
                         </div>
                     </div>
@@ -259,27 +262,17 @@
 
             const presentReading = parseFloat(presentReadingInput.value) || 0;
             
-            if (presentReading < previousReading) {
-                calculationText.textContent = `Invalid: Reading cannot be lower than previous (${previousReading})`;
-                calculationText.className = 'text-xs mt-1 text-rose-500 font-bold';
-                const submitBtn = document.getElementById('edit_bill_btn');
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                }
-                baseChargeInput.value = 0;
-                usageChargeInput.value = 0;
-                consumptionDisplay.value = '0.00';
-                updateTotal();
-                return;
-            }
-            
             const submitBtn = document.getElementById('edit_bill_btn');
+            const cannotProceed = !isFirstBill && presentReading <= previousReading;
             if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                submitBtn.disabled = cannotProceed;
+                if (cannotProceed) {
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
             }
-            const usage = presentReading - previousReading;
+            const usage = Math.max(0, presentReading - previousReading);
             
             consumptionDisplay.value = usage.toFixed(0);
             document.getElementById('consumption').value = usage.toFixed(0);
@@ -289,12 +282,22 @@
             let rate = parseFloat(systemSettings[typeKey + '_usage_rate']) || 15;
             let baseLimit = parseFloat(systemSettings[typeKey + '_base_limit']) || 10;
 
+            const isFirstBill = {{ $bill->isFirstBill() ? 'true' : 'false' }};
             const billableUsage = Math.max(usage - baseLimit, 0);
-            const usageCharge = billableUsage * rate;
+            const usageCharge = isFirstBill ? 0 : (billableUsage * rate);
 
             baseChargeInput.value = baseCharge.toFixed(0);
             usageChargeInput.value = usageCharge.toFixed(0);
-            calculationText.textContent = `Usage: ${usage.toFixed(0)}m³ | Calculation: (${usage.toFixed(0)} - ${baseLimit}) × ₱${rate} = ₱${usageCharge.toFixed(0)}`;
+            if (isFirstBill) {
+                calculationText.textContent = `First Reading: Consumption ${usage.toFixed(0)}m³ recorded | Usage charge waived (₱0) • Base charge only: ₱${baseCharge.toFixed(0)}`;
+                calculationText.className = 'text-xs mt-2 text-emerald-400 font-bold';
+            } else if (presentReading <= previousReading) {
+                calculationText.textContent = `Invalid: Present reading must be greater than previous reading (${previousReading} m³). Cannot save changes.`;
+                calculationText.className = 'text-xs mt-2 text-rose-400 font-bold';
+            } else {
+                calculationText.textContent = `Usage: ${usage.toFixed(0)}m³ | Calculation: (${usage.toFixed(0)} - ${baseLimit}) × ₱${rate} = ₱${usageCharge.toFixed(0)}`;
+                calculationText.className = 'text-xs mt-2 text-emerald-400 font-bold';
+            }
             
             updateTotal();
         }

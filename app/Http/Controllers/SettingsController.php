@@ -23,6 +23,7 @@ class SettingsController extends Controller
             'alert_threshold' => SystemSetting::get('alert_threshold', 1000), 
             'alert_email' => SystemSetting::get('alert_email', ''),
             'global_additional_charges' => json_decode(SystemSetting::get('global_additional_charges', '[]'), true),
+            'disconnection_unpaid_months' => (int) SystemSetting::get('disconnection_unpaid_months', 4),
         ];
  
         $customerTypes = \App\Models\CustomerType::all();
@@ -86,6 +87,7 @@ class SettingsController extends Controller
             'types.*.base_limit' => 'required|numeric|min:0',
             'alert_threshold' => 'nullable|numeric|min:0',
             'alert_email' => 'nullable|email',
+            'disconnection_unpaid_months' => 'nullable|integer|min:1|max:36',
             'additional_charge_names' => 'nullable|array',
             'additional_charge_amounts' => 'nullable|array',
         ]);
@@ -125,6 +127,9 @@ class SettingsController extends Controller
         }
         if (isset($validated['alert_threshold'])) {
             SystemSetting::set('alert_threshold', $validated['alert_threshold'], 'number');
+        }
+        if (isset($validated['disconnection_unpaid_months'])) {
+            SystemSetting::set('disconnection_unpaid_months', $validated['disconnection_unpaid_months'], 'number');
         }
  
         return redirect()->route('settings.index')

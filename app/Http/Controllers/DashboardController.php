@@ -157,11 +157,7 @@ class DashboardController extends Controller
         $currentReading = $validated['reading'];
         $previousReading = $customer->meter_reading ?? 0;
         
-        $usage = $currentReading - $previousReading;
-
-        if ($usage < 0) {
-            return redirect()->back()->withErrors(['reading' => "New reading ({$currentReading}) cannot be lower than the previous reading ({$previousReading})."]);
-        }
+        $usage = max(0, $currentReading - $previousReading);
 
         $customerType = $customer->customerType;
         if (!$customerType) {
@@ -174,8 +170,14 @@ class DashboardController extends Controller
             $baseCharge = (float) $customerType->base_charge;
         }
 
-        $billableUsage = max($usage - $baseLimit, 0);
-        $usageCharge = $billableUsage * $rate;
+        $isFirstReading = !Bill::where('customer_id', $customer->id)->exists();
+
+        if ($isFirstReading) {
+            $usageCharge = 0.0;
+        } else {
+            $billableUsage = max($usage - $baseLimit, 0);
+            $usageCharge = $billableUsage * $rate;
+        }
 
         $globalAdditionalCharges = json_decode(\App\Models\SystemSetting::get('global_additional_charges', '[]'), true);
         $globalAdditionalChargeTotal = collect($globalAdditionalCharges)->sum('amount');

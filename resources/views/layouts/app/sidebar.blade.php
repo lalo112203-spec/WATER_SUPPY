@@ -31,6 +31,8 @@
             border-right: none !important;
             box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2) !important;
             z-index: 50 !important;
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
         }
 
         /* Enforce desktop fixed behavior without breaking mobile transform */
@@ -73,8 +75,8 @@
         [data-flux-sidebar] [data-flux-sidebar-item][data-current] {
             background-color: var(--accent-blue) !important;
             border-radius: 9999px !important;
-            margin: 0 16px !important;
-            width: calc(100% - 32px) !important;
+            margin: 3px 4px !important;
+            width: calc(100% - 8px) !important;
             box-sizing: border-box !important;
             box-shadow: 0 4px 12px rgba(0, 38, 255, 0.3) !important;
         }
@@ -92,8 +94,8 @@
         [data-flux-sidebar] [data-flux-sidebar-item]:hover:not([data-current]) {
             background-color: rgba(255, 255, 255, 0.05) !important;
             border-radius: 9999px !important;
-            margin: 0 16px !important;
-            width: calc(100% - 32px) !important;
+            margin: 3px 4px !important;
+            width: calc(100% - 8px) !important;
             box-sizing: border-box !important;
         }
 
@@ -193,51 +195,53 @@
 
 
 
-            /* Apply custom text styles to all major elements in custom theme */
+            /* Apply custom text styles to elements in custom theme (strictly excluding the sidebar) */
             @if(auth()->user()->text_stroke_color)
-                html.custom-theme h1:not(form *), 
-                html.custom-theme h2:not(form *), 
-                html.custom-theme h3:not(form *), 
-                html.custom-theme p:not(form *), 
-                html.custom-theme span:not(form *), 
-                html.custom-theme div:not([data-flux-sidebar]):not([data-flux-navbar]):not(form *) {
+                html.custom-theme main h1:not(form *), 
+                html.custom-theme main h2:not(form *), 
+                html.custom-theme main h3:not(form *), 
+                html.custom-theme main p:not(form *), 
+                html.custom-theme main span:not(form *), 
+                html.custom-theme main div:not(form *),
+                html.custom-theme *:not([data-flux-sidebar]):not([data-flux-sidebar] *):not([data-flux-navbar]):not([data-flux-navbar] *):not(form *) {
                     @if(auth()->user()->text_stroke_color && auth()->user()->text_stroke_width)
                         -webkit-text-stroke: {{ auth()->user()->text_stroke_width }} {{ auth()->user()->text_stroke_color }} !important;
                         paint-order: stroke fill !important;
                     @endif
                 }
                 
-                /* Protect form elements from inheriting the stroke */
+                /* Protect form elements and sidebar from inheriting the stroke */
                 html.custom-theme input,
                 html.custom-theme select,
                 html.custom-theme textarea,
                 html.custom-theme label,
-                html.custom-theme button {
-                    -webkit-text-stroke: 0 !important;
+                html.custom-theme button,
+                [data-flux-sidebar],
+                [data-flux-sidebar] * {
+                    -webkit-text-stroke: 0px transparent !important;
+                    -webkit-text-stroke-width: 0px !important;
                 }
             @endif
 
-            /* Ensure font family and colors are applied everywhere in custom theme */
+            /* Ensure font family is applied to main content in custom theme (strictly excluding the sidebar) */
             @if(auth()->user()->font_family)
-                html.custom-theme *, 
+                html.custom-theme *:not([data-flux-sidebar]):not([data-flux-sidebar] *), 
                 html.custom-theme input, 
-                html.custom-theme button, 
+                html.custom-theme button:not([data-flux-sidebar] *), 
                 html.custom-theme select, 
                 html.custom-theme textarea {
                     font-family: {{ auth()->user()->font_family }}, 'Inter', sans-serif !important;
                 }
             @endif
 
-
-            
             @if(auth()->user()->text_size)
-                html.custom-theme *:not(form):not(form *) {
+                html.custom-theme *:not([data-flux-sidebar]):not([data-flux-sidebar] *):not(form):not(form *) {
                     font-size: {{ auth()->user()->text_size }} !important;
                 }
             @endif
             
             @if(auth()->user()->font_weight)
-                html.custom-theme *:not(form):not(form *):not(i):not(svg):not(path) {
+                html.custom-theme *:not([data-flux-sidebar]):not([data-flux-sidebar] *):not(form):not(form *):not(i):not(svg):not(path) {
                     font-weight: {{ auth()->user()->font_weight }} !important;
                 }
             @endif
@@ -329,6 +333,109 @@
             padding-left: 0 !important;
             padding-right: 0 !important;
             justify-content: center !important;
+        }
+
+        [data-flux-sidebar-collapsed] .dwss-header-top,
+        [data-flux-sidebar-collapsed-desktop] .dwss-header-top,
+        [data-flux-sidebar-collapsed-mobile] .dwss-header-top {
+            justify-content: center !important;
+        }
+
+        /* =====================================================================
+           FIXED SIDEBAR STYLING - IMMUNE TO APPEARANCE SETTINGS
+           ===================================================================== */
+        /* 1. Neutralize stroke, shadow, and text modifications from appearance settings */
+        [data-flux-sidebar],
+        [data-flux-sidebar] *,
+        html.custom-theme [data-flux-sidebar],
+        html.custom-theme [data-flux-sidebar] *,
+        html.custom-theme body [data-flux-sidebar],
+        html.custom-theme body [data-flux-sidebar] * {
+            -webkit-text-stroke: 0px transparent !important;
+            -webkit-text-stroke-width: 0px !important;
+            paint-order: normal !important;
+        }
+
+        /* 2. Fixed Typography: Font Family, Font Weight, and Bigger Font Size */
+        [data-flux-sidebar] [data-flux-sidebar-item],
+        [data-flux-sidebar] [data-flux-sidebar-item] *,
+        [data-flux-sidebar] [data-flux-sidebar-item] span,
+        [data-flux-sidebar] [data-flux-sidebar-item] div,
+        [data-flux-sidebar] [data-flux-sidebar-item] [data-content],
+        html.custom-theme [data-flux-sidebar] [data-flux-sidebar-item],
+        html.custom-theme [data-flux-sidebar] [data-flux-sidebar-item] *,
+        html.custom-theme [data-flux-sidebar] [data-flux-sidebar-item] span,
+        html.custom-theme [data-flux-sidebar] [data-flux-sidebar-item] div,
+        html.custom-theme [data-flux-sidebar] [data-flux-sidebar-item] [data-content],
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item],
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item] span,
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item] div {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            font-size: 1.05rem !important; /* ~17px - clearly bigger & fixed */
+            font-weight: 600 !important;
+            letter-spacing: 0.015em !important;
+            line-height: 1.4 !important;
+        }
+
+        /* Active sidebar item font weight */
+        [data-flux-sidebar] [data-flux-sidebar-item][data-current],
+        [data-flux-sidebar] [data-flux-sidebar-item][data-current] *,
+        html.custom-theme [data-flux-sidebar] [data-flux-sidebar-item][data-current],
+        html.custom-theme [data-flux-sidebar] [data-flux-sidebar-item][data-current] * {
+            font-weight: 700 !important;
+        }
+
+        /* 3. Enlarge sidebar navigation icons */
+        [data-flux-sidebar] [data-flux-sidebar-item] svg,
+        [data-flux-sidebar] [data-flux-sidebar-item] [data-flux-icon],
+        html.custom-theme [data-flux-sidebar] [data-flux-sidebar-item] svg,
+        html.custom-theme [data-flux-sidebar] [data-flux-sidebar-item] [data-flux-icon],
+        html.custom-theme body [data-flux-sidebar] [data-flux-sidebar-item] svg {
+            width: 1.45rem !important;  /* ~23px */
+            height: 1.45rem !important;
+            min-width: 1.45rem !important;
+            min-height: 1.45rem !important;
+            stroke-width: 2px !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* 4. Sidebar Item Container Spacing & Dimensions */
+        [data-flux-sidebar] [data-flux-sidebar-item],
+        html.custom-theme [data-flux-sidebar] [data-flux-sidebar-item] {
+            min-height: 2.75rem !important; /* 44px */
+            height: auto !important;
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+            padding-left: 0.75rem !important;
+            padding-right: 0.75rem !important;
+            gap: 0.75rem !important;
+            margin: 3px 4px !important;
+            width: calc(100% - 8px) !important;
+            border-radius: 9999px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* 5. Collapsed sidebar alignment */
+        [data-flux-sidebar-collapsed-desktop] [data-flux-sidebar-item],
+        [data-flux-sidebar-collapsed] [data-flux-sidebar-item] {
+            margin-left: auto !important;
+            margin-right: auto !important;
+            width: 2.5rem !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            justify-content: center !important;
+        }
+
+        /* 6. Profile section at the bottom of sidebar */
+        [data-flux-sidebar] [data-flux-sidebar-profile],
+        [data-flux-sidebar] [data-flux-sidebar-profile] *,
+        html.custom-theme [data-flux-sidebar] [data-flux-sidebar-profile],
+        html.custom-theme [data-flux-sidebar] [data-flux-sidebar-profile] * {
+            font-size: 0.95rem !important;
+            font-weight: 600 !important;
+            font-family: 'Inter', system-ui, sans-serif !important;
+            -webkit-text-stroke: 0px transparent !important;
+            -webkit-text-stroke-width: 0px !important;
         }
 
         /* Form Controls visibility in Light Mode */
@@ -442,14 +549,32 @@
     @endphp
     @if($isConsumer)
     <flux:sidebar collapsible collapsed
-        class="dark border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl !w-56">
+        class="dark border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
     @else
     <flux:sidebar collapsible
         class="dark border-e border-[#1e293b] bg-[#0b121c] bg-opacity-65 backdrop-blur-2xl shadow-2xl">
     @endif
-        <flux:sidebar.header>
-            <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
-            <flux:sidebar.collapse />
+        <flux:sidebar.header class="relative !flex !flex-col !items-center !h-auto !min-h-0 pt-4 pb-3 px-2">
+            <!-- Collapse button positioned at top right -->
+            <div class="absolute right-2 top-2 z-10">
+                <flux:sidebar.collapse class="text-gray-400 hover:text-white" />
+            </div>
+
+            <!-- Brand: Logo Icon centered on TOP of the text -->
+            <a href="{{ route('dashboard') }}" wire:navigate class="flex flex-col items-center group w-full text-center dwss-logo-container transition-all duration-300">
+                <!-- Logo Icon on the Top -->
+                <div class="flex aspect-square size-16 items-center justify-center rounded-full bg-white/10 p-1 shadow-[0_0_25px_rgba(34,211,238,0.35)] border-2 border-cyan-400/50 group-hover:scale-105 transition-all duration-300 dwss-logo shrink-0">
+                    <x-app-logo-icon class="size-13 dwss-logo-icon transition-all duration-300" />
+                </div>
+
+                <!-- Text Bigger Directly Below Logo -->
+                <div class="dwss-brand-text flex items-center justify-center w-full mt-2.5">
+                    <span class="text-4xl sm:text-[44px] font-black tracking-widest uppercase drop-shadow-[0_0_18px_rgba(34,211,238,0.9)] inline-block transition-all duration-300 group-hover:scale-105" 
+                        style="color: #22d3ee !important; font-family: 'Inter', system-ui, sans-serif !important; -webkit-text-stroke: 0 !important;">
+                        D.W.S.S
+                    </span>
+                </div>
+            </a>
         </flux:sidebar.header>
 
         <flux:sidebar.nav>
@@ -491,9 +616,9 @@
                     class="{{ $unreadCount > 0 ? 'message-has-unread' : '' }}"
                 >
                     @if(auth()->user()->role === 'admin')
-                        {{ __('Message & Posting') }}
+                        <span>{{ __('Message & Posting') }}</span>
                     @else
-                        {{ __('Messages') }}
+                        <span>{{ __('Messages') }}</span>
                     @endif
                 </flux:sidebar.item>
 

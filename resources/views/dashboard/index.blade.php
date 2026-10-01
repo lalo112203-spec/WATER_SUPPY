@@ -94,7 +94,7 @@
             <div
                 class="bg-[#0f172a]/60 backdrop-blur-md rounded-3xl shadow-lg border border-white/20 p-6 flex items-start justify-between relative overflow-hidden group hover:border-emerald-500/50 transition-all">
                 <div class="relative z-10">
-                    <p class="text-[13px] font-medium text-emerald-300 uppercase tracking-widest mb-1 drop-shadow-sm">Pending Rev.</p>
+                    <p class="text-[13px] font-medium text-emerald-300 uppercase tracking-widest mb-1 drop-shadow-sm">Unpaid Rev.</p>
                     <h3 class="text-3xl font-extrabold text-emerald-400 tracking-tight drop-shadow-md">
                         ₱{{ number_format($pendingRevenue, 0) }}</h3>
                 </div>
@@ -308,7 +308,7 @@
                                     tension: 0.4
                                 },
                                 {
-                                    label: 'Pending (₱)',
+                                    label: 'Unpaid (₱)',
                                     data: allLabels.map(l => {
                                         const pendLabels = {!! json_encode($monthlyPendingRevenue->pluck('month')) !!};
                                         const idx = pendLabels.indexOf(l);

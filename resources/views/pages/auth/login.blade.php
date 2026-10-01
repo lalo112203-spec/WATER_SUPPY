@@ -27,13 +27,13 @@
             <!-- Login Identifier -->
             <flux:input
                 name="email"
-                :label="__('Account Number')"
+                :label="__('Username')"
                 :value="old('email')"
                 type="text"
                 required
                 autofocus
                 autocomplete="username"
-                placeholder="1001"
+                placeholder="Username or Account Number"
             />
 
             <!-- Password -->
@@ -60,14 +60,6 @@
                         </svg>
                     </button>
                 </div>
-
-                @if (Route::has('password.request'))
-                    <div class="flex justify-start mt-2">
-                        <flux:link class="text-sm" :href="route('password.request')" wire:navigate>
-                            {{ __('Forgot your password?') }}
-                        </flux:link>
-                    </div>
-                @endif
             </div>
 
             <!-- Remember Me -->

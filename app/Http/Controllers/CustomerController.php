@@ -196,15 +196,29 @@ class CustomerController extends Controller
         ]);
 
         if ($request->has('create_account') && $request->filled('password')) {
-            $email = $customer->email;
+            $username = $request->filled('username') ? trim($request->input('username')) : $customer->customer_id;
+            $email = str_contains($username, '@') ? $username : ($customer->customer_id . '@system.local');
 
-            // Check if user already exists with this email to avoid 500 error
-            if (\App\Models\User::withTrashed()->where('email', $email)->exists()) {
-                // If it exists, update it instead of creating new one to avoid clash
-                $existingUser = \App\Models\User::withTrashed()->where('email', $email)->first();
+            // If username is already taken by another user, fallback to customer_id
+            if (\App\Models\User::withTrashed()->where('username', $username)->where(function($q) use ($customer) {
+                $q->whereNull('customer_id')->orWhere('customer_id', '!=', $customer->id);
+            })->exists()) {
+                $username = $customer->customer_id;
+            }
+
+            // Check if user already exists
+            $existingUser = \App\Models\User::withTrashed()
+                ->where('customer_id', $customer->id)
+                ->orWhere('email', $email)
+                ->orWhere('username', $username)
+                ->first();
+
+            if ($existingUser) {
                 $existingUser->restore();
                 $existingUser->update([
                     'name' => $customer->name,
+                    'username' => $username,
+                    'email' => $email,
                     'password' => \Illuminate\Support\Facades\Hash::make($request->input('password')),
                     'plain_password' => $request->input('password'),
                     'customer_id' => $customer->id,
@@ -212,6 +226,7 @@ class CustomerController extends Controller
             } else {
                 \App\Models\User::create([
                     'name' => $customer->name,
+                    'username' => $username,
                     'email' => $email,
                     'password' => \Illuminate\Support\Facades\Hash::make($request->input('password')),
                     'plain_password' => $request->input('password'),
@@ -301,36 +316,66 @@ class CustomerController extends Controller
             ->with('success', 'Customer and all associated data deleted successfully');
     }
 
-    public function createAccount(Customer $customer)
+    public function createAccount(Request $request, Customer $customer)
     {
         if (auth()->user()->role === 'consumer') {
             abort(403);
         }
 
         if ($customer->user) {
-            return back()->with('error', 'Account already exists.');
+            return back()->with('error', 'Account already exists for this consumer.');
         }
 
-        $password = \Illuminate\Support\Str::random(8);
-        $email = $customer->customer_id . '@system.local';
+        $request->validate([
+            'username' => 'nullable|string|max:50',
+            'password' => 'nullable|string|min:6',
+        ]);
 
-        // Check for existing email to avoid Integrity Constraint Violation
-        if (\App\Models\User::withTrashed()->where('email', $email)->exists()) {
-            $existingUser = \App\Models\User::withTrashed()->where('email', $email)->first();
+        $password = $request->input('password') ?: \Illuminate\Support\Str::random(8);
+        $username = $request->filled('username') ? trim($request->input('username')) : $customer->customer_id;
+        $email = str_contains($username, '@') ? $username : ($customer->customer_id . '@system.local');
 
-            // Re-sync if it belongs to this customer but somehow the link was lost or it was soft-deleted
+        // Check for existing username on another user
+        $usernameConflict = \App\Models\User::withTrashed()
+            ->where(function($q) use ($username, $email) {
+                $q->where('username', $username)
+                  ->orWhere('email', $email);
+            })
+            ->where(function($q) use ($customer) {
+                $q->whereNull('customer_id')
+                  ->orWhere('customer_id', '!=', $customer->id);
+            })
+            ->exists();
+
+        if ($usernameConflict) {
+            return back()->with('error', "The username '{$username}' is already taken by another account. Please choose a different username.");
+        }
+
+        // Check for existing user linked to this customer or matching email/username
+        $existingUser = \App\Models\User::withTrashed()
+            ->where('customer_id', $customer->id)
+            ->orWhere('email', $email)
+            ->orWhere('username', $username)
+            ->first();
+
+        if ($existingUser) {
             $existingUser->restore();
             $existingUser->update([
+                'name' => $customer->name,
+                'username' => $username,
+                'email' => $email,
                 'customer_id' => $customer->id,
                 'password' => \Illuminate\Support\Facades\Hash::make($password),
                 'plain_password' => $password,
+                'role' => 'consumer',
             ]);
 
-            return back()->with('success', 'Account updated successfully. Password reset to: ' . $password);
+            return back()->with('success', "Account updated successfully for {$customer->name}! Username: {$username}");
         }
 
         \App\Models\User::create([
             'name' => $customer->name,
+            'username' => $username,
             'email' => $email,
             'password' => \Illuminate\Support\Facades\Hash::make($password),
             'plain_password' => $password,
@@ -339,7 +384,7 @@ class CustomerController extends Controller
             'email_verified_at' => now(),
         ]);
 
-        return back()->with('success', 'Account created successfully. Default password is: ' . $password);
+        return back()->with('success', "Account created successfully for {$customer->name}! Username: {$username}");
     }
 
     public function updatePassword(Request $request, Customer $customer)
@@ -362,5 +407,66 @@ class CustomerController extends Controller
         ]);
 
         return back()->with('success', 'Customer account password updated successfully.');
+    }
+
+    public function printBillingHistory(Customer $customer): View
+    {
+        $user = auth()->user();
+        if ($user->role === 'consumer' && (int)$user->customer_id !== (int)$customer->id) {
+            abort(403, 'Unauthorized access to customer billing history.');
+        }
+
+        $selectedBillIds = request()->input('bill_ids');
+        $customer->load(['customerType', 'bills' => function ($q) use ($selectedBillIds) {
+            if (!empty($selectedBillIds)) {
+                $ids = is_array($selectedBillIds) ? $selectedBillIds : explode(',', $selectedBillIds);
+                $q->whereIn('id', $ids);
+            }
+            $q->orderBy('billing_date', 'asc');
+        }]);
+
+        $disconnectionThreshold = (int) \App\Models\SystemSetting::get('disconnection_unpaid_months', 4);
+        $totalBilled = (float) $customer->bills->sum('total_amount');
+        $totalPaid = (float) $customer->bills->where('status', 'Paid')->sum('total_amount');
+        $totalUnpaid = (float) $customer->bills->where('status', '!=', 'Paid')->sum('total_amount');
+        $unpaidBills = $customer->bills->where('status', '!=', 'Paid');
+
+        return view('customers.billing-history-print', compact(
+            'customer',
+            'disconnectionThreshold',
+            'totalBilled',
+            'totalPaid',
+            'totalUnpaid',
+            'unpaidBills'
+        ));
+    }
+
+    public function sendDisconnectionNotice(Request $request, Customer $customer)
+    {
+        if (auth()->user()->role === 'consumer') {
+            abort(403);
+        }
+
+        $threshold = (int) \App\Models\SystemSetting::get('disconnection_unpaid_months', 4);
+        $unpaidCount = $customer->unpaid_bills_count;
+        $unpaidTotal = $customer->unpaid_bills_total;
+
+        if ($customer->user) {
+            $noticeText = "URGENT DISCONNECTION NOTICE: Dear {$customer->name}, your account ({$customer->customer_id}) has {$unpaidCount} unpaid bill(s) totaling ₱" . number_format($unpaidTotal, 2) . ". In accordance with our water service policy ({$threshold} months unpaid threshold), your service is subject to disconnection. Please settle your accounts immediately.";
+
+            \App\Models\Message::create([
+                'sender_id' => auth()->id(),
+                'receiver_id' => $customer->user->id,
+                'message' => $noticeText,
+            ]);
+
+            try {
+                $customer->user->notify(new \App\Notifications\DisconnectionWarningNotification($unpaidCount, $unpaidTotal));
+            } catch (\Exception $e) {
+                // Ignore web push exception if client isn't actively listening
+            }
+        }
+
+        return back()->with('success', "Disconnection notice successfully sent to {$customer->name} (Account #{$customer->customer_id}).");
     }
 }

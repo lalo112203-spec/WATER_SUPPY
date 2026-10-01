@@ -18,6 +18,8 @@ class ReaderController extends Controller
         // For a meter reader, we can fetch all active customers or customers assigned to specific admin
         // Assuming they can see all active customers for now.
         $groupedCustomers = Customer::whereIn('status', ['active', 'Active', 'ACTIVE'])
+            ->with(['customerType', 'bills'])
+            ->withCount('bills')
             ->orderBy('barangay', 'asc')
             ->orderBy('name', 'asc')
             ->get()
@@ -56,11 +58,7 @@ class ReaderController extends Controller
         $currentReading = $validated['reading'];
         $previousReading = $customer->meter_reading ?? 0;
         
-        $usage = $currentReading - $previousReading;
-
-        if ($usage < 0) {
-            return redirect()->back()->withErrors(['reading' => "New reading ({$currentReading}) cannot be lower than the previous reading ({$previousReading})."]);
-        }
+        $usage = max(0, $currentReading - $previousReading);
 
         // Check for existing bill in the same month
         $today = now();
@@ -92,8 +90,14 @@ class ReaderController extends Controller
             $baseCharge = (float) $customerType->base_charge;
         }
 
-        $billableUsage = max($usage - $baseLimit, 0);
-        $usageCharge = $billableUsage * $rate;
+        $isFirstReading = !Bill::where('customer_id', $customer->id)->exists();
+
+        if ($isFirstReading) {
+            $usageCharge = 0.0;
+        } else {
+            $billableUsage = max($usage - $baseLimit, 0);
+            $usageCharge = $billableUsage * $rate;
+        }
 
         $globalAdditionalCharges = json_decode(SystemSetting::get('global_additional_charges', '[]'), true);
         $globalAdditionalChargeTotal = collect($globalAdditionalCharges)->sum('amount');
@@ -165,6 +169,78 @@ class ReaderController extends Controller
         return view('billing.receipt', compact('bill'));
     }
 
+    public function updateBill(Request $request, Bill $bill)
+    {
+        if (auth()->user()->role === 'consumer') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+        }
+
+        $readingVal = $request->input('new_reading', $request->input('reading'));
+        if ($readingVal === null || !is_numeric($readingVal) || (float)$readingVal < 0) {
+            return response()->json(['success' => false, 'message' => 'A valid new reading is required.'], 422);
+        }
+
+        $newReading = (float) $readingVal;
+        $previousReading = $request->has('previous_reading') && is_numeric($request->input('previous_reading'))
+            ? (float) $request->input('previous_reading')
+            : (float) ($bill->previous_reading ?? 0);
+
+        $usage = max(0, $newReading - $previousReading);
+
+        $customer = Customer::find($bill->customer_id);
+        $customerType = $customer ? $customer->customerType : null;
+        if (!$customerType && $customer) {
+            $customerType = \App\Models\CustomerType::where('name', $customer->type)->first();
+        }
+
+        $baseLimit = $customerType ? (float) $customerType->base_limit : 10;
+        $rate = $customerType ? (float) $customerType->usage_rate : 15;
+        $baseCharge = $customerType ? (float) $customerType->base_charge : 100;
+
+        $billableUsage = max($usage - $baseLimit, 0);
+        $usageCharge = $billableUsage * $rate;
+
+        $globalAdditionalChargeTotal = collect($bill->applied_additional_charges ?? [])->sum('amount');
+        $additionalChargeAmount = (float) ($bill->additional_charge_amount ?? 0);
+        $totalAmount = $baseCharge + $usageCharge + $globalAdditionalChargeTotal + $additionalChargeAmount;
+
+        $bill->update([
+            'previous_reading' => $previousReading,
+            'new_reading' => $newReading,
+            'usage_units' => $usage,
+            'consumption' => $usage,
+            'base_charge' => $baseCharge,
+            'usage_charge' => $usageCharge,
+            'total_amount' => $totalAmount,
+        ]);
+
+        // If this bill is the latest bill for the customer, update customer's current meter reading
+        $latestBill = Bill::where('customer_id', $bill->customer_id)
+            ->orderBy('billing_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($latestBill && $latestBill->id === $bill->id && $customer) {
+            $customer->update([
+                'meter_reading' => $newReading
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Meter reading updated successfully.',
+            'bill' => [
+                'id' => $bill->id,
+                'previous_reading' => $previousReading,
+                'new_reading' => $newReading,
+                'consumption' => $usage,
+                'total_amount' => $totalAmount,
+                'status' => $bill->status,
+            ],
+            'customer_meter_reading' => $customer ? $customer->meter_reading : $newReading,
+        ]);
+    }
+
     public function deleteBill(Bill $bill)
     {
         if (auth()->user()->role === 'consumer') {
@@ -189,5 +265,28 @@ class ReaderController extends Controller
         }
 
         return response()->json(['success' => true, 'message' => 'Bill deleted successfully.']);
+    }
+
+    public function updateCustomerReading(Request $request, Customer $customer)
+    {
+        if (auth()->user()->role === 'consumer') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+        }
+
+        $validated = $request->validate([
+            'reading' => 'required|numeric|min:0',
+        ]);
+
+        $newReading = (float) $validated['reading'];
+
+        $customer->update([
+            'meter_reading' => $newReading,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Meter reading updated successfully.',
+            'customer_meter_reading' => $newReading,
+        ]);
     }
 }

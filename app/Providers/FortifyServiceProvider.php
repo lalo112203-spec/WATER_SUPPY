@@ -39,10 +39,12 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
         Fortify::authenticateUsing(function (\Illuminate\Http\Request $request) {
-            $user = \App\Models\User::where('name', $request->email)
-                ->orWhere('email', $request->email)
-                ->orWhereHas('customer', function($q) use ($request) {
-                    $q->where('customer_id', $request->email);
+            $login = $request->input('username') ?? $request->input('email');
+            $user = \App\Models\User::where('username', $login)
+                ->orWhere('name', $login)
+                ->orWhere('email', $login)
+                ->orWhereHas('customer', function($q) use ($login) {
+                    $q->where('customer_id', $login);
                 })->first();
 
             if ($user && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {

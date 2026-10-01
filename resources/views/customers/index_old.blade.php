@@ -292,7 +292,7 @@
                                                             </td>
                                                             <td class="px-4 py-2 font-bold text-cyan-400">Γé▒{{ number_format($bill->total_amount, 0) }}</td>
                                                             <td class="px-4 py-2">
-                                                                <span class="capitalize {{ $bill->status === 'paid' ? 'text-emerald-400' : 'text-rose-400' }}">{{ $bill->status }}</span>
+                                                                <span class="capitalize {{ strtolower($bill->status) === 'paid' ? 'text-emerald-400' : 'text-rose-400' }}">{{ strtolower($bill->status) === 'paid' ? 'Paid' : 'Unpaid' }}</span>
                                                             </td>
                                                             <td class="px-4 py-2 text-right">
                                                                 <div class="flex justify-end gap-1">

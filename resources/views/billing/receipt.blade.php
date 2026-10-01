@@ -116,7 +116,7 @@
 
     <div class="max-w-xl mx-auto py-8">
         <div class="mb-4 flex justify-between items-center no-print">
-            <a href="javascript:history.back()" class="flex items-center gap-2 px-4 py-2 bg-[#1b2636] hover:bg-[#263548] text-gray-300 rounded-lg text-sm font-semibold transition-all border border-[#2d4059]">
+            <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('billing.index') }}" class="flex items-center gap-2 px-4 py-2 bg-[#1b2636] hover:bg-[#263548] text-gray-300 rounded-lg text-sm font-semibold transition-all border border-[#2d4059]">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
@@ -135,6 +135,9 @@
                     <div>
                         <h2 class="text-3xl font-bold text-gray-200">{{ strtolower($bill->status) === 'paid' ? 'RECEIPT' : 'BILLING STATEMENT' }}</h2>
                         <p class="text-sm text-gray-200 mt-1">#{{ str_pad($bill->id, 8, '0', STR_PAD_LEFT) }}</p>
+                        @if($bill->or_number || strtolower($bill->status) === 'paid')
+                            <p class="text-xs text-cyan-400 print:text-zinc-700 mt-0.5 font-mono font-semibold">OR No: {{ $bill->or_number_display }}</p>
+                        @endif
                     </div>
                     <div class="text-right">
                         <x-app-logo class="h-8 mb-2 justify-end" />
@@ -210,13 +213,74 @@
                             <p class="text-blue-400 font-bold">+ ₱{{ number_format($bill->additional_charge_amount, 0) }}</p>
                         </div>
                         @endif
+
+                        @php
+                            $isPaid = strtolower($bill->status) === 'paid';
+                        @endphp
+
+                        @if(!$isPaid)
+                            {{-- Arrears: displayed for pending/unpaid bills even if zero --}}
+                            @php
+                                $otherUnpaidBills = $bill->customer_id ? \App\Models\Bill::where('customer_id', $bill->customer_id)
+                                    ->where('id', '!=', $bill->id)
+                                    ->whereNotIn('status', ['Paid', 'paid'])
+                                    ->orderBy('billing_date', 'asc')
+                                    ->get() : collect();
+                                $otherUnpaidCount = $otherUnpaidBills->count();
+                            @endphp
+                            @if($otherUnpaidCount > 0)
+                                <div class="pt-2 border-t border-[#263548]/60 print:border-zinc-200">
+                                    <div class="flex justify-between items-center mb-1.5">
+                                        <div>
+                                            <p class="text-gray-200 print:text-zinc-700 font-medium">Unpaid Bill</p>
+                                            <p class="text-[10px] text-gray-400 print:text-zinc-500">Unpaid previous bills ({{ $otherUnpaidCount }} {{ Str::plural('bill', $otherUnpaidCount) }})</p>
+                                        </div>
+                                        <p class="font-bold text-amber-400 print:text-amber-700">₱{{ number_format($bill->arrears, 0) }}</p>
+                                    </div>
+                                    <div class="space-y-1.5 pl-3 py-1.5 border-l-2 border-amber-500/40 print:border-amber-600/40 bg-amber-500/5 print:bg-zinc-50 rounded-r-lg">
+                                        @foreach($otherUnpaidBills as $unpaid)
+                                            <div class="flex justify-between items-center text-xs">
+                                                <span class="text-gray-300 print:text-zinc-700 flex items-center gap-1.5">
+                                                    <span class="h-1.5 w-1.5 rounded-full bg-amber-400 print:bg-amber-600 shrink-0"></span>
+                                                    <span class="font-medium">{{ $unpaid->billing_date ? $unpaid->billing_date->format('F Y') : 'Prior Bill' }}</span>
+                                                </span>
+                                                <span class="font-bold text-amber-400 print:text-amber-800">₱{{ number_format($unpaid->total_amount, 0) }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @else
+                                <div class="flex justify-between items-center pt-2 border-t border-[#263548]/60 print:border-zinc-200">
+                                    <div>
+                                        <p class="text-gray-200 print:text-zinc-700 font-medium">Unpaid Bill</p>
+                                        <p class="text-[10px] text-gray-400 print:text-zinc-500">No previous unpaid balance</p>
+                                    </div>
+                                    <p class="font-bold text-gray-200 print:text-black">₱0</p>
+                                </div>
+                            @endif
+                        @endif
                     </div>
+
+                    @php
+                        $disconnectionThreshold = (int) \App\Models\SystemSetting::get('disconnection_unpaid_months', 4);
+                        $unpaidMonths = $bill->customer ? $bill->customer->unpaid_bills_count : 0;
+                    @endphp
+                    @if($unpaidMonths >= $disconnectionThreshold && !$isPaid)
+                        <div class="mt-4 p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 print:border-red-600 print:text-red-700 text-xs">
+                            <strong class="font-bold">NOTICE OF POSSIBLE DISCONNECTION:</strong> This account has {{ $unpaidMonths }} unpaid monthly bill(s) (policy threshold: {{ $disconnectionThreshold }} months). Please settle your previous bills immediately to prevent disconnection of water services.
+                        </div>
+                    @endif
                 </div>
 
                 <div class="bg-[#0f1722] -mx-8 -mb-8 p-8 border-t border-[#263548] print:bg-white print:border-zinc-200">
                     <div class="flex justify-between items-center">
-                        <p class="text-lg text-gray-200 font-semibold uppercase tracking-wider print:text-zinc-700">{{ strtolower($bill->status) === 'paid' ? 'Total Paid' : 'Total Amount Due' }}</p>
-                        <p class="text-2xl {{ strtolower($bill->status) === 'paid' ? 'text-green-600' : 'text-blue-500' }} font-bold tracking-tight print:text-black">₱{{ number_format($bill->total_amount, 0) }}</p>
+                        <div>
+                            <p class="text-lg text-gray-200 font-semibold uppercase tracking-wider print:text-zinc-700">{{ $isPaid ? 'Total Paid' : 'Total Amount Due' }}</p>
+                            @if(!$isPaid && $bill->arrears > 0)
+                                <p class="text-xs text-gray-400 print:text-zinc-500 font-medium">(Current: ₱{{ number_format($bill->total_amount, 0) }} + Unpaid Bill: ₱{{ number_format($bill->arrears, 0) }})</p>
+                            @endif
+                        </div>
+                        <p class="text-2xl {{ $isPaid ? 'text-green-600' : 'text-blue-500' }} font-bold tracking-tight print:text-black">₱{{ number_format($isPaid ? $bill->total_amount : ($bill->total_amount + $bill->arrears), 0) }}</p>
                     </div>
                 </div>
                 <div class="mt-12 hidden mt-8 text-center print:block print-footer" data-date="{{ now()->format('M d, Y H:i') }}">

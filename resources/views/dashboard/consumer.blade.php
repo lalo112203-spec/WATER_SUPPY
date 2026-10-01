@@ -24,6 +24,39 @@
             </div>
         @endif
 
+        @if(isset($customer) && $customer->isEligibleForDisconnection())
+            <div class="mb-6 mx-2 animate-fade-in-down p-5 rounded-2xl bg-rose-500/15 border-2 border-rose-500/40 text-white shadow-xl backdrop-blur-md">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-start gap-3.5">
+                        <div class="p-2.5 bg-rose-500/30 text-rose-300 rounded-xl border border-rose-500/40 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-rose-400 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-rose-200 tracking-tight flex items-center gap-2">
+                                URGENT NOTICE: Possible Service Disconnection
+                                <span class="text-xs px-2 py-0.5 rounded-full bg-rose-500/30 text-rose-200 border border-rose-500/40 font-mono">
+                                    {{ $customer->unpaid_bills_count }} Unpaid Bills
+                                </span>
+                            </h3>
+                            <p class="text-xs sm:text-sm text-gray-200 mt-1 leading-relaxed">
+                                You currently have <strong class="text-rose-300 font-bold">{{ $customer->unpaid_bills_count }} unpaid billing cycle(s)</strong> with an overdue balance of <strong class="text-rose-300 font-bold font-mono">₱{{ number_format($customer->unpaid_bills_total, 2) }}</strong>. System policy states that accounts with <strong class="text-white">{{ \App\Models\SystemSetting::get('disconnection_unpaid_months', 4) }} or more months</strong> of unpaid bills are subject to immediate disconnection. Please settle your previous bills promptly.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0 self-end sm:self-center">
+                        <a href="{{ route('customers.billing-history.print', $customer->id) }}" target="_blank" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-rose-950/40 flex items-center gap-1.5 whitespace-nowrap">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            View & Print History
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endif
+
 
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 flex-1 mb-8 mx-0 sm:mx-2 items-start">
@@ -37,7 +70,7 @@
                 <div class="flex flex-col gap-3 flex-1 justify-center">
                     <div>
                         <label for="reading_estimate" class="block text-[13px] font-medium text-gray-300 mb-1.5">Current Meter Reading (Previous: {{ $customer->meter_reading ?? 0 }})</label>
-                        <input type="number" id="reading_estimate" class="block w-full px-3 py-2 text-sm bg-[#0f1722] border border-[#263548] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="Enter reading" min="{{ $customer->meter_reading ?? 0 }}" onkeypress="if(event.key === 'Enter') calculateEstimate()">
+                        <input type="number" id="reading_estimate" class="block w-full px-3 py-2 text-sm bg-[#0f1722] border border-[#263548] rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="Enter reading" min="0" onkeypress="if(event.key === 'Enter') calculateEstimate()">
                     </div>
                     <button type="button" onclick="calculateEstimate()" class="w-full px-4 py-2 mt-1 text-sm bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-900/20 transition-all border border-blue-500">
                         View Estimate
@@ -67,12 +100,22 @@
                         <svg class="w-6 h-6 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         Billing Overview
                     </h2>
-                    <button type="button" onclick="document.getElementById('printBatchForm').submit()" class="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] sm:text-sm font-semibold transition-all shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                        </svg>
-                        Print Selected
-                    </button>
+                    <div class="flex items-center gap-2">
+                        @if(isset($customer))
+                            <a href="{{ route('customers.billing-history.print', $customer->id) }}" target="_blank" class="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] sm:text-sm font-semibold transition-all shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Print Complete History
+                            </a>
+                        @endif
+                        <button type="button" onclick="document.getElementById('printBatchForm').submit()" class="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] sm:text-sm font-semibold transition-all shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            Print Selected
+                        </button>
+                    </div>
                 </div>
                 <form id="printBatchForm" action="{{ route('billing.print-batch') }}" method="POST" target="_blank">
                     @csrf
@@ -105,7 +148,7 @@
                                             @if(strtolower($bill->status) === 'paid')
                                                 <span class="px-1.5 sm:px-3 py-1 inline-flex text-[9px] sm:text-xs font-bold rounded-full bg-green-100 text-green-700 shadow-sm border border-green-200 uppercase tracking-wide">Paid</span>
                                             @else
-                                                <span class="px-1.5 sm:px-3 py-1 inline-flex text-[9px] sm:text-xs font-bold rounded-full bg-red-100 text-red-700 shadow-sm border border-red-200 uppercase tracking-wide">Pending</span>
+                                                <span class="px-1.5 sm:px-3 py-1 inline-flex text-[9px] sm:text-xs font-bold rounded-full bg-red-100 text-red-700 shadow-sm border border-red-200 uppercase tracking-wide">Unpaid</span>
                                             @endif
                                         </td>
                                         <td class="px-1 sm:px-6 py-4 whitespace-nowrap text-right">
@@ -209,25 +252,20 @@
         const errorText = document.getElementById('estimate_error_text');
         const currentReading = parseFloat(input.value);
         
-        if (isNaN(currentReading)) {
+        if (isNaN(currentReading) || currentReading < 0) {
             errorText.textContent = "Please enter a valid reading.";
-            errorText.classList.remove('hidden');
-            return;
-        }
-        
-        if (currentReading < previousReading) {
-            errorText.textContent = `Reading cannot be lower than your previous reading (${previousReading}).`;
             errorText.classList.remove('hidden');
             return;
         }
         
         errorText.classList.add('hidden');
         
-        const usage = currentReading - previousReading;
+        const usage = Math.max(0, currentReading - previousReading);
         const typeSettings = estimatorSettings[customerType] || estimatorSettings['Regular'];
         
+        const isFirstReading = {{ (isset($customer) && $customer->bills->count() === 0) ? 'true' : 'false' }};
         const billableUsage = Math.max(usage - typeSettings.limit, 0);
-        const usageCharge = billableUsage * typeSettings.rate;
+        const usageCharge = isFirstReading ? 0 : (billableUsage * typeSettings.rate);
         const total = typeSettings.base + usageCharge + globalAdditionalChargeTotal;
         
         // Populate modal
@@ -235,7 +273,7 @@
         document.getElementById('modal_est_new').textContent = currentReading.toLocaleString();
         document.getElementById('modal_est_usage').textContent = usage.toLocaleString() + ' m³';
         
-        document.getElementById('modal_est_usage_charge_lbl').textContent = `Usage Charge (${usage} m³)`;
+        document.getElementById('modal_est_usage_charge_lbl').textContent = isFirstReading ? `Usage Charge (${usage} m³ - First Reading Waived)` : `Usage Charge (${usage} m³)`;
         document.getElementById('modal_est_usage_charge').textContent = '₱' + usageCharge.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         document.getElementById('modal_est_base_charge').textContent = '₱' + typeSettings.base.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         
