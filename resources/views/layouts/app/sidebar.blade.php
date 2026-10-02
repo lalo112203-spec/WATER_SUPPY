@@ -710,6 +710,36 @@
     </flux:header>
     @endif
 
+    <!-- Historical / Custom System Date Banner -->
+    @php
+        $activeCustomSystemDate = \App\Models\SystemSetting::get('system_date');
+    @endphp
+    @if(!empty($activeCustomSystemDate) && auth()->check() && in_array(auth()->user()->role, ['admin', 'staff']))
+        <div class="bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 text-white px-4 py-2 text-xs font-semibold flex flex-wrap items-center justify-between gap-2 shadow-lg sticky top-0 z-40 backdrop-blur-md border-b border-amber-400/30">
+            <div class="flex items-center gap-2">
+                <span class="p-1 bg-white/20 rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </span>
+                <span>
+                    <strong>Historical Record Mode Active:</strong> System date is currently set to <strong>{{ \Carbon\Carbon::parse($activeCustomSystemDate)->format('F d, Y') }}</strong>. All new readings, bills, and calculations will use this date.
+                </span>
+            </div>
+            <div class="flex items-center gap-2">
+                <form method="POST" action="{{ route('settings.reset-date') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="px-2.5 py-1 bg-white text-amber-900 hover:bg-amber-100 rounded-lg font-bold text-[11px] shadow-sm transition-all active:scale-95">
+                        Reset to Real-Time
+                    </button>
+                </form>
+                <a href="{{ route('settings.index') }}" class="underline text-white hover:text-white/80 text-[11px] font-medium ml-1">
+                    System Settings
+                </a>
+            </div>
+        </div>
+    @endif
+
     {{ $slot }}
 
     @fluxScripts

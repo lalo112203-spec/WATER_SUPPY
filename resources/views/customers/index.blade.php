@@ -1362,7 +1362,7 @@
                     })
                     .then(r => r.json())
                     .then(data => {
-                        const _now = new Date();
+                        const _now = new Date('{{ now()->format('Y-m-d\TH:i:s') }}');
                         const readings = data.readings || [];
                         quickIsFirstReading = readings.length === 0 || quickPrevReading === 0;
                         if (document.getElementById('modal_present_reading')?.value !== '') {

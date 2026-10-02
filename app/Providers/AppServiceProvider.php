@@ -25,6 +25,21 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
 
+        // System date override for historical / backlog records entry
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('system_settings')) {
+                $customDate = \App\Models\SystemSetting::get('system_date');
+                if (!empty($customDate)) {
+                    $parsed = \Carbon\Carbon::parse($customDate)->setTime(12, 0, 0);
+                    \Illuminate\Support\Facades\Date::setTestNow($parsed);
+                    \Carbon\Carbon::setTestNow($parsed);
+                    \Carbon\CarbonImmutable::setTestNow($parsed);
+                }
+            }
+        } catch (\Throwable $e) {
+            // Gracefully ignore during installation / migrations
+        }
+
         // Dynamically detect scheme and host to seamlessly support ngrok, cloudflare, and live domains
         if (isset($_SERVER['HTTP_HOST'])) {
             $isSecure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || 

@@ -185,6 +185,71 @@
                             <input type="number" name="alert_threshold" value="{{ $settings['alert_threshold'] ?? 15 }}">
                         </div>
 
+                        <!-- System Date Configuration (Historical / Backlog Records Entry) -->
+                        <div class="mt-8 p-6 bg-[#0f1722]/80 border border-cyan-500/30 rounded-2xl shadow-lg">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2.5 bg-cyan-500/20 text-cyan-400 rounded-xl border border-cyan-500/30 shrink-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                            System Date Configuration
+                                        </h4>
+                                        <p class="text-xs text-gray-400">Change the system date to input historical records (readings, bills, payments). All new transactions and duplicate checks will follow this date.</p>
+                                    </div>
+                                </div>
+                                <div class="shrink-0">
+                                    @if(!empty($settings['system_date']))
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse whitespace-nowrap shadow-sm">
+                                            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                                            Custom: {{ \Carbon\Carbon::parse($settings['system_date'])->format('M d, Y') }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 whitespace-nowrap shadow-sm">
+                                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                            Real-Time Active: {{ now()->format('M d, Y') }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-300 mb-1.5">
+                                        Active System Date (YYYY-MM-DD)
+                                    </label>
+                                    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                                        <div class="relative flex-1 min-w-[200px]">
+                                            <input type="date" id="system_date_input" name="system_date"
+                                                value="{{ old('system_date', $settings['system_date'] ?? '') }}"
+                                                class="w-full bg-[#1b2636]/60 border border-[#2d4059] focus:border-cyan-500 text-white text-sm rounded-xl py-2.5 px-4 outline-none transition-all font-mono font-bold">
+                                        </div>
+                                        <button type="button" onclick="applyQuickDateNow()" 
+                                            class="px-3.5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95 whitespace-nowrap">
+                                            Apply Date Now
+                                        </button>
+                                        <button type="button" onclick="document.getElementById('system_date_input').value = '{{ \Carbon\CarbonImmutable::now('UTC')->format('Y-m-d') }}'" 
+                                            class="px-3 py-2.5 bg-blue-600/25 hover:bg-blue-600/40 text-blue-300 border border-blue-500/30 rounded-xl text-xs font-bold uppercase tracking-wider transition-all active:scale-95 whitespace-nowrap">
+                                            Today
+                                        </button>
+                                        @if(!empty($settings['system_date']))
+                                        <button type="button" onclick="if(confirm('Reset system date back to real-time clock?')) { document.getElementById('quickResetDateForm').submit(); }"
+                                            class="px-3 py-2.5 bg-rose-600/25 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 rounded-xl text-xs font-bold uppercase tracking-wider transition-all active:scale-95 whitespace-nowrap">
+                                            Reset Real-Time
+                                        </button>
+                                        @endif
+                                    </div>
+                                </div>
+                                
+                                <p class="text-[11px] text-gray-400">
+                                    Set any past date to enter old readings/bills. Click <strong>Apply Date Now</strong> for immediate switch, or click <strong>Reset Real-Time</strong> to return to the live date.
+                                </p>
+                            </div>
+                        </div>
+
                         <!-- Disconnection Policy Configuration (Item 7) -->
                         <div class="mt-8 p-6 bg-[#0f1722]/80 border border-amber-500/30 rounded-2xl">
                             <div class="flex items-center gap-3 mb-4">
@@ -239,6 +304,26 @@
             </form>
         @endcomponent
     </section>
+
+    <!-- Quick Date Switch & Reset Forms -->
+    <form id="quickResetDateForm" method="POST" action="{{ route('settings.reset-date') }}" class="hidden">
+        @csrf
+    </form>
+    <form id="quickSetDateForm" method="POST" action="{{ route('settings.set-date') }}" class="hidden">
+        @csrf
+        <input type="hidden" name="system_date" id="hidden_quick_system_date">
+    </form>
+    <script>
+        function applyQuickDateNow() {
+            const input = document.getElementById('system_date_input');
+            if (!input || !input.value) {
+                alert('Please select a valid date first.');
+                return;
+            }
+            document.getElementById('hidden_quick_system_date').value = input.value;
+            document.getElementById('quickSetDateForm').submit();
+        }
+    </script>
 
 
 

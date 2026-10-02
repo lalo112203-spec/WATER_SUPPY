@@ -71,6 +71,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::post('settings/authorize', [SettingsController::class, 'authorize'])->name('settings.authorize');
     Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::post('settings/reset-date', [SettingsController::class, 'resetSystemDate'])->name('settings.reset-date');
+    Route::post('settings/set-date', [SettingsController::class, 'setSystemDate'])->name('settings.set-date');
     Route::post('settings/customer-type', [SettingsController::class, 'storeCustomerType'])->name('settings.customer-type.store');
     Route::post('settings/customer-type/ajax', [SettingsController::class, 'storeCustomerTypeAjax'])->name('settings.customer-type.store-ajax');
     Route::delete('settings/customer-type/{customerType}', [SettingsController::class, 'destroyCustomerType'])->name('settings.customer-type.destroy');

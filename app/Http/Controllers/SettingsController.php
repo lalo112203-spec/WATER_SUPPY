@@ -24,6 +24,7 @@ class SettingsController extends Controller
             'alert_email' => SystemSetting::get('alert_email', ''),
             'global_additional_charges' => json_decode(SystemSetting::get('global_additional_charges', '[]'), true),
             'disconnection_unpaid_months' => (int) SystemSetting::get('disconnection_unpaid_months', 4),
+            'system_date' => SystemSetting::get('system_date', ''),
         ];
  
         $customerTypes = \App\Models\CustomerType::all();
@@ -88,6 +89,7 @@ class SettingsController extends Controller
             'alert_threshold' => 'nullable|numeric|min:0',
             'alert_email' => 'nullable|email',
             'disconnection_unpaid_months' => 'nullable|integer|min:1|max:36',
+            'system_date' => 'nullable|date',
             'additional_charge_names' => 'nullable|array',
             'additional_charge_amounts' => 'nullable|array',
         ]);
@@ -131,9 +133,64 @@ class SettingsController extends Controller
         if (isset($validated['disconnection_unpaid_months'])) {
             SystemSetting::set('disconnection_unpaid_months', $validated['disconnection_unpaid_months'], 'number');
         }
+
+        if ($request->filled('system_date')) {
+            SystemSetting::set('system_date', $validated['system_date'], 'text');
+            $parsed = \Carbon\Carbon::parse($validated['system_date'])->setTime(12, 0, 0);
+            \Illuminate\Support\Facades\Date::setTestNow($parsed);
+            \Carbon\Carbon::setTestNow($parsed);
+            \Carbon\CarbonImmutable::setTestNow($parsed);
+        } else {
+            SystemSetting::where('key', 'system_date')->delete();
+            \Illuminate\Support\Facades\Date::setTestNow(null);
+            \Carbon\Carbon::setTestNow(null);
+            \Carbon\CarbonImmutable::setTestNow(null);
+        }
  
         return redirect()->route('settings.index')
             ->with('success', 'Settings updated successfully');
+    }
+
+    public function resetSystemDate(Request $request)
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+
+        SystemSetting::where('key', 'system_date')->delete();
+        \Illuminate\Support\Facades\Date::setTestNow(null);
+        \Carbon\Carbon::setTestNow(null);
+        \Carbon\CarbonImmutable::setTestNow(null);
+
+        return redirect()->back()->with('success', 'System date reset to real-time successfully (' . now()->format('M d, Y') . ').');
+    }
+
+    public function setSystemDate(Request $request)
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $request->validate([
+            'system_date' => 'nullable|date',
+        ]);
+
+        if ($request->filled('system_date')) {
+            SystemSetting::set('system_date', $request->system_date, 'text');
+            $parsed = \Carbon\Carbon::parse($request->system_date)->setTime(12, 0, 0);
+            \Illuminate\Support\Facades\Date::setTestNow($parsed);
+            \Carbon\Carbon::setTestNow($parsed);
+            \Carbon\CarbonImmutable::setTestNow($parsed);
+            $msg = 'System date changed to ' . $parsed->format('M d, Y') . ' for historical records entry.';
+        } else {
+            SystemSetting::where('key', 'system_date')->delete();
+            \Illuminate\Support\Facades\Date::setTestNow(null);
+            \Carbon\Carbon::setTestNow(null);
+            \Carbon\CarbonImmutable::setTestNow(null);
+            $msg = 'System date reset to real-time successfully.';
+        }
+
+        return redirect()->back()->with('success', $msg);
     }
 
     public function storeCustomerType(Request $request)

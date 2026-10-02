@@ -638,7 +638,7 @@
             })
             .then(r => r.json())
             .then(data => {
-                const _now = new Date();
+                const _now = new Date('{{ now()->format('Y-m-d\TH:i:s') }}');
                 const readings = data.readings || [];
                 billingIsFirstReading = readings.length === 0 || billingPrevReading === 0;
                 if (pr.value !== '') {

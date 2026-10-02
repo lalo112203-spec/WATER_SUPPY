@@ -1146,7 +1146,7 @@
                     .then(r => r.json())
                     .then(data => {
                         const bills = data.bills || [];
-                        const now = new Date();
+                        const now = new Date('{{ now()->format('Y-m-d\TH:i:s') }}');
                         const duplicate = bills.find(b => {
                             const d = new Date(b.billing_date);
                             return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();

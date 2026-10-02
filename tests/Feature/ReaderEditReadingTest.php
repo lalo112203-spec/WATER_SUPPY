@@ -127,7 +127,7 @@ class ReaderEditReadingTest extends TestCase
         $this->actingAs($this->reader);
 
         $response = $this->putJson(route('reader.updateBill', $bill), [
-            'new_reading' => 15, // lower than previous 20
+            'new_reading' => -5,
             'previous_reading' => 20,
         ]);
 
