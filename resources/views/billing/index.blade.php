@@ -81,14 +81,15 @@
 
         <div class="mb-8 flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
             <form action="{{ route('billing.index') }}" method="GET" class="flex flex-col sm:flex-row flex-wrap lg:flex-nowrap gap-3 flex-1 max-w-5xl">
-                <div class="relative flex-1 min-w-[200px] group">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="relative flex-1 min-w-[220px] flex items-center bg-[#121a25]/90 hover:bg-[#162232] border border-[#263548] focus-within:border-blue-500/70 focus-within:ring-1 focus-within:ring-blue-500/30 rounded-xl overflow-hidden transition-all shadow-sm group">
+                    <div class="pl-3.5 pr-1 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-400 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Search Account # or Name" 
-                        class="w-full pl-10 pr-10 py-2.5 bg-[#121a25]/60 border border-[#263548] rounded-xl focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all text-gray-200 text-sm">
+                        style="background: transparent !important; color: #f3f4f6 !important;"
+                        class="w-full py-2.5 pl-2 pr-9 bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-gray-100 placeholder:text-gray-400 text-sm font-medium">
                     @if(request('search'))
                         <a href="{{ route('billing.index', request()->except('search')) }}" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-rose-400 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -269,36 +270,57 @@
                 </div>
 
                 {{-- Status Filter --}}
-                <div class="w-full sm:w-40">
-                    <select name="status" onchange="this.form.submit()" class="w-full py-2.5 px-3 bg-[#121a25]/80 border border-[#263548] rounded-xl focus:outline-none focus:border-blue-500 text-gray-200 text-sm cursor-pointer">
-                        <option value="all" {{ request('status') == 'all' || !request('status') ? 'selected' : '' }}>All Status</option>
-                        <option value="unpaid" {{ in_array(request('status'), ['unpaid', 'pending']) ? 'selected' : '' }}>Unpaid Only</option>
-                        <option value="paid" {{ request('status') == 'paid' ? 'selected' : '' }}>Paid Only</option>
+                <div class="relative w-full sm:w-40 flex items-center bg-[#121a25]/90 hover:bg-[#162232] border border-[#263548] focus-within:border-blue-500/70 focus-within:ring-1 focus-within:ring-blue-500/30 rounded-xl transition-all shadow-sm group">
+                    <select name="status" onchange="this.form.submit()" 
+                        style="background: transparent !important; color: #f3f4f6 !important;"
+                        class="w-full py-2.5 pl-3.5 pr-8 bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-gray-100 text-xs sm:text-sm font-medium cursor-pointer appearance-none">
+                        <option value="all" {{ request('status') == 'all' || !request('status') ? 'selected' : '' }} class="bg-[#0f1722] text-gray-100">All Status</option>
+                        <option value="unpaid" {{ in_array(request('status'), ['unpaid', 'pending']) ? 'selected' : '' }} class="bg-[#0f1722] text-gray-100">Unpaid Only</option>
+                        <option value="paid" {{ request('status') == 'paid' ? 'selected' : '' }} class="bg-[#0f1722] text-gray-100">Paid Only</option>
                     </select>
+                    <div class="absolute right-0 pr-3 pointer-events-none text-gray-400 group-hover:text-gray-300 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
                 </div>
 
                 {{-- Barangay Filter --}}
-                <div class="w-full sm:w-44">
-                    <select name="barangay" onchange="this.form.submit()" class="w-full py-2.5 px-3 bg-[#121a25]/80 border border-[#263548] rounded-xl focus:outline-none focus:border-blue-500 text-gray-200 text-sm cursor-pointer">
-                        <option value="all" {{ !request('barangay') || request('barangay') === 'all' ? 'selected' : '' }}>All Barangays</option>
+                <div class="relative w-full sm:w-44 flex items-center bg-[#121a25]/90 hover:bg-[#162232] border border-[#263548] focus-within:border-blue-500/70 focus-within:ring-1 focus-within:ring-blue-500/30 rounded-xl transition-all shadow-sm group">
+                    <select name="barangay" onchange="this.form.submit()" 
+                        style="background: transparent !important; color: #f3f4f6 !important;"
+                        class="w-full py-2.5 pl-3.5 pr-8 bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-gray-100 text-xs sm:text-sm font-medium cursor-pointer appearance-none">
+                        <option value="all" {{ !request('barangay') || request('barangay') === 'all' ? 'selected' : '' }} class="bg-[#0f1722] text-gray-100">All Barangays</option>
                         @foreach($availableBarangays as $brgy)
-                            <option value="{{ $brgy }}" {{ request('barangay') === $brgy ? 'selected' : '' }}>{{ $brgy }}</option>
+                            <option value="{{ $brgy }}" {{ request('barangay') === $brgy ? 'selected' : '' }} class="bg-[#0f1722] text-gray-100">{{ $brgy }}</option>
                         @endforeach
                     </select>
+                    <div class="absolute right-0 pr-3 pointer-events-none text-gray-400 group-hover:text-gray-300 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
                 </div>
 
                 {{-- Meter Post Filter --}}
-                <div class="w-full sm:w-44">
-                    <select name="meter_post" onchange="this.form.submit()" class="w-full py-2.5 px-3 bg-[#121a25]/80 border border-[#263548] rounded-xl focus:outline-none focus:border-blue-500 text-gray-200 text-sm cursor-pointer">
-                        <option value="all" {{ !request('meter_post') || request('meter_post') === 'all' ? 'selected' : '' }}>All Meter Posts</option>
+                <div class="relative w-full sm:w-44 flex items-center bg-[#121a25]/90 hover:bg-[#162232] border border-[#263548] focus-within:border-blue-500/70 focus-within:ring-1 focus-within:ring-blue-500/30 rounded-xl transition-all shadow-sm group">
+                    <select name="meter_post" onchange="this.form.submit()" 
+                        style="background: transparent !important; color: #f3f4f6 !important;"
+                        class="w-full py-2.5 pl-3.5 pr-8 bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-gray-100 text-xs sm:text-sm font-medium cursor-pointer appearance-none">
+                        <option value="all" {{ !request('meter_post') || request('meter_post') === 'all' ? 'selected' : '' }} class="bg-[#0f1722] text-gray-100">All Meter Posts</option>
                         @foreach($availableMeterPosts as $post)
-                            <option value="{{ $post }}" {{ request('meter_post') === $post ? 'selected' : '' }}>Post: {{ $post }}</option>
+                            <option value="{{ $post }}" {{ request('meter_post') === $post ? 'selected' : '' }} class="bg-[#0f1722] text-gray-100">Post: {{ $post }}</option>
                         @endforeach
                     </select>
+                    <div class="absolute right-0 pr-3 pointer-events-none text-gray-400 group-hover:text-gray-300 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
                 </div>
 
                 @if($selectedMonth || $selectedYear || (request('status') && request('status') !== 'all') || (request('barangay') && request('barangay') !== 'all') || (request('meter_post') && request('meter_post') !== 'all') || request('search'))
-                    <a href="{{ route('billing.index') }}" class="px-3 py-2.5 bg-[#1b2636] hover:bg-[#263548] text-gray-300 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 border border-[#2d4059] transition">
+                    <a href="{{ route('billing.index') }}" class="px-4 py-2.5 bg-[#121a25]/90 hover:bg-[#162232] text-gray-300 hover:text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1 border border-[#263548] transition-all shadow-sm">
                         Reset
                     </a>
                 @endif
